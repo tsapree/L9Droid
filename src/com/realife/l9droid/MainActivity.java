@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements OnClickListener {
         return true;
     }
 
-	@Override
+	//@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
