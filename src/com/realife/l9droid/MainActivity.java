@@ -41,7 +41,7 @@ public class MainActivity extends Activity implements OnClickListener {
         return true;
     }
 
-    //
+    // some text
 	//@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
