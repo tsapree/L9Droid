@@ -64,7 +64,9 @@ class L9implement extends L9 {
 	L9implement(EditText et1) {
 		et=et1;
 	};
+	
 	void os_printchar(char c) {
+		if (c==0x0d) et.append("\n");
 		et.append(String.valueOf(c));
 	};
 }

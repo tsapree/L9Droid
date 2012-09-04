@@ -2,10 +2,14 @@ package com.realife.l9droid;
 
 //started: 01.09.2012
 
-//byte		L9BYTE		unsigned 8 bit quantity
-//short 	L9UINT16	unsigned 16 bit quantity
-//int		L9UINT32	unsigned 32 bit quantity
-//boolean	L9BOOL		quantity capable of holding the values TRUE (1) and FALSE (0)
+//char		16 bit
+//byte		signed 8 bit	->	L9BYTE		unsigned 8 bit quantity
+//short 	signed 16 bit	->	L9UINT16	unsigned 16 bit quantity
+//int		signed 32 bit	->	L9UINT32	unsigned 32 bit quantity
+//boolean					->	L9BOOL		quantity capable of holding the values TRUE (1) and FALSE (0)
+//
+//0=false
+//1=true 
 
 public class L9 {
 	
@@ -20,6 +24,91 @@ public class L9 {
 	
 	//char LastGame[MAX_PATH];
 	String LastGame;
+	
+
+//// "L901"
+//#define L9_ID 0x4c393031
+//
+//#define IBUFFSIZE 500
+//#define RAMSAVESLOTS 10
+//#define GFXSTACKSIZE 100
+//
+//
+//// Typedefs
+//typedef struct
+//{
+//	L9UINT16 vartable[256];
+//	L9BYTE listarea[LISTAREASIZE];
+//} SaveStruct;
+//
+//typedef struct
+//{
+//	L9BYTE *a5;
+//	int scale;
+//} GfxState;
+//
+//
+//// Enumerations 
+//enum L9GameTypes {L9_V1,L9_V2,L9_V3,L9_V4};
+//enum V2MsgTypes {V2M_NORMAL,V2M_ERIK};
+//
+
+// Global Variables
+//L9BYTE* startfile=NULL,*pictureaddress=NULL,*picturedata=NULL;
+//L9BYTE* startdata;
+//L9UINT32 FileSize,picturesize;
+//
+//L9BYTE *L9Pointers[12];
+//L9BYTE *absdatablock,*list2ptr,*list3ptr,*list9startptr,*acodeptr;
+//L9BYTE *startmd,*endmd,*endwdp5,*wordtable,*dictdata,*defdict;
+//L9UINT16 dictdatalen;
+//L9BYTE *startmdV2;
+//
+	int wordcase;
+//int unpackcount;
+//char unpackbuf[8];
+//L9BYTE* dictptr;
+//char threechars[34];
+//int L9GameType;
+//int V2MsgType;
+//
+//SaveStruct ramsavearea[RAMSAVESLOTS];
+//
+//char ibuff[IBUFFSIZE];
+//L9BYTE* ibuffptr;
+//char obuff[34];
+//
+	boolean Cheating=false;
+//int CheatWord;
+//GameState CheatWorkspace;
+//
+//int reflectflag,scale,gintcolour,option;
+//int l9textmode=0,drawx=0,drawy=0,screencalled=0;
+//L9BYTE *gfxa5=NULL;
+//L9BOOL scalegfx=TRUE;
+//Bitmap* bitmap=NULL;
+//
+//GfxState GfxStack[GFXSTACKSIZE];
+//int GfxStackPos=0;
+//
+	char lastchar='.';
+	char lastactualchar=0;
+	int d5;
+//
+//L9BYTE* codeptr;	// instruction codes 
+//L9BYTE code;		// instruction codes 
+//
+//L9BYTE* list9ptr;
+//
+//int unpackd3;
+//
+//L9BYTE exitreversaltable[16]= {0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
+//
+//L9UINT16 gnostack[128];
+//L9BYTE gnoscratch[32];
+//int object,gnosp,numobjectfound,searchdepth,inithisearchpos;
+
+
 	
 	L9() {
 		workspace=new GameState();		
@@ -67,9 +156,28 @@ public class L9 {
 		
 	}
 	
+	//TODO: void GetPictureSize(int* width, int* height)
+	//TODO: L9BOOL RunGraphics(void)
+	//TODO: BitmapType DetectBitmaps(char* dir)
+	//TODO: Bitmap* DecodeBitmap(char* dir, BitmapType type, int num, int x, int y)
+	
 ////////////////////////////////////////////////////////////////////////
 
 	void os_printchar(char c) {};
+	//L9BOOL os_input(char* ibuff, int size)
+	//char os_readchar(L9UINT32 millis)
+	//L9BOOL os_stoplist(void)
+	//void os_flush(void)
+	//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
+	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
+	//L9BOOL os_get_game_file(char* NewName, int Size)
+	//void os_set_filenumber(char* NewName, int Size, int n)
+	//void os_graphics(int mode)
+	//void os_cleargraphics(void)
+	//void os_setcolour(int colour, int index)
+	//void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2)
+	//void os_fill(int x, int y, int colour1, int colour2)
+	//void os_show_bitmap(int pic, int x, int y)
 	
 ////////////////////////////////////////////////////////////////////////
 	
@@ -110,6 +218,7 @@ public class L9 {
 	}
 	*/
 	boolean LoadGame2(String filename, String picname) {
+		// may be already running a game, maybe in input routine
 		Running=false;
 		//TODO: ibuffptr=NULL;
 		if (!intinitialise(filename,picname)) return false;
@@ -120,7 +229,7 @@ public class L9 {
 		return Running;
 	}
 	
-	/*
+	/*-- was --------------------------------------
 	L9BOOL intinitialise(char*filename,char*picname)
 	{
 	// init 
@@ -302,10 +411,10 @@ public class L9 {
 		*/
 		if (!load(filename))
 		{
-			error("\nUnable to load: %s\n",filename);
+			error("\rUnable to load: %s\r",filename);
 			return false;
 		}
-		/*
+		/*TODO:
 		// try to load graphics
 		if (picname)
 		{
@@ -487,7 +596,6 @@ public class L9 {
 		for (i=0;i< (int) strlen(buf);i++) os_printchar(buf[i]);
 	}
 	*/
-
 	//TODO: error*3 - Изврат
 	//TODO: может error выводить инфу во всплывающем окне?
 	void error(String txt)
@@ -507,7 +615,102 @@ public class L9 {
 		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
 	}
 
+	/*--was---------------
+	void printchar(char c)
+	{
+		if (Cheating) return;
+
+		if (c&128) lastchar=(c&=0x7f);
+		else if (c!=0x20 && c!=0x0d && (c<'\"' || c>='.'))
+		{
+			if (lastchar=='!' || lastchar=='?' || lastchar=='.') c=toupper(c);
+			lastchar=c;
+		}
+		// eat multiple CRs
+		if (c!=0x0d || lastactualchar!=0x0d) os_printchar(c);
+		lastactualchar=c;
+	}
+	*/
+	void printchar(char c)
+	{
+		if (Cheating) return;
+
+		//if <128, Upper case after ".", "!", "?"
+		if ((c&128)!=0) lastchar=(c&=0x7f);
+		else if (c!=0x20 && c!=0x0d && (c<'\"' || c>='.'))
+		{
+			if (lastchar=='!' || lastchar=='?' || lastchar=='.') c=toupper(c);
+			lastchar=c;
+		}
+		// eat multiple CRs
+		if (c!=0x0d || lastactualchar!=0x0d) os_printchar(c);
+		lastactualchar=c;
+	}
+ 
+	/*--was---------------
+	void printstring(char*buf)
+	{
+		int i;
+		for (i=0;i< (int) strlen(buf);i++) printchar(buf[i]);
+	}
+	*/
+	void printstring(String str)
+	{
+		for (int i=0;i<str.length();i++) printchar(str.charAt(i));
+	}
 	
+	/*--was---------------
+	void printdecimald0(int d0)
+	{
+		char temp[12];
+		sprintf(temp,"%d",d0);
+		printstring(temp);
+	}
+	*/
+	void printdecimald0(int d0)
+	{
+		printstring(String.valueOf(d0));
+	}
+
+	/*--was---------------
+	void printautocase(int d0)
+	{
+		if (d0 & 128) printchar((char) d0);
+		else
+		{
+			if (wordcase) printchar((char) toupper(d0));
+			else if (d5<6) printchar((char) d0);
+			else
+			{
+				wordcase=0;
+				printchar((char) toupper(d0));
+			}
+		}
+	}
+	*/
+	void printautocase(int d0)
+	{
+		if ((d0 & 128)!=0) printchar((char) d0);
+		else
+		{
+			//TODO: check wordcase!=0
+			if (wordcase!=0) printchar(toupper((char)d0));
+			else if (d5<6) printchar((char) d0);
+			else
+			{
+				wordcase=0;
+				printchar(toupper((char)d0));
+			}
+		}
+	}
+	
+	///////////////////// New (tsap) implementations ////////////////////
+	
+	char toupper(char c) {
+		if (c>='a' && c<='z') return (char)(c-32);
+		else return c;
+	}
+
 }
 
 /*-------------
@@ -543,36 +746,3 @@ class GameState {
 	
 }
 
-
-
-
-
-//#define MAX_PATH 256
-
-//void os_printchar(char c)
-//L9BOOL os_input(char* ibuff, int size)
-//char os_readchar(L9UINT32 millis)
-//L9BOOL os_stoplist(void)
-//void os_flush(void)
-//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
-//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
-//L9BOOL os_get_game_file(char* NewName, int Size)
-//void os_set_filenumber(char* NewName, int Size, int n)
-//void os_graphics(int mode)
-//void os_cleargraphics(void)
-//void os_setcolour(int colour, int index)
-//void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2)
-//void os_fill(int x, int y, int colour1, int colour2)
-//void os_show_bitmap(int pic, int x, int y)
-//L9BOOL LoadGame(char* filename, char* picname)
-//L9BOOL RunGame(void)
-//void StopGame(void)
-//void RestoreGame(char *inFile)
-//void FreeMemory(void)
-//void GetPictureSize(int* width, int* height)
-//L9BOOL RunGraphics(void)
-//BitmapType DetectBitmaps(char* dir)
-//Bitmap* DecodeBitmap(char* dir, BitmapType type, int num, int x, int y)
-
-
-	
