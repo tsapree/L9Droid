@@ -103,14 +103,336 @@ public class L9 {
 	*/
 	boolean LoadGame2(String filename, String picname) {
 		Running=false;
-		//ibuffptr=NULL;
-		//if (!intinitialise(filename,picname)) return false;
-		//codeptr=acodeptr;
-		//randomseed=(L9UINT16)time(NULL);
-		//strcpy(LastGame,filename);
+		//TODO: ibuffptr=NULL;
+		if (!intinitialise(filename,picname)) return false;
+		//TODO: codeptr=acodeptr;
+		//TODO: randomseed=(L9UINT16)time(NULL);
+		//TODO: strcpy(LastGame,filename);
 		Running=true;
 		return Running;
 	}
+	
+	/*
+	L9BOOL intinitialise(char*filename,char*picname)
+	{
+	// init 
+	// driverclg 
+
+		int i;
+		int hdoffset;
+		long Offset;
+		FILE *f;
+
+		if (pictureaddress)
+		{
+			free(pictureaddress);
+			pictureaddress=NULL;
+		}
+		picturedata=NULL;
+		picturesize=0;
+		gfxa5=NULL;
+
+		if (!load(filename))
+		{
+			error("\rUnable to load: %s\r",filename);
+			return FALSE;
+		}
+
+		// try to load graphics
+		if (picname)
+		{
+			f=fopen(picname,"rb");
+			if (f)
+			{
+				picturesize=filelength(f);
+				L9Allocate(&pictureaddress,picturesize);
+				if (fread(pictureaddress,1,picturesize,f)!=picturesize)
+				{
+					free(pictureaddress);
+					pictureaddress=NULL;
+					picturesize=0;
+				}
+				picturedata=pictureaddress;
+				fclose(f);
+			}
+		}
+		screencalled=0;
+		l9textmode=0;
+
+	#ifdef FULLSCAN
+		FullScan(startfile,FileSize);
+	#endif
+
+		Offset=Scan(startfile,FileSize);
+		if (Offset<0)
+		{
+			Offset=ScanV2(startfile,FileSize);
+			L9GameType=L9_V2;
+			if (Offset<0)
+			{
+				Offset=ScanV1(startfile,FileSize);
+				L9GameType=L9_V1;
+				if (Offset<0)
+				{
+					error("\rUnable to locate valid header in file: %s\r",filename);
+				 	return FALSE;
+				}
+			}
+		}
+
+		startdata=startfile+Offset;
+		FileSize-=Offset;
+
+	// setup pointers 
+		if (L9GameType!=L9_V1)
+		{
+			// V2,V3,V4 
+
+			hdoffset=L9GameType==L9_V2 ? 4 : 0x12;
+
+			for (i=0;i<12;i++)
+			{
+				L9UINT16 d0=L9WORD(startdata+hdoffset+i*2);
+				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
+			}
+			absdatablock=L9Pointers[0];
+			list2ptr=L9Pointers[3];
+			list3ptr=L9Pointers[4];
+			//list9startptr 
+
+			// if ((((L9UINT32) L9Pointers[10])&1)==0) L9Pointers[10]++; amiga word access hack
+
+			list9startptr=L9Pointers[10];
+			acodeptr=L9Pointers[11];
+		}
+
+		switch (L9GameType)
+		{
+			case L9_V1:
+				break;
+			case L9_V2:
+			{
+				double a2,a25;
+				startmd=startdata + L9WORD(startdata+0x0);
+				startmdV2=startdata + L9WORD(startdata+0x2);
+
+				// determine message type 
+				if (analyseV2(&a2) && a2>2 && a2<10)
+				{
+					V2MsgType=V2M_NORMAL;
+					#ifdef L9DEBUG
+					printf("V2 msg table: normal, wordlen=%.2lf",a2);
+					#endif
+				}
+				else if (analyseV25(&a25) && a25>2 && a25<10)
+				{
+					V2MsgType=V2M_ERIK;
+					#ifdef L9DEBUG
+					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
+					#endif
+				}
+				else
+				{
+					error("\rUnable to identify V2 message table in file: %s\r",filename);
+					return FALSE;
+				}
+				break;
+			}
+			case L9_V3:
+			case L9_V4:
+				startmd=startdata + L9WORD(startdata+0x2);
+				endmd=startmd + L9WORD(startdata+0x4);
+				defdict=startdata+L9WORD(startdata+6);
+				endwdp5=defdict + 5 + L9WORD(startdata+0x8);
+				dictdata=startdata+L9WORD(startdata+0x0a);
+				dictdatalen=L9WORD(startdata+0x0c);
+				wordtable=startdata + L9WORD(startdata+0xe);
+				break;
+		}
+
+	#ifndef NO_SCAN_GRAPHICS
+		// If there was no graphics file, look in the game data 
+		if (picturedata==NULL)
+		{
+			int sz=FileSize-(acodeptr-startdata);
+			int i=0;
+			while ((i<sz-0x1000)&&(picturedata==NULL))
+			{
+				picturedata=acodeptr+i;
+				picturesize=sz-i;
+				if (!checksubs())
+				{
+					picturedata=NULL;
+					picturesize=0;
+				}
+				i++;
+			}
+		}
+	#endif
+		return TRUE;
+	}
+	*/
+
+	boolean intinitialise(String filename, String picname)
+	{
+	// init 
+	// driverclg 
+		/*TODO:
+		int i;
+		int hdoffset;
+		long Offset;
+		FILE *f;
+
+		if (pictureaddress)
+		{
+			free(pictureaddress);
+			pictureaddress=NULL;
+		}
+		picturedata=NULL;
+		picturesize=0;
+		gfxa5=NULL;
+
+		if (!load(filename))
+		{
+			error("\rUnable to load: %s\r",filename);
+			return FALSE;
+		}
+
+		// try to load graphics
+		if (picname)
+		{
+			f=fopen(picname,"rb");
+			if (f)
+			{
+				picturesize=filelength(f);
+				L9Allocate(&pictureaddress,picturesize);
+				if (fread(pictureaddress,1,picturesize,f)!=picturesize)
+				{
+					free(pictureaddress);
+					pictureaddress=NULL;
+					picturesize=0;
+				}
+				picturedata=pictureaddress;
+				fclose(f);
+			}
+		}
+		screencalled=0;
+		l9textmode=0;
+
+	#ifdef FULLSCAN
+		FullScan(startfile,FileSize);
+	#endif
+
+		Offset=Scan(startfile,FileSize);
+		if (Offset<0)
+		{
+			Offset=ScanV2(startfile,FileSize);
+			L9GameType=L9_V2;
+			if (Offset<0)
+			{
+				Offset=ScanV1(startfile,FileSize);
+				L9GameType=L9_V1;
+				if (Offset<0)
+				{
+					error("\rUnable to locate valid header in file: %s\r",filename);
+				 	return FALSE;
+				}
+			}
+		}
+
+		startdata=startfile+Offset;
+		FileSize-=Offset;
+
+	// setup pointers 
+		if (L9GameType!=L9_V1)
+		{
+			// V2,V3,V4 
+
+			hdoffset=L9GameType==L9_V2 ? 4 : 0x12;
+
+			for (i=0;i<12;i++)
+			{
+				L9UINT16 d0=L9WORD(startdata+hdoffset+i*2);
+				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
+			}
+			absdatablock=L9Pointers[0];
+			list2ptr=L9Pointers[3];
+			list3ptr=L9Pointers[4];
+			//list9startptr 
+
+			// if ((((L9UINT32) L9Pointers[10])&1)==0) L9Pointers[10]++; amiga word access hack
+
+			list9startptr=L9Pointers[10];
+			acodeptr=L9Pointers[11];
+		}
+
+		switch (L9GameType)
+		{
+			case L9_V1:
+				break;
+			case L9_V2:
+			{
+				double a2,a25;
+				startmd=startdata + L9WORD(startdata+0x0);
+				startmdV2=startdata + L9WORD(startdata+0x2);
+
+				// determine message type 
+				if (analyseV2(&a2) && a2>2 && a2<10)
+				{
+					V2MsgType=V2M_NORMAL;
+					#ifdef L9DEBUG
+					printf("V2 msg table: normal, wordlen=%.2lf",a2);
+					#endif
+				}
+				else if (analyseV25(&a25) && a25>2 && a25<10)
+				{
+					V2MsgType=V2M_ERIK;
+					#ifdef L9DEBUG
+					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
+					#endif
+				}
+				else
+				{
+					error("\rUnable to identify V2 message table in file: %s\r",filename);
+					return FALSE;
+				}
+				break;
+			}
+			case L9_V3:
+			case L9_V4:
+				startmd=startdata + L9WORD(startdata+0x2);
+				endmd=startmd + L9WORD(startdata+0x4);
+				defdict=startdata+L9WORD(startdata+6);
+				endwdp5=defdict + 5 + L9WORD(startdata+0x8);
+				dictdata=startdata+L9WORD(startdata+0x0a);
+				dictdatalen=L9WORD(startdata+0x0c);
+				wordtable=startdata + L9WORD(startdata+0xe);
+				break;
+		}
+
+	#ifndef NO_SCAN_GRAPHICS
+		// If there was no graphics file, look in the game data 
+		if (picturedata==NULL)
+		{
+			int sz=FileSize-(acodeptr-startdata);
+			int i=0;
+			while ((i<sz-0x1000)&&(picturedata==NULL))
+			{
+				picturedata=acodeptr+i;
+				picturesize=sz-i;
+				if (!checksubs())
+				{
+					picturedata=NULL;
+					picturesize=0;
+				}
+				i++;
+			}
+		}
+	#endif
+		*/
+		return true;
+	}
+
 
 }
 
@@ -149,10 +471,8 @@ class GameState {
 
 
 
-//L9BYTE		unsigned 8 bit quantity
-//L9UINT16	unsigned 16 bit quantity
-//L9UINT32	unsigned 32 bit quantity
-//L9BOOL		quantity capable of holding the values TRUE (1) and FALSE (0)
+
+
 //#define MAX_PATH 256
 
 //void os_printchar(char c)
