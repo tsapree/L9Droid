@@ -55,8 +55,10 @@ public class L9 {
 
 // Global Variables
 //L9BYTE* startfile=NULL,*pictureaddress=NULL,*picturedata=NULL;
+	byte startfile[];
 //L9BYTE* startdata;
-//L9UINT32 FileSize,picturesize;
+	int FileSize;
+//L9UINT32 picturesize;
 //
 //L9BYTE *L9Pointers[12];
 //L9BYTE *absdatablock,*list2ptr,*list3ptr,*list9startptr,*acodeptr;
@@ -66,7 +68,7 @@ public class L9 {
 //
 	int wordcase;
 //int unpackcount;
-//char unpackbuf[8];
+	char unpackbuf[];
 //L9BYTE* dictptr;
 //char threechars[34];
 //int L9GameType;
@@ -111,7 +113,8 @@ public class L9 {
 
 	
 	L9() {
-		workspace=new GameState();		
+		workspace=new GameState();
+		unpackbuf=new char[8];
 	};
 	
 	/*-- was ------------------------------------------
@@ -178,6 +181,8 @@ public class L9 {
 	//void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2)
 	//void os_fill(int x, int y, int colour1, int colour2)
 	//void os_show_bitmap(int pic, int x, int y)
+	
+	byte[] os_load(String filename) { return null; };
 	
 ////////////////////////////////////////////////////////////////////////
 	
@@ -414,6 +419,14 @@ public class L9 {
 			error("\rUnable to load: %s\r",filename);
 			return false;
 		}
+		//TODO:kill debug code =)
+		error("Loaded ok, size=%d\r",FileSize);
+		printdecimald0(startfile[0]);
+		printchar(',');
+		printdecimald0(startfile[1]);
+		printchar(',');
+		printdecimald0(startfile[2]);
+		
 		/*TODO:
 		// try to load graphics
 		if (picname)
@@ -581,7 +594,10 @@ public class L9 {
 		//}
 	 	//fclose(f);
 		//return TRUE;
-		return false;
+		startfile=os_load(filename);
+		if (startfile==null) return false;
+		FileSize=startfile.length;
+		return true;
 	}
 	
 	/*-- was ----------------

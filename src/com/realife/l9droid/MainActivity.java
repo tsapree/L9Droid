@@ -1,5 +1,8 @@
 package com.realife.l9droid;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +18,7 @@ public class MainActivity extends Activity implements OnClickListener {
     EditText etCmd;
     
     L9implement l9;
+    byte gamedata[];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,11 +32,20 @@ public class MainActivity extends Activity implements OnClickListener {
         etLog = (EditText) findViewById(R.id.etLog);
         etCmd = (EditText) findViewById(R.id.etCmd);
 
-        l9=new L9implement(etLog);
-        
         etCmd.setText("GO WEST");
         etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
         etLog.append("hey!\n");
+        
+        gamedata=new byte[49179];
+        
+        try {
+            InputStream is=getResources().openRawResource(R.raw.timev2);
+            is.read(gamedata);            
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        
+        l9=new L9implement(etLog,gamedata);
         
         l9.LoadGame("test", "");
         
@@ -56,17 +69,24 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		
 	}
-
 }
 
 class L9implement extends L9 {
 	EditText et;
-	L9implement(EditText et1) {
+	byte gamedata[];
+	L9implement(EditText et1, byte dat[]) {
 		et=et1;
+		gamedata=dat;
 	};
 	
 	void os_printchar(char c) {
 		if (c==0x0d) et.append("\n");
 		et.append(String.valueOf(c));
 	};
+	
+	byte[] os_load(String filename) {
+		return gamedata;
+	};
+
+
 }
