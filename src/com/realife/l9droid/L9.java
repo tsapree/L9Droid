@@ -13,14 +13,19 @@ public class L9 {
 	
 	//GameState workspace;
 	GameState workspace;
-
 	//L9UINT16 randomseed;
-	boolean Running;
-	//L9BOOL Running;
 	short randomseed;
+	//L9BOOL Running;
+	boolean Running;
 	
+	//char LastGame[MAX_PATH];
+	String LastGame;
 	
-	/*-------------------------------------------
+	L9() {
+		workspace=new GameState();		
+	};
+	
+	/*-- was ------------------------------------------
 	L9BOOL LoadGame(char *filename,char *picname)
 	{
 		L9BOOL ret=LoadGame2(filename,picname);
@@ -41,7 +46,6 @@ public class L9 {
 		/* need to clear listarea as well */
 		//TODO: возможно, поискать более красивое решение - метод memset
 		//TODO: вообще перенести очистку в класс GameState
-		//memset((L9BYTE*) workspace.listarea,0,LISTAREASIZE);
 		for (int i=0;i<workspace.listarea.length;i++) workspace.listarea[i]=0;
 		return ret;
 
@@ -64,8 +68,12 @@ public class L9 {
 	}
 	
 ////////////////////////////////////////////////////////////////////////
+
+	void os_printchar(char c) {};
 	
-	/*-----------------------
+////////////////////////////////////////////////////////////////////////
+	
+	/*-- was ----------------
 	void clearworkspace(void)
 	{
 		memset(workspace.vartable,0,sizeof(workspace.vartable));
@@ -78,7 +86,7 @@ public class L9 {
 		for (int i=0;i<workspace.vartable.length;i++) workspace.vartable[i]=0; 
 	}
 	
-	/*
+	/*-- was -------------------------------------
 	L9BOOL LoadGame2(char *filename,char *picname)
 	{
 	#ifdef CODEFOLLOW
@@ -106,8 +114,8 @@ public class L9 {
 		//TODO: ibuffptr=NULL;
 		if (!intinitialise(filename,picname)) return false;
 		//TODO: codeptr=acodeptr;
-		//TODO: randomseed=(L9UINT16)time(NULL);
-		//TODO: strcpy(LastGame,filename);
+		randomseed = (short)(Math.random()*32767);
+		LastGame=filename;
 		Running=true;
 		return Running;
 	}
@@ -291,13 +299,13 @@ public class L9 {
 		picturedata=NULL;
 		picturesize=0;
 		gfxa5=NULL;
-
+		*/
 		if (!load(filename))
 		{
-			error("\rUnable to load: %s\r",filename);
-			return FALSE;
+			error("\nUnable to load: %s\n",filename);
+			return false;
 		}
-
+		/*
 		// try to load graphics
 		if (picname)
 		{
@@ -432,8 +440,74 @@ public class L9 {
 		*/
 		return true;
 	}
+	/*-- was ------------------
+	L9BOOL load(char *filename)
+	{
+		FILE *f=fopen(filename,"rb");
+		if (!f) return FALSE;
+		FileSize=filelength(f);
+		L9Allocate(&startfile,FileSize);
 
+		if (fread(startfile,1,FileSize,f)!=FileSize)
+		{
+			fclose(f);
+			return FALSE;
+		}
+	 	fclose(f);
+		return TRUE;
+	}
+	*/
+	
+	boolean load(String filename)
+	{
+		//FILE *f=fopen(filename,"rb");
+		//if (!f) return FALSE;
+		//FileSize=filelength(f);
+		//L9Allocate(&startfile,FileSize);
+		//
+		//if (fread(startfile,1,FileSize,f)!=FileSize)
+		//{
+		//	fclose(f);
+		//	return FALSE;
+		//}
+	 	//fclose(f);
+		//return TRUE;
+		return false;
+	}
+	
+	/*-- was ----------------
+	void error(char *fmt,...)
+	{
+		char buf[256];
+		int i;
+		va_list ap;
+		va_start(ap,fmt);
+		vsprintf(buf,fmt,ap);
+		va_end(ap);
+		for (i=0;i< (int) strlen(buf);i++) os_printchar(buf[i]);
+	}
+	*/
 
+	//TODO: error*3 - Изврат
+	//TODO: может error выводить инфу во всплывающем окне?
+	void error(String txt)
+	{
+		for (int i=0;i<txt.length();i++) os_printchar(txt.charAt(i));
+	}
+	
+	void error(String txt1, String txt2)
+	{
+		String str=String.format(txt1, txt2);
+		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
+	}
+
+	void error(String txt, int val)
+	{
+		String str=String.format(txt, val);
+		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
+	}
+
+	
 }
 
 /*-------------

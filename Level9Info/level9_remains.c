@@ -93,7 +93,7 @@ L9BYTE* dictptr;
 char threechars[34];
 int L9GameType;
 int V2MsgType;
-char LastGame[MAX_PATH];
+
 
 
 #if defined(AMIGA) && defined(_DCC)
@@ -310,17 +310,6 @@ void printdecimald0(int d0)
 	char temp[12];
 	sprintf(temp,"%d",d0);
 	printstring(temp);
-}
-
-void error(char *fmt,...)
-{
-	char buf[256];
-	int i;
-	va_list ap;
-	va_start(ap,fmt);
-	vsprintf(buf,fmt,ap);
-	va_end(ap);
-	for (i=0;i< (int) strlen(buf);i++) os_printchar(buf[i]);
 }
 
 void printautocase(int d0)
@@ -715,21 +704,7 @@ void FreeMemory(void)
 	gfxa5=NULL;
 }
 
-L9BOOL load(char *filename)
-{
-	FILE *f=fopen(filename,"rb");
-	if (!f) return FALSE;
-	FileSize=filelength(f);
-	L9Allocate(&startfile,FileSize);
 
-	if (fread(startfile,1,FileSize,f)!=FileSize)
-	{
-		fclose(f);
-		return FALSE;
-	}
- 	fclose(f);
-	return TRUE;
-}
 
 L9UINT16 scanmovewa5d0(L9BYTE* Base,L9UINT32 *Pos)
 {

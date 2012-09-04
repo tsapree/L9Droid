@@ -14,24 +14,27 @@ public class MainActivity extends Activity implements OnClickListener {
 	EditText etLog;
     EditText etCmd;
     
-    L9 l9;
+    L9implement l9;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        l9=new L9();
-                
+               
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
         
         etLog = (EditText) findViewById(R.id.etLog);
         etCmd = (EditText) findViewById(R.id.etCmd);
+
+        l9=new L9implement(etLog);
         
         etCmd.setText("GO WEST");
         etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
         etLog.append("hey!\n");
+        
+        l9.LoadGame("test", "");
         
     }
 
@@ -53,4 +56,15 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		
 	}
+
+}
+
+class L9implement extends L9 {
+	EditText et;
+	L9implement(EditText et1) {
+		et=et1;
+	};
+	void os_printchar(char c) {
+		et.append(String.valueOf(c));
+	};
 }
