@@ -477,10 +477,10 @@ int L9GameType;
 		Offset=Scan(startfile,FileSize);
 		if (Offset<0)
 		{
-			//Offset=ScanV2(startfile,FileSize);
-			//L9GameType=L9_V2;
-			//if (Offset<0)
-			//{
+			Offset=ScanV2(startfile,FileSize);
+			L9GameType=L9_V2;
+			if (Offset<0)
+			{
 			//	Offset=ScanV1(startfile,FileSize);
 			//	L9GameType=L9_V1;
 			//	if (Offset<0)
@@ -488,8 +488,10 @@ int L9GameType;
 					error("\rUnable to locate valid header in file: %s\r",filename);
 				 	return false;
 			//	}
-			//}
+			}
 		}
+		//TODO:kill debug code =)
+		error("Found header v%d\r",L9GameType);
 		/*TODO:
 		startdata=startfile+Offset;
 		FileSize-=Offset;
@@ -584,8 +586,7 @@ int L9GameType;
 		return true;
 	}
 	
-	/*
-	 * long Scan(L9BYTE* StartFile,L9UINT32 FileSize)
+	/*--was-- long Scan(L9BYTE* StartFile,L9UINT32 FileSize)
 		{
 			L9BYTE *Chk=malloc(FileSize+1);
 			L9BYTE *Image=calloc(FileSize,1);
@@ -664,7 +665,6 @@ int L9GameType;
 		}
 
 	 */
-	
 	int Scan(byte[] StartFile, int FileSize)
 	{
 		//L9BYTE *Chk=malloc(FileSize+1);
@@ -678,7 +678,7 @@ int L9GameType;
 		
 		ScanData scandata=new ScanData();
 		
-		//TODO:
+		//TODO: Есть ли шанс, что массивы Chk и Image не создадутся?
 		//if ((Chk==NULL)||(Image==NULL))
 		//{
 		//	fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
@@ -727,7 +727,7 @@ int L9GameType;
 					scandata.Size=0;
 					scandata.Min=scandata.Max=i+d0;
 					scandata.DriverV4=false;
-					if (ValidateSequence(StartFile,Image,i+d0,i+d0,scandata,FileSize,false))
+					if (ValidateSequence(StartFile,Image,i+d0,i+d0,scandata,FileSize,false,true))
 					{
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
@@ -918,7 +918,7 @@ int L9GameType;
 		return Valid; // && Strange==0; 
 	}
 	*/
-	boolean ValidateSequence(byte[] Base,byte[] Image,int iPos,int acode,ScanData sdat,int FileSize,boolean Rts)
+	boolean ValidateSequence(byte[] Base,byte[] Image,int iPos,int acode,ScanData sdat,int FileSize,boolean Rts, boolean checkDriverV4)
 	{
 
 		boolean Finished=false,Valid;
@@ -956,14 +956,14 @@ int L9GameType;
 				case 0: // goto 
 				{
 					int Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true,checkDriverV4);
 					Finished=true;
 					break;
 				}
 				case 1: // intgosub 
 				{
 					int Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true,checkDriverV4);
 					break;
 				}
 				case 2: // intreturn 
@@ -986,11 +986,10 @@ int L9GameType;
 							pscm.Pos++;
 							break;
 						case 1:// calldriver
-							//if (DriverV4) //TODO: точно не нужно проверять? (DriverV4 - указатель на переменную в оригинале) 
-							//{
+							if (checkDriverV4) {
 								if (CheckCallDriverV4(Base,pscm.Pos-2))
 									sdat.DriverV4 = true;
-							//}
+							}
 							break;
 						case 3:// save 
 						case 4:// restore 
@@ -1043,7 +1042,7 @@ int L9GameType;
 					int Val;
 					pscm.Pos+=2;
 					Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts,checkDriverV4);
 					break;
 				}
 				case 20: // screen 
@@ -1067,7 +1066,7 @@ int L9GameType;
 					pscm.Pos++;
 					scangetcon(Code,pscm);
 					Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts,checkDriverV4);
 					break;
 				}
 				case 28: // printinput 
@@ -1225,6 +1224,137 @@ int L9GameType;
 		return false;
 	}
 
+	/*--was-- long ScanV2(L9BYTE* StartFile,L9UINT32 FileSize)
+	{
+		L9BYTE *Chk=malloc(FileSize+1);
+		L9BYTE *Image=calloc(FileSize,1);
+		L9UINT32 i,Size,MaxSize=0,num;
+		int j;
+		L9UINT16 d0=0,l9;
+		L9UINT32 Min,Max;
+		long Offset=-1;
+		L9BOOL JumpKill;
+	
+		if ((Chk==NULL)||(Image==NULL))
+		{
+			fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
+			exit(0);
+		}
+	
+		Chk[0]=0;
+		for (i=1;i<=FileSize;i++)
+			Chk[i]=Chk[i-1]+StartFile[i-1];
+	
+		for (i=0;i<FileSize-28;i++)
+		{
+			num=L9WORD(StartFile+i+28)+1;
+			if (i+num<=FileSize && ((Chk[i+num]-Chk[i+32])&0xff)==StartFile[i+0x1e])
+			{
+				for (j=0;j<14;j++)
+				{
+					 d0=L9WORD (StartFile+i+ j*2);
+					 if (j!=13 && d0>=0x8000 && d0<0x9000)
+					 {
+						if (d0>=0x8000+LISTAREASIZE) break;
+					 }
+					 else if (i+d0>FileSize) break;
+				}
+				// list9 ptr must be in listarea, acode ptr in data 
+				//if (j<14 || (d0>=0x8000 && d0<0x9000)) continue;
+				if (j<14) continue;
+	
+				l9=L9WORD(StartFile+i+6 + 9*2);
+				if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
+	
+				Size=0;
+				Min=Max=i+d0;
+				if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,NULL))
+				{
+	#ifdef L9DEBUG 
+					printf("Found valid V2 header at %ld, code size %ld",i,Size);
+	#endif
+					if (Size>MaxSize)
+					{
+						Offset=i;
+						MaxSize=Size;
+					}
+				}
+			}
+		}
+		free(Chk);
+		free(Image);
+		return Offset;
+	}
+*/
+	int ScanV2(byte[] StartFile,int FileSize)
+	{
+		//L9BYTE *Chk=malloc(FileSize+1);
+		byte Chk[] = new byte[FileSize+1];
+		//L9BYTE *Image=calloc(FileSize,1);
+		byte Image[] = new byte[FileSize];
+		
+		int i,MaxSize=0,num;
+		int j;
+		int d0=0,l9;
+		//int Min,Max,Size;
+		//boolean JumpKill;
+		int Offset=-1;
+	
+		ScanData scandata=new ScanData();
+		
+		/* TODO: Есть ли шанс, что массивы Chk и Image не создадутся?
+		if ((Chk==NULL)||(Image==NULL))
+		{
+			fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
+			exit(0);
+		}*/
+	
+		Chk[0]=0;
+		for (i=1;i<=FileSize;i++)
+			//Chk[i]=Chk[i-1]+StartFile[i-1];
+			Chk[i]=(byte)(((Chk[i-1]&255)+StartFile[i-1]&255)&0xff);
+	
+		//BUGFIXbyTSAP, possible out of array on L9WORD - Filesize-28+28=Filesize
+		for (i=0;i<FileSize-28-1;i++)
+		{
+			num=L9WORD(StartFile,i+28)+1;
+			if (i+num<=FileSize && ((Chk[i+num]&0xff-Chk[i+32]&0xff)&0xff)==(StartFile[i+0x1e]&0xff))
+			{
+				for (j=0;j<14;j++)
+				{
+					 d0=L9WORD (StartFile,i+ j*2);
+					 if (j!=13 && d0>=0x8000 && d0<0x9000)
+					 {
+						if (d0>=0x8000+LISTAREASIZE) break;
+					 }
+					 else if (i+d0>FileSize) break;
+				}
+				// list9 ptr must be in listarea, acode ptr in data 
+				//if (j<14 || (d0>=0x8000 && d0<0x9000)) continue;
+				if (j<14) continue;
+	
+				l9=L9WORD(StartFile,i+6 + 9*2);
+				if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
+	
+				scandata.Size=0;
+				scandata.Min=scandata.Max=i+d0;
+				if (ValidateSequence(StartFile,Image,i+d0,i+d0,scandata,FileSize,false,false))
+				{
+//	#ifdef L9DEBUG 
+//					printf("Found valid V2 header at %ld, code size %ld",i,Size);
+//	#endif
+					if (scandata.Size>MaxSize)
+					{
+						Offset=i;
+						MaxSize=scandata.Size;
+					}
+				}
+			}
+		}
+		return Offset;
+	}
+	
+	
 	/*-- was ------------------
 	L9BOOL load(char *filename)
 	{

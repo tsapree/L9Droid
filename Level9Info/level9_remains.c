@@ -511,66 +511,6 @@ L9BOOL Check(L9BYTE* StartFile,L9UINT32 FileSize,L9UINT32 Offset)
 */
 
 
-long ScanV2(L9BYTE* StartFile,L9UINT32 FileSize)
-{
-	L9BYTE *Chk=malloc(FileSize+1);
-	L9BYTE *Image=calloc(FileSize,1);
-	L9UINT32 i,Size,MaxSize=0,num;
-	int j;
-	L9UINT16 d0=0,l9;
-	L9UINT32 Min,Max;
-	long Offset=-1;
-	L9BOOL JumpKill;
-
-	if ((Chk==NULL)||(Image==NULL))
-	{
-		fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
-		exit(0);
-	}
-
-	Chk[0]=0;
-	for (i=1;i<=FileSize;i++)
-		Chk[i]=Chk[i-1]+StartFile[i-1];
-
-	for (i=0;i<FileSize-28;i++)
-	{
-		num=L9WORD(StartFile+i+28)+1;
-		if (i+num<=FileSize && ((Chk[i+num]-Chk[i+32])&0xff)==StartFile[i+0x1e])
-		{
-			for (j=0;j<14;j++)
-			{
-				 d0=L9WORD (StartFile+i+ j*2);
-				 if (j!=13 && d0>=0x8000 && d0<0x9000)
-				 {
-					if (d0>=0x8000+LISTAREASIZE) break;
-				 }
-				 else if (i+d0>FileSize) break;
-			}
-			/* list9 ptr must be in listarea, acode ptr in data */
-			if (j<14 /*|| (d0>=0x8000 && d0<0x9000)*/) continue;
-
-			l9=L9WORD(StartFile+i+6 + 9*2);
-			if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
-
-			Size=0;
-			Min=Max=i+d0;
-			if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,NULL))
-			{
-#ifdef L9DEBUG 
-				printf("Found valid V2 header at %ld, code size %ld",i,Size);
-#endif
-				if (Size>MaxSize)
-				{
-					Offset=i;
-					MaxSize=Size;
-				}
-			}
-		}
-	}
-	free(Chk);
-	free(Image);
-	return Offset;
-}
 
 long ScanV1(L9BYTE* StartFile,L9UINT32 FileSize)
 {
