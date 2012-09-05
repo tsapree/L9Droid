@@ -13,6 +13,11 @@ package com.realife.l9droid;
 
 public class L9 {
 	
+	//TODO: перенести LISTAREASIZE и STACKSIZE в глобальные константы 
+	//TODO: может, перенести их в какой-либо класс, а не таскать по всем.
+	private static final int LISTAREASIZE = 0x800;
+	private static final int STACKSIZE = 1024;
+
 	int showtitle=1;
 	
 	//GameState workspace;
@@ -399,21 +404,21 @@ public class L9 {
 	{
 	// init 
 	// driverclg 
-		/*TODO:
-		int i;
-		int hdoffset;
-		long Offset;
-		FILE *f;
+		
+		//TODO: int i;
+		//TODO: int hdoffset;
+		int Offset;
+		//TODO: FILE *f;
 
-		if (pictureaddress)
-		{
-			free(pictureaddress);
-			pictureaddress=NULL;
-		}
-		picturedata=NULL;
-		picturesize=0;
-		gfxa5=NULL;
-		*/
+		//TODO: if (pictureaddress)
+		//TODO: {
+		//TODO: 	free(pictureaddress);
+		//TODO: 	pictureaddress=NULL;
+		//TODO: }
+		//TODO: picturedata=NULL;
+		//TODO: picturesize=0;
+		//TODO: gfxa5=NULL;
+		
 		if (!load(filename))
 		{
 			error("\rUnable to load: %s\r",filename);
@@ -463,7 +468,9 @@ public class L9 {
 		FullScan(startfile,FileSize);
 	#endif
 
+		*/
 		Offset=Scan(startfile,FileSize);
+		/*TODO:
 		if (Offset<0)
 		{
 			Offset=ScanV2(startfile,FileSize);
@@ -653,7 +660,7 @@ public class L9 {
 		}
 
 	 */
-	/*
+	
 	int Scan(byte[] StartFile, int FileSize)
 	{
 		//L9BYTE *Chk=malloc(FileSize+1);
@@ -662,7 +669,7 @@ public class L9 {
 		byte Image[] = new byte[FileSize];
 		int i,num,Size,MaxSize=0;
 		int j;
-		short d0=0,l9,md,ml,dd,dl;
+		int d0=0,l9,md,ml,dd,dl;
 		int Min,Max;
 		int Offset=-1;
 		boolean JumpKill, DriverV4;
@@ -677,7 +684,7 @@ public class L9 {
 		Chk[0]=0;
 		for (i=1;i<=FileSize;i++)
 			//Chk[i]=Chk[i-1]+StartFile[i-1];
-			Chk[i]=(byte)(((short)Chk[i-1]+(short)StartFile[i-1])&0xff);
+			Chk[i]=(byte)(((Chk[i-1]&255)+StartFile[i-1]&255)&0xff);
 
 		for (i=0;i<FileSize-33;i++)
 		{
@@ -689,17 +696,17 @@ public class L9 {
 
 			if (num>0x2000 && i+num<=FileSize && Chk[i+num]==Chk[i])
 			{
-				md=L9WORD(StartFile+i+0x2);
-				ml=L9WORD(StartFile+i+0x4);
-				dd=L9WORD(StartFile+i+0xa);
-				dl=L9WORD(StartFile+i+0xc);
+				md=L9WORD(StartFile,i+0x2);
+				ml=L9WORD(StartFile,i+0x4);
+				dd=L9WORD(StartFile,i+0xa);
+				dl=L9WORD(StartFile,i+0xc);
 
 				if (ml>0 && md>0 && i+md+ml<=FileSize && dd>0 && dl>0 && i+dd+dl*4<=FileSize)
 				{
 					// v4 files may have acodeptr in 8000-9000, need to fix 
 					for (j=0;j<12;j++)
 					{
-						d0=L9WORD (StartFile+i+0x12 + j*2);
+						d0=L9WORD (StartFile,i+0x12 + j*2);
 						if (j!=11 && d0>=0x8000 && d0<0x9000)
 						{
 							if (d0>=0x8000+LISTAREASIZE) break;
@@ -710,17 +717,18 @@ public class L9 {
 					//if (j<12 || (d0>=0x8000 && d0<0x9000)) continue;
 					//if (j<12) continue;
 
-					l9=L9WORD(StartFile+i+0x12 + 10*2);
+					l9=L9WORD(StartFile, i+0x12 + 10*2);
 					if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
 
 					Size=0;
 					Min=Max=i+d0;
-					DriverV4=0;
+					DriverV4=false;
+					/*TODO:
 					if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,&DriverV4))
 					{
-	#ifdef L9DEBUG
-						printf("Found valid header at %ld, code size %ld",i,Size);
-	#endif
+	//#ifdef L9DEBUG
+	//					printf("Found valid header at %ld, code size %ld",i,Size);
+	//#endif
 						if (Size>MaxSize)
 						{
 							Offset=i;
@@ -728,14 +736,14 @@ public class L9 {
 							L9GameType=DriverV4?L9_V4:L9_V3;
 						}
 					}
+					*/
 				}
 			}
 		}
-		free(Chk);
-		free(Image);
+		//free(Chk);
+		//free(Image);
 		return Offset;
 	}
-	*/
 	
 	/*-- was ------------------
 	L9BOOL load(char *filename)
