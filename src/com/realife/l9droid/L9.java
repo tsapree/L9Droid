@@ -136,7 +136,7 @@ public class L9 {
 		clearworkspace();
 		workspace.stackptr=0;
 		/* need to clear listarea as well */
-		//TODO: возможно, поискать более красивое решение - метод memset
+		//TODO: возможно, поискать более красивое решение - метод memset (как и clearworkspace)
 		//TODO: вообще перенести очистку в класс GameState
 		for (int i=0;i<workspace.listarea.length;i++) workspace.listarea[i]=0;
 		return ret;
@@ -426,6 +426,16 @@ public class L9 {
 		printdecimald0(startfile[1]);
 		printchar(',');
 		printdecimald0(startfile[2]);
+		printchar(',');
+		error("word gamedata[0]= %h\r",L9WORD(startfile,0));
+		error("word gamedata[2]= %h\r",L9WORD(startfile,2));
+		L9SETWORD(startfile, 4, 0xfeaa);
+		L9SETDWORD(startfile, 6, 0xfffefdfc);
+		error("word gamedata[4]= %h\r",L9WORD(startfile,4));
+		error("word gamedata[6]= %h\r",L9WORD(startfile,6));
+		error("word gamedata[8]= %h\r",L9WORD(startfile,8));
+		error("word gamedata[10]= %h\r",L9WORD(startfile,10));
+		
 		
 		/*TODO:
 		// try to load graphics
@@ -562,6 +572,171 @@ public class L9 {
 		*/
 		return true;
 	}
+	
+	/*
+	 * long Scan(L9BYTE* StartFile,L9UINT32 FileSize)
+		{
+			L9BYTE *Chk=malloc(FileSize+1);
+			L9BYTE *Image=calloc(FileSize,1);
+			L9UINT32 i,num,Size,MaxSize=0;
+			int j;
+			L9UINT16 d0=0,l9,md,ml,dd,dl;
+			L9UINT32 Min,Max;
+			long Offset=-1;
+			L9BOOL JumpKill, DriverV4;
+		
+			if ((Chk==NULL)||(Image==NULL))
+			{
+				fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
+				exit(0);
+			}
+		
+			Chk[0]=0;
+			for (i=1;i<=FileSize;i++)
+				Chk[i]=Chk[i-1]+StartFile[i-1];
+		
+			for (i=0;i<FileSize-33;i++)
+			{
+				num=L9WORD(StartFile+i)+1;
+		
+				//Chk[i] = 0 +...+ i-1
+				//Chk[i+n] = 0 +...+ i+n-1
+				//Chk[i+n] - Chk[i] = i + ... + i+n
+		
+				if (num>0x2000 && i+num<=FileSize && Chk[i+num]==Chk[i])
+				{
+					md=L9WORD(StartFile+i+0x2);
+					ml=L9WORD(StartFile+i+0x4);
+					dd=L9WORD(StartFile+i+0xa);
+					dl=L9WORD(StartFile+i+0xc);
+		
+					if (ml>0 && md>0 && i+md+ml<=FileSize && dd>0 && dl>0 && i+dd+dl*4<=FileSize)
+					{
+						// v4 files may have acodeptr in 8000-9000, need to fix
+						for (j=0;j<12;j++)
+						{
+							d0=L9WORD (StartFile+i+0x12 + j*2);
+							if (j!=11 && d0>=0x8000 && d0<0x9000)
+							{
+								if (d0>=0x8000+LISTAREASIZE) break;
+							}
+							else if (i+d0>FileSize) break;
+						}
+						// list9 ptr must be in listarea, acode ptr in data
+						//if (j<12 || (d0>=0x8000 && d0<0x9000)) continue;
+						if (j<12) continue;
+								
+						l9=L9WORD(StartFile+i+0x12 + 10*2);
+						if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
+		
+						Size=0;
+						Min=Max=i+d0;
+						DriverV4=0;
+						if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,&DriverV4))
+						{
+		#ifdef L9DEBUG
+							printf("Found valid header at %ld, code size %ld",i,Size);
+		#endif
+							if (Size>MaxSize)
+							{
+								Offset=i;
+								MaxSize=Size;
+								L9GameType=DriverV4?L9_V4:L9_V3;
+							}
+						}
+					}
+				}
+			}
+			free(Chk);
+			free(Image);
+			return Offset;
+		}
+
+	 */
+	/*
+	int Scan(byte[] StartFile, int FileSize)
+	{
+		//L9BYTE *Chk=malloc(FileSize+1);
+		byte Chk[] = new byte[FileSize+1];
+		//L9BYTE *Image=calloc(FileSize,1);
+		byte Image[] = new byte[FileSize];
+		int i,num,Size,MaxSize=0;
+		int j;
+		short d0=0,l9,md,ml,dd,dl;
+		int Min,Max;
+		int Offset=-1;
+		boolean JumpKill, DriverV4;
+
+		//TODO:
+		//if ((Chk==NULL)||(Image==NULL))
+		//{
+		//	fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
+		//	exit(0);
+		//}
+
+		Chk[0]=0;
+		for (i=1;i<=FileSize;i++)
+			//Chk[i]=Chk[i-1]+StartFile[i-1];
+			Chk[i]=(byte)(((short)Chk[i-1]+(short)StartFile[i-1])&0xff);
+
+		for (i=0;i<FileSize-33;i++)
+		{
+			num=L9WORD(StartFile,i)+1;
+	
+			//Chk[i] = 0 +...+ i-1
+			//Chk[i+n] = 0 +...+ i+n-1
+			//Chk[i+n] - Chk[i] = i + ... + i+n
+
+			if (num>0x2000 && i+num<=FileSize && Chk[i+num]==Chk[i])
+			{
+				md=L9WORD(StartFile+i+0x2);
+				ml=L9WORD(StartFile+i+0x4);
+				dd=L9WORD(StartFile+i+0xa);
+				dl=L9WORD(StartFile+i+0xc);
+
+				if (ml>0 && md>0 && i+md+ml<=FileSize && dd>0 && dl>0 && i+dd+dl*4<=FileSize)
+				{
+					// v4 files may have acodeptr in 8000-9000, need to fix 
+					for (j=0;j<12;j++)
+					{
+						d0=L9WORD (StartFile+i+0x12 + j*2);
+						if (j!=11 && d0>=0x8000 && d0<0x9000)
+						{
+							if (d0>=0x8000+LISTAREASIZE) break;
+						}
+						else if (i+d0>FileSize) break;
+					}
+					// list9 ptr must be in listarea, acode ptr in data 
+					//if (j<12 || (d0>=0x8000 && d0<0x9000)) continue;
+					//if (j<12) continue;
+
+					l9=L9WORD(StartFile+i+0x12 + 10*2);
+					if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
+
+					Size=0;
+					Min=Max=i+d0;
+					DriverV4=0;
+					if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,&DriverV4))
+					{
+	#ifdef L9DEBUG
+						printf("Found valid header at %ld, code size %ld",i,Size);
+	#endif
+						if (Size>MaxSize)
+						{
+							Offset=i;
+							MaxSize=Size;
+							L9GameType=DriverV4?L9_V4:L9_V3;
+						}
+					}
+				}
+			}
+		}
+		free(Chk);
+		free(Image);
+		return Offset;
+	}
+	*/
+	
 	/*-- was ------------------
 	L9BOOL load(char *filename)
 	{
@@ -720,12 +895,34 @@ public class L9 {
 		}
 	}
 	
+	//#define L9WORD(x) (*(x) + ((*(x+1))<<8))
+	//!! возвращаю int, чтобы не заморачиваться с +/-
+	int L9WORD(byte[] arr, int x) {
+		return (arr[x]&255)+((arr[x+1]&255)<<8); //&255 для конверсии в int без учета знака.
+	}
+	
+	//#define L9SETWORD(x,val) *(x)=(L9BYTE) val; *(x+1)=(L9BYTE)(val>>8);
+	void L9SETWORD(byte[] arr, int x, int val) {
+		arr[x]=(byte)(val & 0xff);
+		arr[x+1]=(byte)((val & 0xff00)>>8);
+	}
+	
+	//#define L9SETDWORD(x,val) *(x)=(L9BYTE)val; *(x+1)=(L9BYTE)(val>>8); *(x+2)=(L9BYTE)(val>>16); *(x+3)=(L9BYTE)(val>>24);
+	void L9SETDWORD(byte[] arr, int x, int val) {
+		arr[x]=(byte)(val & 0xff);
+		arr[x+1]=(byte)((val & 0xff00)>>8);
+		arr[x+2]=(byte)((val & 0xff0000)>>16);
+		arr[x+3]=(byte)((val & 0xff000000)>>24);
+	}
+	
 	///////////////////// New (tsap) implementations ////////////////////
 	
 	char toupper(char c) {
 		if (c>='a' && c<='z') return (char)(c-32);
 		else return c;
 	}
+	
+	
 
 }
 
