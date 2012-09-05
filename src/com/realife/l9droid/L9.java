@@ -66,11 +66,11 @@ int L9_V4=4;
 // Global Variables
 //L9BYTE* startfile=NULL,*pictureaddress=NULL,*picturedata=NULL;
 	byte startfile[];
-//L9BYTE* startdata;
+	int startdata;
 	int FileSize;
 //L9UINT32 picturesize;
 //
-//L9BYTE *L9Pointers[12];
+	int L9Pointers[];
 //L9BYTE *absdatablock,*list2ptr,*list3ptr,*list9startptr,*acodeptr;
 //L9BYTE *startmd,*endmd,*endwdp5,*wordtable,*dictdata,*defdict;
 //L9UINT16 dictdatalen;
@@ -125,6 +125,7 @@ int L9GameType;
 	L9() {
 		workspace=new GameState();
 		unpackbuf=new char[8];
+		L9Pointers=new int[12];
 	};
 	
 	/*-- was ------------------------------------------
@@ -410,8 +411,8 @@ int L9GameType;
 	// init 
 	// driverclg 
 		
-		//TODO: int i;
-		//TODO: int hdoffset;
+		int i;
+		int hdoffset;
 		int Offset;
 		//TODO: FILE *f;
 
@@ -492,8 +493,8 @@ int L9GameType;
 		}
 		//TODO:kill debug code =)
 		error("Found header v%d\r",L9GameType);
-		/*TODO:
-		startdata=startfile+Offset;
+
+		startdata=Offset;
 		FileSize-=Offset;
 
 	// setup pointers 
@@ -505,20 +506,22 @@ int L9GameType;
 
 			for (i=0;i<12;i++)
 			{
-				L9UINT16 d0=L9WORD(startdata+hdoffset+i*2);
-				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
+				int d0=L9WORD(startfile,startdata+hdoffset+i*2);
+				//TODO: L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
 			}
-			absdatablock=L9Pointers[0];
-			list2ptr=L9Pointers[3];
-			list3ptr=L9Pointers[4];
+			//TODO: absdatablock=L9Pointers[0];
+			//TODO: list2ptr=L9Pointers[3];
+			//TODO: list3ptr=L9Pointers[4];
 			//list9startptr 
 
 			// if ((((L9UINT32) L9Pointers[10])&1)==0) L9Pointers[10]++; amiga word access hack
 
-			list9startptr=L9Pointers[10];
-			acodeptr=L9Pointers[11];
+			//TODO: list9startptr=L9Pointers[10];
+			//TODO: acodeptr=L9Pointers[11];
 		}
 
+		/*TODO:
+		
 		switch (L9GameType)
 		{
 			case L9_V1:
