@@ -10,6 +10,7 @@ package com.realife.l9droid;
 //
 //0=false
 //1=true 
+//if (var) -> if(var!=0) 
 
 public class L9 {
 	
@@ -53,8 +54,12 @@ public class L9 {
 //} GfxState;
 //
 //
-//// Enumerations 
+// Enumerations 
 //enum L9GameTypes {L9_V1,L9_V2,L9_V3,L9_V4};
+int L9_V1=1;
+int L9_V2=2;
+int L9_V3=3;
+int L9_V4=4;
 //enum V2MsgTypes {V2M_NORMAL,V2M_ERIK};
 //
 
@@ -76,7 +81,7 @@ public class L9 {
 	char unpackbuf[];
 //L9BYTE* dictptr;
 //char threechars[34];
-//int L9GameType;
+int L9GameType;
 //int V2MsgType;
 //
 //SaveStruct ramsavearea[RAMSAVESLOTS];
@@ -470,23 +475,22 @@ public class L9 {
 
 		*/
 		Offset=Scan(startfile,FileSize);
-		/*TODO:
 		if (Offset<0)
 		{
-			Offset=ScanV2(startfile,FileSize);
-			L9GameType=L9_V2;
-			if (Offset<0)
-			{
-				Offset=ScanV1(startfile,FileSize);
-				L9GameType=L9_V1;
-				if (Offset<0)
-				{
+			//Offset=ScanV2(startfile,FileSize);
+			//L9GameType=L9_V2;
+			//if (Offset<0)
+			//{
+			//	Offset=ScanV1(startfile,FileSize);
+			//	L9GameType=L9_V1;
+			//	if (Offset<0)
+			//	{
 					error("\rUnable to locate valid header in file: %s\r",filename);
-				 	return FALSE;
-				}
-			}
+				 	return false;
+			//	}
+			//}
 		}
-
+		/*TODO:
 		startdata=startfile+Offset;
 		FileSize-=Offset;
 
@@ -667,13 +671,13 @@ public class L9 {
 		byte Chk[] = new byte[FileSize+1];
 		//L9BYTE *Image=calloc(FileSize,1);
 		byte Image[] = new byte[FileSize];
-		int i,num,Size,MaxSize=0;
+		int i,num,MaxSize=0;
 		int j;
 		int d0=0,l9,md,ml,dd,dl;
-		int Min,Max;
 		int Offset=-1;
-		boolean JumpKill, DriverV4;
-
+		
+		ScanData scandata=new ScanData();
+		
 		//TODO:
 		//if ((Chk==NULL)||(Image==NULL))
 		//{
@@ -720,23 +724,21 @@ public class L9 {
 					l9=L9WORD(StartFile, i+0x12 + 10*2);
 					if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
 
-					Size=0;
-					Min=Max=i+d0;
-					DriverV4=false;
-					/*TODO:
-					if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,&DriverV4))
+					scandata.Size=0;
+					scandata.Min=scandata.Max=i+d0;
+					scandata.DriverV4=false;
+					if (ValidateSequence(StartFile,Image,i+d0,i+d0,scandata,FileSize,false))
 					{
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
 	//#endif
-						if (Size>MaxSize)
+						if (scandata.Size>MaxSize)
 						{
 							Offset=i;
-							MaxSize=Size;
-							L9GameType=DriverV4?L9_V4:L9_V3;
+							MaxSize=scandata.Size;
+							L9GameType=scandata.DriverV4?L9_V4:L9_V3;
 						}
 					}
-					*/
 				}
 			}
 		}
@@ -745,6 +747,484 @@ public class L9 {
 		return Offset;
 	}
 	
+	/*--was-- L9BOOL ValidateSequence(L9BYTE* Base,L9BYTE* Image,L9UINT32 iPos,L9UINT32 acode,L9UINT32 *Size,L9UINT32 FileSize,L9UINT32 *Min,L9UINT32 *Max,L9BOOL Rts,L9BOOL *JumpKill, L9BOOL *DriverV4)
+	{
+		L9UINT32 Pos;
+		L9BOOL Finished=FALSE,Valid;
+		L9UINT32 Strange=0;
+		int ScanCodeMask;
+		int Code;
+		*JumpKill=FALSE;
+	
+		if (iPos>=FileSize)
+			return FALSE;
+		Pos=iPos;
+		if (Pos<*Min) *Min=Pos;
+	
+		if (Image[Pos]) return TRUE; // hit valid code 
+	
+		do
+		{
+			Code=Base[Pos];
+			Valid=TRUE;
+			if (Image[Pos]) break; // converged to found code 
+			Image[Pos++]=2;
+			if (Pos>*Max) *Max=Pos;
+	
+			ScanCodeMask=0x9f;
+			if (Code&0x80)
+			{
+				ScanCodeMask=0xff;
+				if ((Code&0x1f)>0xa)
+					Valid=FALSE;
+				Pos+=2;
+			}
+			else switch (Code & 0x1f)
+			{
+				case 0: // goto 
+				{
+					L9UINT32 Val=scangetaddr(Code,Base,&Pos,acode,&ScanCodeMask);
+					Valid=ValidateSequence(Base,Image,Val,acode,Size,FileSize,Min,Max,TRUE,JumpKill,DriverV4);
+					Finished=TRUE;
+					break;
+				}
+				case 1: // intgosub 
+				{
+					L9UINT32 Val=scangetaddr(Code,Base,&Pos,acode,&ScanCodeMask);
+					Valid=ValidateSequence(Base,Image,Val,acode,Size,FileSize,Min,Max,TRUE,JumpKill,DriverV4);
+					break;
+				}
+				case 2: // intreturn 
+					Valid=Rts;
+					Finished=TRUE;
+					break;
+				case 3: // printnumber
+					Pos++;
+					break;
+				case 4: // messagev 
+					Pos++;
+					break;
+				case 5: // messagec 
+					scangetcon(Code,&Pos,&ScanCodeMask);
+					break;
+				case 6: // function 
+					switch (Base[Pos++])
+					{
+						case 2:// random 
+							Pos++;
+							break;
+						case 1:// calldriver 
+							if (DriverV4)
+							{
+								if (CheckCallDriverV4(Base,Pos-2))
+									*DriverV4 = TRUE;
+							}
+							break;
+						case 3:// save 
+						case 4:// restore 
+						case 5:// clearworkspace 
+						case 6:// clear stack 
+							break;
+						case 250: // printstr 
+							while (Base[Pos++]);
+							break;
+	
+						default:
+	//#ifdef L9DEBUG
+	//						// printf("scan: illegal function call: %d",Base[Pos-1]); 
+	//#endif
+							Valid=FALSE;
+							break;
+					}
+					break;
+				case 7: // input 
+					Pos+=4;
+					break;
+				case 8: // varcon 
+					scangetcon(Code,&Pos,&ScanCodeMask);
+					Pos++;
+					break;
+				case 9: // varvar
+					Pos+=2;
+					break;
+				case 10: // _add 
+					Pos+=2;
+					break;
+				case 11: // _sub 
+					Pos+=2;
+					break;
+				case 14: // jump 
+	//#ifdef L9DEBUG
+	//				// printf("jmp at codestart: %ld",acode); 
+	//#endif
+					*JumpKill=TRUE;
+					Finished=TRUE;
+					break;
+				case 15: // exit 
+					Pos+=4;
+					break;
+				case 16: // ifeqvt 
+				case 17: // ifnevt 
+				case 18: // ifltvt 
+				case 19: // ifgtvt 
+				{
+					L9UINT32 Val;
+					Pos+=2;
+					Val=scangetaddr(Code,Base,&Pos,acode,&ScanCodeMask);
+					Valid=ValidateSequence(Base,Image,Val,acode,Size,FileSize,Min,Max,Rts,JumpKill,DriverV4);
+					break;
+				}
+				case 20: // screen 
+					if (Base[Pos++]) Pos++;
+					break;
+				case 21: // cleartg 
+					Pos++;
+					break;
+				case 22: // picture 
+					Pos++;
+					break;
+				case 23: // getnextobject 
+					Pos+=6;
+					break;
+				case 24: // ifeqct 
+				case 25: // ifnect 
+				case 26: // ifltct 
+				case 27: // ifgtct 
+				{
+					L9UINT32 Val;
+					Pos++;
+					scangetcon(Code,&Pos,&ScanCodeMask);
+					Val=scangetaddr(Code,Base,&Pos,acode,&ScanCodeMask);
+					Valid=ValidateSequence(Base,Image,Val,acode,Size,FileSize,Min,Max,Rts,JumpKill,DriverV4);
+					break;
+				}
+				case 28: // printinput 
+					break;
+				case 12: // ilins 
+				case 13: // ilins 
+				case 29: // ilins 
+				case 30: // ilins 
+				case 31: // ilins 
+	//#ifdef L9DEBUG 
+	//				// printf("scan: illegal instruction"); 
+	//#endif
+					Valid=FALSE;
+					break;
+			}
+		if (Valid && (Code & ~ScanCodeMask))
+			Strange++;
+		} while (Valid && !Finished && Pos<FileSize); // && Strange==0); 
+		(*Size)+=Pos-iPos;
+		return Valid; // && Strange==0; 
+	}
+	*/
+	boolean ValidateSequence(byte[] Base,byte[] Image,int iPos,int acode,ScanData sdat,int FileSize,boolean Rts)
+	{
+
+		boolean Finished=false,Valid;
+		int Strange=0;
+		int Code;
+		sdat.JumpKill=false;
+		
+		PosScanCodeMask pscm=new PosScanCodeMask();
+	
+		if (iPos>=FileSize)
+			return false;
+		pscm.Pos=iPos;
+		if (pscm.Pos<sdat.Min) sdat.Min=pscm.Pos;
+	
+		if (Image[pscm.Pos]!=0) return true; // hit valid code 
+	
+		do
+		{
+			Code=Base[pscm.Pos];
+			Valid=true;
+			if (Image[pscm.Pos]!=0) break; // converged to found code 
+			Image[pscm.Pos++]=2;
+			if (pscm.Pos>sdat.Max) sdat.Max=pscm.Pos;
+	
+			pscm.ScanCodeMask=0x9f;
+			if ((Code&0x80)!=0)
+			{
+				pscm.ScanCodeMask=0xff;
+				if ((Code&0x1f)>0xa)
+					Valid=false;
+				pscm.Pos+=2;
+			}
+			else switch (Code & 0x1f)
+			{
+				case 0: // goto 
+				{
+					int Val=scangetaddr(Code,Base,pscm,acode);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true);
+					Finished=true;
+					break;
+				}
+				case 1: // intgosub 
+				{
+					int Val=scangetaddr(Code,Base,pscm,acode);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true);
+					break;
+				}
+				case 2: // intreturn 
+					Valid=Rts;
+					Finished=true;
+					break;
+				case 3: // printnumber
+					pscm.Pos++;
+					break;
+				case 4: // messagev 
+					pscm.Pos++;
+					break;
+				case 5: // messagec 
+					scangetcon(Code,pscm);
+					break;
+				case 6: // function 
+					switch ((int)Base[pscm.Pos++])
+					{
+						case 2:// random 
+							pscm.Pos++;
+							break;
+						case 1:// calldriver
+							//if (DriverV4) //TODO: точно не нужно проверять? (DriverV4 - указатель на переменную в оригинале) 
+							//{
+								if (CheckCallDriverV4(Base,pscm.Pos-2))
+									sdat.DriverV4 = true;
+							//}
+							break;
+						case 3:// save 
+						case 4:// restore 
+						case 5:// clearworkspace 
+						case 6:// clear stack 
+							break;
+						case 250: // printstr 
+							while (Base[pscm.Pos++]!=0);
+							break;
+	
+						default:
+	//#ifdef L9DEBUG
+	//						// printf("scan: illegal function call: %d",Base[Pos-1]); 
+	//#endif
+							Valid=false;
+							break;
+					}
+					break;
+				case 7: // input 
+					pscm.Pos+=4;
+					break;
+				case 8: // varcon 
+					scangetcon(Code,pscm);
+					pscm.Pos++;
+					break;
+				case 9: // varvar
+					pscm.Pos+=2;
+					break;
+				case 10: // _add 
+					pscm.Pos+=2;
+					break;
+				case 11: // _sub 
+					pscm.Pos+=2;
+					break;
+				case 14: // jump 
+	//#ifdef L9DEBUG
+	//				// printf("jmp at codestart: %ld",acode); 
+	//#endif
+					sdat.JumpKill=true;
+					Finished=true;
+					break;
+				case 15: // exit 
+					pscm.Pos+=4;
+					break;
+				case 16: // ifeqvt 
+				case 17: // ifnevt 
+				case 18: // ifltvt 
+				case 19: // ifgtvt 
+				{
+					int Val;
+					pscm.Pos+=2;
+					Val=scangetaddr(Code,Base,pscm,acode);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts);
+					break;
+				}
+				case 20: // screen 
+					if (Base[pscm.Pos++]!=0) pscm.Pos++;
+					break;
+				case 21: // cleartg 
+					pscm.Pos++;
+					break;
+				case 22: // picture 
+					pscm.Pos++;
+					break;
+				case 23: // getnextobject 
+					pscm.Pos+=6;
+					break;
+				case 24: // ifeqct 
+				case 25: // ifnect 
+				case 26: // ifltct 
+				case 27: // ifgtct 
+				{
+					int Val;
+					pscm.Pos++;
+					scangetcon(Code,pscm);
+					Val=scangetaddr(Code,Base,pscm,acode);
+					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts);
+					break;
+				}
+				case 28: // printinput 
+					break;
+				case 12: // ilins 
+				case 13: // ilins 
+				case 29: // ilins 
+				case 30: // ilins 
+				case 31: // ilins 
+	//#ifdef L9DEBUG 
+	//				// printf("scan: illegal instruction"); 
+	//#endif
+					Valid=false;
+					break;
+			}
+		if (Valid && ((Code & ~pscm.ScanCodeMask)!=0))
+			Strange++;
+		} while (Valid && !Finished && pscm.Pos<FileSize); // && Strange==0); 
+		(sdat.Size)+=pscm.Pos-iPos;
+		return Valid; // && Strange==0; 
+	}
+	
+	/*--was-- L9UINT32 scangetaddr(int Code,L9BYTE *Base,L9UINT32 *Pos,L9UINT32 acode,int *Mask)
+		{
+			(*Mask)|=0x20;
+			if (Code&0x20)
+			{
+				// getaddrshort 
+				signed char diff=Base[*Pos];
+				(*Pos)++;
+				return (*Pos)+diff-1;
+			}
+			else
+			{
+				return acode+scanmovewa5d0(Base,Pos);
+			}
+		}
+		*/
+	int scangetaddr(int Code,byte[] Base,PosScanCodeMask dat,int acode)
+	{
+		(dat.ScanCodeMask)|=0x20;
+		if ((Code&0x20)!=0)
+		{
+			// getaddrshort 
+			byte diff=Base[dat.Pos];
+			(dat.Pos)++;
+			return (dat.Pos)+diff-1;
+		}
+		else
+		{
+			return acode+scanmovewa5d0(Base,dat);
+		}
+	}
+	
+	/*--was-- L9UINT16 scanmovewa5d0(L9BYTE* Base,L9UINT32 *Pos)
+	{
+		L9UINT16 ret=L9WORD(Base+*Pos);
+		(*Pos)+=2;
+		return ret;
+	}*/
+	int scanmovewa5d0(byte[] Base,PosScanCodeMask dat)
+	{
+		int ret=L9WORD(Base, dat.Pos);
+		(dat.Pos)+=2;
+		return ret;
+	}
+	
+	/*--was-- void scangetcon(int Code,L9UINT32 *Pos,int *Mask)
+	{
+		(*Pos)++;
+		if (!(Code & 64)) (*Pos)++;
+		(*Mask)|=0x40;
+	}
+	*/
+	void scangetcon(int Code,PosScanCodeMask dat)
+	{
+		(dat.Pos)++;
+		if (!((Code & 64)!=0)) (dat.Pos)++;
+		(dat.ScanCodeMask)|=0x40;
+	}
+		
+	/*--was-- L9BOOL CheckCallDriverV4(L9BYTE* Base,L9UINT32 Pos)
+		{
+			int i,j;
+		
+			// Look back for an assignment from a variable
+			// to list9[0], which is used to specify the
+			// driver call.
+			//
+			for (i = 0; i < 2; i++)
+			{
+				int x = Pos - ((i+1)*3);
+				if ((Base[x] == 0x89) && (Base[x+1] == 0x00))
+				{
+					// Get the variable being copied to list9[0] 
+					int var = Base[x+2];
+		
+					// Look back for an assignment to the variable. 
+					for (j = 0; j < 2; j++)
+					{
+						int y = x - ((j+1)*3);
+						if ((Base[y] == 0x48) && (Base[y+2] == var))
+						{
+							// If this a V4 driver call? 
+							switch (Base[y+1])
+							{
+							case 0x0E:
+							case 0x20:
+							case 0x22:
+								return TRUE;
+							}
+							return FALSE;
+						}
+					}
+				}
+			}
+			return FALSE;
+		}
+	 */
+	boolean CheckCallDriverV4(byte[] Base,int Pos)
+	{
+		int i,j;
+	
+		// Look back for an assignment from a variable
+		// to list9[0], which is used to specify the
+		// driver call.
+		//
+		for (i = 0; i < 2; i++)
+		{
+			int x = Pos - ((i+1)*3);
+			if ((Base[x] == 0x89) && (Base[x+1] == 0x00))
+			{
+				// Get the variable being copied to list9[0] 
+				int var = Base[x+2];
+	
+				// Look back for an assignment to the variable. 
+				for (j = 0; j < 2; j++)
+				{
+					int y = x - ((j+1)*3);
+					if ((Base[y] == 0x48) && (Base[y+2] == var))
+					{
+						// If this a V4 driver call? 
+						switch (Base[y+1])
+						{
+						case 0x0E:
+						case 0x20:
+						case 0x22:
+							return true;
+						}
+						return false;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	/*-- was ------------------
 	L9BOOL load(char *filename)
 	{
@@ -967,3 +1447,13 @@ class GameState {
 	
 }
 
+class ScanData {
+	int Size;
+	int Min,Max;
+	boolean JumpKill, DriverV4;
+};
+
+class PosScanCodeMask {
+	int Pos;
+	int ScanCodeMask;
+}
