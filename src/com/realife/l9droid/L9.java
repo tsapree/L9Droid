@@ -454,7 +454,7 @@ int V2MsgType;
 			return false;
 		}
 		//TODO:kill debug code =)
-		error("Loaded ok, size=%d\r",FileSize);
+//		error("Loaded ok, size=%d\r",FileSize);
 //		printdecimald0(startfile[0]);
 //		printchar(',');
 //		printdecimald0(startfile[1]);
@@ -499,12 +499,10 @@ int V2MsgType;
 
 		*/
 		Offset=Scan(startfile,FileSize);
-		error("Offset1=%d\r",Offset);
 		if (Offset<0)
 		{
 			Offset=ScanV2(startfile,FileSize);
 			L9GameType=L9_V2;
-			error("Offset2=%d\r",Offset);
 			if (Offset<0)
 			{
 				Offset=ScanV1(startfile,FileSize);
@@ -520,7 +518,6 @@ int V2MsgType;
 		//TODO:kill debug code =)
 		error("Found header v%d\r",L9GameType);
 		error("Offset=%d\r",Offset);
-		
 
 		startdata=Offset;
 		FileSize-=Offset;
@@ -558,12 +555,8 @@ int V2MsgType;
 				startmd=startdata + L9WORD(startfile,startdata+0x0);
 				startmdV2=startdata + L9WORD(startfile,startdata+0x2);
 
-				if (analyseV2()>0) {
-					
-				};
 				// determine message type
 				a2=analyseV2();
-				error("a2=%d\r",(int)a2);
 				if (a2>0.0 && a2>2 && a2<10)
 				{
 					V2MsgType=V2M_NORMAL;
@@ -577,9 +570,9 @@ int V2MsgType;
 					if (a25>0 && a25>2 && a25<10)
 					{
 						V2MsgType=V2M_ERIK;
-	//TODO:					#ifdef L9DEBUG
-	//TODO:					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
-	//TODO:					#endif
+//TODO:					#ifdef L9DEBUG
+//TODO:					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
+//TODO:					#endif
 					}
 					else
 					{
@@ -600,6 +593,7 @@ int V2MsgType;
 				wordtable=startdata + L9WORD(startfile,startdata+0xe);
 				break;
 		};
+		//TODO: tsap, kill debug code
 		error("L9GameType=%d\r",L9GameType);
 		error("V2MsgType=%d\r",V2MsgType);
 
@@ -645,7 +639,7 @@ int V2MsgType;
 	}*/
 	double analyseV2()
 	{
-		long words=0,chars=0;
+		int words=0,chars=0;
 		int i;
 		for (i=1;i<256;i++)
 		{
@@ -660,7 +654,6 @@ int V2MsgType;
 			else return -1.0;
 		}
 		return words!=0 ? (double) chars/words : 0.0;
-		//return TRUE;
 	}
 
 	/*--was-- L9BOOL analyseV25(double *wl)
@@ -683,7 +676,7 @@ int V2MsgType;
 	}*/
 	double analyseV25()
 	{
-		long words=0,chars=0;
+		int words=0,chars=0;
 		int i;
 		for (i=0;i<256;i++)
 		{
@@ -699,7 +692,6 @@ int V2MsgType;
 		}
 
 		return words!=0 ? (double) chars/words : 0.0;
-		//return true;
 	}
 	
 	/*--was-- L9BOOL amessageV2(L9BYTE *ptr,int msg,long *w,long *c)
@@ -751,7 +743,7 @@ int V2MsgType;
 		n=msglenV2(ptr);
 
 		while (--n>0) {
-			a=startfile[++ptr];
+			a=startfile[++ptr]&0xff;
 			if (a<3) return true;
 			if (a>=0x5e)
 			{
@@ -771,9 +763,6 @@ int V2MsgType;
 		}
 		return true;
 	}
-	
-
-	
 
 	/*--was-- L9BOOL amessageV25(L9BYTE *ptr,int msg,long *w,long *c)
 	{
@@ -825,7 +814,7 @@ int V2MsgType;
 
 		while (--n>0)
 		{
-			a=startfile[ptr++];
+			a=startfile[ptr++]&0xff;
 			if (a<3) return true;
 
 			if (a>=0x5e)
@@ -1044,8 +1033,8 @@ int V2MsgType;
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
 	//#endif
-						error("Found valid header at %ld",i);
-						error(", code size %ld",scandata.Size);
+						error("Found valid header at %d",i);
+						error(", code size %d",scandata.Size);
 						if (scandata.Size>MaxSize)
 						{
 							Offset=i;
@@ -1656,7 +1645,7 @@ int V2MsgType;
 //					printf("Found valid V2 header at %ld, code size %ld",i,Size);
 //	#endif
 					error("Found valid V2 header at %d",i);
-					error(", code size %d",scandata.Size);
+					error(", code size %d\r",scandata.Size);
 					if (scandata.Size>MaxSize)
 					{
 						Offset=i;
