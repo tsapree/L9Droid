@@ -235,28 +235,6 @@ void printmessage(int Msg)
 	}
 }
 
-/* v2 message stuff */
-
-int msglenV2(L9BYTE **ptr)
-{
-	int i=0;
-	L9BYTE a;
-
-	/* catch berzerking code */
-	if (*ptr >= startdata+FileSize) return 0;
-
-	while ((a=**ptr)==0)
-	{
-	 (*ptr)++;
-	 
-	 if (*ptr >= startdata+FileSize) return 0;
-
-	 i+=255;
-	}
-	i+=a;
-	return i;
-}
-
 void printcharV2(char c)
 {
 	if (c==0x25) c=0xd;
@@ -285,13 +263,6 @@ void displaywordV2(L9BYTE *ptr,int msg)
 	}
 }
 
-int msglenV25(L9BYTE **ptr)
-{
-	L9BYTE *ptr2=*ptr;
-	while (ptr2<startdata+FileSize && *ptr2++!=1) ;
-	return ptr2-*ptr;
-}
-
 void displaywordV25(L9BYTE *ptr,int msg)
 {
 	int n;
@@ -312,116 +283,6 @@ void displaywordV25(L9BYTE *ptr,int msg)
 	}
 }
 
-L9BOOL amessageV2(L9BYTE *ptr,int msg,long *w,long *c)
-{
-	int n;
-	L9BYTE a;
-	static int depth=0;
-	if (msg==0) return FALSE;
-	while (--msg)
-	{
-		ptr+=msglenV2(&ptr);
-	}
-	if (ptr >= startdata+FileSize) return FALSE;
-	n=msglenV2(&ptr);
-
-	while (--n>0)
-	{
-		a=*++ptr;
-		if (a<3) return TRUE;
-
-		if (a>=0x5e)
-		{
-			if (++depth>10 || !amessageV2(startmdV2-1,a-0x5d,w,c))
-			{
-				depth--;
-				return FALSE;
-			}
-			depth--;
-		}
-		else
-		{
-			char ch=a+0x1d;
-			if (ch==0x5f || ch==' ') (*w)++;
-			else (*c)++;
-		}
-	}
-	return TRUE;
-}
-
-L9BOOL amessageV25(L9BYTE *ptr,int msg,long *w,long *c)
-{
-	int n;
-	L9BYTE a;
-	static int depth=0;
-
-	while (msg--)
-	{
-		ptr+=msglenV25(&ptr);
-	}
-	if (ptr >= startdata+FileSize) return FALSE;
-	n=msglenV25(&ptr);
-
-	while (--n>0)
-	{
-		a=*ptr++;
-		if (a<3) return TRUE;
-
-		if (a>=0x5e)
-		{
-			if (++depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
-			{
-				depth--;
-				return FALSE;
-			}
-			depth--;
-		}
-		else
-		{
-			char ch=a+0x1d;
-			if (ch==0x5f || ch==' ') (*w)++;
-			else (*c)++;
-		}
-	}
-	return TRUE;
-}
-
-L9BOOL analyseV2(double *wl)
-{
-	long words=0,chars=0;
-	int i;
-	for (i=1;i<256;i++)
-	{
-		long w=0,c=0;
-		if (amessageV2(startmd,i,&w,&c))
-		{
-			words+=w;
-			chars+=c;
-		}
-		else return FALSE;
-	}
-	*wl=words ? (double) chars/words : 0.0;
-	return TRUE;
-}
-
-L9BOOL analyseV25(double *wl)
-{
-	long words=0,chars=0;
-	int i;
-	for (i=0;i<256;i++)
-	{
-		long w=0,c=0;
-		if (amessageV25(startmd,i,&w,&c))
-		{
-			words+=w;
-			chars+=c;
-		}
-		else return FALSE;
-	}
-
-	*wl=words ? (double) chars/words : 0.0;
-	return TRUE;
-}
 
 void printmessageV2(int Msg)
 {
@@ -472,8 +333,6 @@ void FreeMemory(void)
 	picturesize=0;
 	gfxa5=NULL;
 }
-
-
 
 L9BYTE calcchecksum(L9BYTE* ptr,L9UINT32 num)
 {

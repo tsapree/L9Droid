@@ -61,6 +61,8 @@ int L9_V2=2;
 int L9_V3=3;
 int L9_V4=4;
 //enum V2MsgTypes {V2M_NORMAL,V2M_ERIK};
+int V2M_NORMAL=1;
+int V2M_ERIK=2;
 //
 
 // Global Variables
@@ -71,10 +73,27 @@ int L9_V4=4;
 //L9UINT32 picturesize;
 //
 	int L9Pointers[];
-//L9BYTE *absdatablock,*list2ptr,*list3ptr,*list9startptr,*acodeptr;
-//L9BYTE *startmd,*endmd,*endwdp5,*wordtable,*dictdata,*defdict;
+//L9BYTE *absdatablock
+//L9BYTE *list2ptr
+//L9BYTE *list3ptr
+//L9BYTE *list9startptr
+//L9BYTE *acodeptr;
+//L9BYTE *startmd
+	int startmd;
+//L9BYTE *endmd
+	int endmd;
+//L9BYTE *endwdp5
+	int endwdp5;
+//L9BYTE *wordtable
+	int wordtable;
+//L9BYTE *dictdata
+	int dictdata;
+//L9BYTE *defdict;
+	int defdict;
 //L9UINT16 dictdatalen;
+	int dictdatalen;
 //L9BYTE *startmdV2;
+	int startmdV2;
 //
 	int wordcase;
 //int unpackcount;
@@ -82,7 +101,7 @@ int L9_V4=4;
 //L9BYTE* dictptr;
 //char threechars[34];
 int L9GameType;
-//int V2MsgType;
+int V2MsgType;
 //
 //SaveStruct ramsavearea[RAMSAVESLOTS];
 //
@@ -99,7 +118,9 @@ int L9GameType;
 //L9BYTE *gfxa5=NULL;
 //L9BOOL scalegfx=TRUE;
 //Bitmap* bitmap=NULL;
-//
+	
+	
+	//
 //GfxState GfxStack[GFXSTACKSIZE];
 //int GfxStackPos=0;
 //
@@ -120,7 +141,9 @@ int L9GameType;
 //L9BYTE gnoscratch[32];
 //int object,gnosp,numobjectfound,searchdepth,inithisearchpos;
 
-
+//vars added by tsap
+	int amessageV2_depth=0;
+	int amessageV25_depth=0;
 	
 	L9() {
 		workspace=new GameState();
@@ -520,8 +543,6 @@ int L9GameType;
 			//TODO: acodeptr=L9Pointers[11];
 		}
 
-		/*TODO:
-		
 		switch (L9GameType)
 		{
 			case L9_V1:
@@ -529,64 +550,348 @@ int L9GameType;
 			case L9_V2:
 			{
 				double a2,a25;
-				startmd=startdata + L9WORD(startdata+0x0);
-				startmdV2=startdata + L9WORD(startdata+0x2);
+				startmd=startdata + L9WORD(startfile,startdata+0x0);
+				startmdV2=startdata + L9WORD(startfile,startdata+0x2);
 
-				// determine message type 
-				if (analyseV2(&a2) && a2>2 && a2<10)
+				if (analyseV2()>0) {
+					
+				};
+				// determine message type
+				a2=analyseV2();
+				if (a2>0.0 && a2>2 && a2<10)
 				{
 					V2MsgType=V2M_NORMAL;
-					#ifdef L9DEBUG
-					printf("V2 msg table: normal, wordlen=%.2lf",a2);
-					#endif
+//TODO:				#ifdef L9DEBUG
+//TODO:				printf("V2 msg table: normal, wordlen=%.2lf",a2);
+//TODO:				#endif
 				}
-				else if (analyseV25(&a25) && a25>2 && a25<10)
-				{
-					V2MsgType=V2M_ERIK;
-					#ifdef L9DEBUG
-					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
-					#endif
-				}
-				else
-				{
-					error("\rUnable to identify V2 message table in file: %s\r",filename);
-					return FALSE;
-				}
+				else {
+					a25=analyseV25();
+					if (a25>0 && a25>2 && a25<10)
+					{
+						V2MsgType=V2M_ERIK;
+	//TODO:					#ifdef L9DEBUG
+	//TODO:					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
+	//TODO:					#endif
+					}
+					else
+					{
+						error("\rUnable to identify V2 message table in file: %s\r",filename);
+						return false;
+					}
+				};
 				break;
 			}
 			case L9_V3:
 			case L9_V4:
-				startmd=startdata + L9WORD(startdata+0x2);
-				endmd=startmd + L9WORD(startdata+0x4);
-				defdict=startdata+L9WORD(startdata+6);
-				endwdp5=defdict + 5 + L9WORD(startdata+0x8);
-				dictdata=startdata+L9WORD(startdata+0x0a);
-				dictdatalen=L9WORD(startdata+0x0c);
-				wordtable=startdata + L9WORD(startdata+0xe);
+				startmd=startdata + L9WORD(startfile,startdata+0x2);
+				endmd=startmd + L9WORD(startfile,startdata+0x4);
+				defdict=startdata+L9WORD(startfile,startdata+6);
+				endwdp5=defdict + 5 + L9WORD(startfile,startdata+0x8);
+				dictdata=startdata+L9WORD(startfile,startdata+0x0a);
+				dictdatalen=L9WORD(startfile,startdata+0x0c);
+				wordtable=startdata + L9WORD(startfile,startdata+0xe);
 				break;
 		}
 
-	#ifndef NO_SCAN_GRAPHICS
-		// If there was no graphics file, look in the game data 
-		if (picturedata==NULL)
+//TODO:	#ifndef NO_SCAN_GRAPHICS
+//TODO:		// If there was no graphics file, look in the game data 
+//TODO:		if (picturedata==NULL)
+//TODO:		{
+//TODO:			int sz=FileSize-(acodeptr-startdata);
+//TODO:			int i=0;
+//TODO:			while ((i<sz-0x1000)&&(picturedata==NULL))
+//TODO:			{
+//TODO:				picturedata=acodeptr+i;
+//TODO:				picturesize=sz-i;
+//TODO:				if (!checksubs())
+//TODO:				{
+//TODO:					picturedata=NULL;
+//TODO:					picturesize=0;
+//TODO:				}
+//TODO:				i++;
+//TODO:			}
+//TODO:		}
+//TODO:	#endif
+	
+		return true;
+	}
+	
+	/*--was-- L9BOOL analyseV2(double *wl)
+	{
+		long words=0,chars=0;
+		int i;
+		for (i=1;i<256;i++)
 		{
-			int sz=FileSize-(acodeptr-startdata);
-			int i=0;
-			while ((i<sz-0x1000)&&(picturedata==NULL))
+			long w=0,c=0;
+			if (amessageV2(startmd,i,&w,&c))
 			{
-				picturedata=acodeptr+i;
-				picturesize=sz-i;
-				if (!checksubs())
+				words+=w;
+				chars+=c;
+			}
+			else return FALSE;
+		}
+		*wl=words ? (double) chars/words : 0.0;
+		return TRUE;
+	}*/
+	double analyseV2()
+	{
+		long words=0,chars=0;
+		int i;
+		for (i=1;i<256;i++)
+		{
+			//long w=0,c=0;
+			int w[]={0};
+			int c[]={0};
+			if (amessageV2(startmd,i,w,c))
+			{
+				words+=w[0];
+				chars+=c[0];
+			}
+			else return -1.0;
+		}
+		return words!=0 ? (double) chars/words : 0.0;
+		//return TRUE;
+	}
+
+	/*--was-- L9BOOL analyseV25(double *wl)
+	{
+		long words=0,chars=0;
+		int i;
+		for (i=0;i<256;i++)
+		{
+			long w=0,c=0;
+			if (amessageV25(startmd,i,&w,&c))
+			{
+				words+=w;
+				chars+=c;
+			}
+			else return FALSE;
+		}
+
+		*wl=words ? (double) chars/words : 0.0;
+		return TRUE;
+	}*/
+	double analyseV25()
+	{
+		long words=0,chars=0;
+		int i;
+		for (i=0;i<256;i++)
+		{
+			//long w=0,c=0;
+			int w[]={0};
+			int c[]={0};
+			if (amessageV25(startmd,i,w,c))
+			{
+				words+=w[0];
+				chars+=c[0];
+			}
+			else return -1.0;
+		}
+
+		return words!=0 ? (double) chars/words : 0.0;
+		//return true;
+	}
+	
+	/*--was-- L9BOOL amessageV2(L9BYTE *ptr,int msg,long *w,long *c)
+	{
+		int n;
+		L9BYTE a;
+		static int depth=0;
+		if (msg==0) return FALSE;
+		while (--msg)
+		{
+			ptr+=msglenV2(&ptr);
+		}
+		if (ptr >= startdata+FileSize) return FALSE;
+		n=msglenV2(&ptr);
+
+		while (--n>0)
+		{
+			a=*++ptr;
+			if (a<3) return TRUE;
+
+			if (a>=0x5e)
+			{
+				if (++depth>10 || !amessageV2(startmdV2-1,a-0x5d,w,c))
 				{
-					picturedata=NULL;
-					picturesize=0;
+					depth--;
+					return FALSE;
 				}
-				i++;
+				depth--;
+			}
+			else
+			{
+				char ch=a+0x1d;
+				if (ch==0x5f || ch==' ') (*w)++;
+				else (*c)++;
 			}
 		}
-	#endif
-		*/
+		return TRUE;
+	}*/
+	L9BOOL amessageV2(int ptr,int msg,int w[],int c[])
+	{
+		int n;
+		byte a;
+		if (msg==0) return false;
+		while (--msg!=0)
+		{
+			ptr+=msglenV2(&ptr);
+		}
+		if (ptr >= startdata+FileSize) return false;
+		n=msglenV2(&ptr);
+
+		while (--n>0)
+		{
+			a=*++ptr;
+			if (a<3) return true;
+
+			if (a>=0x5e)
+			{
+				if (++depth>10 || !amessageV2(startmdV2-1,a-0x5d,w,c))
+				{
+					depth--;
+					return false;
+				}
+				depth--;
+			}
+			else
+			{
+				char ch=a+0x1d;
+				if (ch==0x5f || ch==' ') (*w)++;
+				else (*c)++;
+			}
+		}
 		return true;
+	}
+	
+
+	
+
+	/*--was-- L9BOOL amessageV25(L9BYTE *ptr,int msg,long *w,long *c)
+	{
+		int n;
+		L9BYTE a;
+		static int depth=0;
+
+		while (msg--)
+		{
+			ptr+=msglenV25(&ptr);
+		}
+		if (ptr >= startdata+FileSize) return FALSE;
+		n=msglenV25(&ptr);
+
+		while (--n>0)
+		{
+			a=*ptr++;
+			if (a<3) return TRUE;
+
+			if (a>=0x5e)
+			{
+				if (++depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
+				{
+					depth--;
+					return FALSE;
+				}
+				depth--;
+			}
+			else
+			{
+				char ch=a+0x1d;
+				if (ch==0x5f || ch==' ') (*w)++;
+				else (*c)++;
+			}
+		}
+		return TRUE;
+	}*/
+	boolean amessageV25(int ptr,int msg,int w[],int c[])
+	{
+		int n;
+		int a;
+		
+		while (msg--!=0)
+		{
+			ptr+=msglenV25(&ptr);
+		}
+		if (ptr >= startdata+FileSize) return false;
+		n=msglenV25(&ptr);
+
+		while (--n>0)
+		{
+			a=startfile[ptr++];
+			if (a<3) return true;
+
+			if (a>=0x5e)
+			{
+				if (++depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
+				{
+					amessageV25_depth--;
+					return false;
+				}
+				amessageV25_depth--;
+			}
+			else
+			{
+				char ch=a+0x1d;
+				if (ch==0x5f || ch==' ') w[0]++;
+				else c[0]++;
+			}
+		}
+		return true;
+	}
+	
+	/*--was-- int msglenV25(L9BYTE **ptr)
+	{
+		L9BYTE *ptr2=*ptr;
+		while (ptr2<startdata+FileSize && *ptr2++!=1) ;
+		return ptr2-*ptr;
+	}*/
+	int msglenV25(int ptr)
+	{
+		L9BYTE *ptr2=*ptr;
+		while (ptr2<startdata+FileSize && startfile[ptr2++]!=1) ;
+		return ptr2-*ptr;
+	}
+
+	/* v2 message stuff */
+	/*--was-- int msglenV2(L9BYTE **ptr)
+	{
+		int i=0;
+		L9BYTE a;
+
+		// catch berzerking code 
+		if (*ptr >= startdata+FileSize) return 0;
+
+		while ((a=**ptr)==0)
+		{
+		 (*ptr)++;
+		 
+		 if (*ptr >= startdata+FileSize) return 0;
+
+		 i+=255;
+		}
+		i+=a;
+		return i;
+	}*/
+	
+	int msglenV2(int ptr)
+	{
+		int i=0;
+		byte a;
+
+		/* catch berzerking code */
+		if (ptr >= startdata+FileSize) return 0;
+
+		while ((a=**ptr)==0)
+		{
+		 (*ptr)++;
+		 
+		 if (ptr >= startdata+FileSize) return 0;
+
+		 i+=255;
+		}
+		i+=a;
+		return i;
 	}
 	
 	/*--was-- long Scan(L9BYTE* StartFile,L9UINT32 FileSize)
