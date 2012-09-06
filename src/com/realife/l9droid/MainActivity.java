@@ -39,7 +39,8 @@ public class MainActivity extends Activity implements OnClickListener {
         gamedata=new byte[49179];
         
         try {
-            InputStream is=getResources().openRawResource(R.raw.timev2);
+            //InputStream is=getResources().openRawResource(R.raw.timev2);
+        	InputStream is=getResources().openRawResource(R.raw.wormv3);
             is.read(gamedata);            
           } catch (IOException e) {
             e.printStackTrace();

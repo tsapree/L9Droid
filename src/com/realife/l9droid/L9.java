@@ -454,7 +454,8 @@ int V2MsgType;
 			return false;
 		}
 		//TODO:kill debug code =)
-//		error("Loaded ok, size=%d\r",FileSize);
+		error("Loaded ok, size=%d\r",FileSize);
+		
 //		printdecimald0(startfile[0]);
 //		printchar(',');
 //		printdecimald0(startfile[1]);
@@ -499,9 +500,11 @@ int V2MsgType;
 
 		*/
 		Offset=Scan(startfile,FileSize);
+		error("Offset1=%d\r",Offset);
 		if (Offset<0)
 		{
 			Offset=ScanV2(startfile,FileSize);
+			error("Offset2=%d\r",Offset);
 			L9GameType=L9_V2;
 			if (Offset<0)
 			{
@@ -515,6 +518,7 @@ int V2MsgType;
 				}
 			}
 		}
+
 		//TODO:kill debug code =)
 		error("Found header v%d\r",L9GameType);
 		error("Offset=%d\r",Offset);
@@ -566,7 +570,7 @@ int V2MsgType;
 				}
 				else {
 					a25=analyseV25();
-					error("a25=%d\r",(int)a25);
+					error("a25=%d/100\r",(int)(a25*100));
 					if (a25>0 && a25>2 && a25<10)
 					{
 						V2MsgType=V2M_ERIK;
@@ -989,9 +993,9 @@ int V2MsgType;
 		Chk[0]=0;
 		for (i=1;i<=FileSize;i++)
 			//Chk[i]=Chk[i-1]+StartFile[i-1];
-			Chk[i]=(byte)(((Chk[i-1]&255)+StartFile[i-1]&255)&0xff);
+			Chk[i]=(byte)(((Chk[i-1]&255)+(StartFile[i-1]&255))&0xff);
 
-		for (i=0;i<FileSize-33;i++)
+		for (i=0;i<FileSize-33-1;i++)
 		{
 			num=L9WORD(StartFile,i)+1;
 	
