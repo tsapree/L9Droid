@@ -56,10 +56,10 @@ public class L9 {
 //
 // Enumerations 
 //enum L9GameTypes {L9_V1,L9_V2,L9_V3,L9_V4};
-int L9_V1=1;
-int L9_V2=2;
-int L9_V3=3;
-int L9_V4=4;
+	private static final int L9_V1=1;
+	private static final int L9_V2=2;
+	private static final int L9_V3=3;
+	private static final int L9_V4=4;
 //enum V2MsgTypes {V2M_NORMAL,V2M_ERIK};
 int V2M_NORMAL=1;
 int V2M_ERIK=2;
@@ -455,20 +455,20 @@ int V2MsgType;
 		}
 		//TODO:kill debug code =)
 		error("Loaded ok, size=%d\r",FileSize);
-		printdecimald0(startfile[0]);
-		printchar(',');
-		printdecimald0(startfile[1]);
-		printchar(',');
-		printdecimald0(startfile[2]);
-		printchar(',');
-		error("word gamedata[0]= %h\r",L9WORD(startfile,0));
-		error("word gamedata[2]= %h\r",L9WORD(startfile,2));
-		L9SETWORD(startfile, 4, 0xfeaa);
-		L9SETDWORD(startfile, 6, 0xfffefdfc);
-		error("word gamedata[4]= %h\r",L9WORD(startfile,4));
-		error("word gamedata[6]= %h\r",L9WORD(startfile,6));
-		error("word gamedata[8]= %h\r",L9WORD(startfile,8));
-		error("word gamedata[10]= %h\r",L9WORD(startfile,10));
+//		printdecimald0(startfile[0]);
+//		printchar(',');
+//		printdecimald0(startfile[1]);
+//		printchar(',');
+//		printdecimald0(startfile[2]);
+//		printchar(',');
+//		error("word gamedata[0]= %h\r",L9WORD(startfile,0));
+//		error("word gamedata[2]= %h\r",L9WORD(startfile,2));
+//		//L9SETWORD(startfile, 4, 0xfeaa);
+//		//L9SETDWORD(startfile, 6, 0xfffefdfc);
+//		error("word gamedata[4]= %h\r",L9WORD(startfile,4));
+//		error("word gamedata[6]= %h\r",L9WORD(startfile,6));
+//		error("word gamedata[8]= %h\r",L9WORD(startfile,8));
+//		error("word gamedata[10]= %h\r",L9WORD(startfile,10));
 		
 		
 		/*TODO:
@@ -499,13 +499,16 @@ int V2MsgType;
 
 		*/
 		Offset=Scan(startfile,FileSize);
+		error("Offset1=%d\r",Offset);
 		if (Offset<0)
 		{
 			Offset=ScanV2(startfile,FileSize);
 			L9GameType=L9_V2;
+			error("Offset2=%d\r",Offset);
 			if (Offset<0)
 			{
 				Offset=ScanV1(startfile,FileSize);
+				error("Offset3=%d\r",Offset);
 				L9GameType=L9_V1;
 				if (Offset<0)
 				{
@@ -516,6 +519,8 @@ int V2MsgType;
 		}
 		//TODO:kill debug code =)
 		error("Found header v%d\r",L9GameType);
+		error("Offset=%d\r",Offset);
+		
 
 		startdata=Offset;
 		FileSize-=Offset;
@@ -558,6 +563,7 @@ int V2MsgType;
 				};
 				// determine message type
 				a2=analyseV2();
+				error("a2=%d\r",(int)a2);
 				if (a2>0.0 && a2>2 && a2<10)
 				{
 					V2MsgType=V2M_NORMAL;
@@ -567,6 +573,7 @@ int V2MsgType;
 				}
 				else {
 					a25=analyseV25();
+					error("a25=%d\r",(int)a25);
 					if (a25>0 && a25>2 && a25<10)
 					{
 						V2MsgType=V2M_ERIK;
@@ -592,7 +599,9 @@ int V2MsgType;
 				dictdatalen=L9WORD(startfile,startdata+0x0c);
 				wordtable=startdata + L9WORD(startfile,startdata+0xe);
 				break;
-		}
+		};
+		error("L9GameType=%d\r",L9GameType);
+		error("V2MsgType=%d\r",V2MsgType);
 
 //TODO:	#ifndef NO_SCAN_GRAPHICS
 //TODO:		// If there was no graphics file, look in the game data 
@@ -729,37 +738,35 @@ int V2MsgType;
 		}
 		return TRUE;
 	}*/
-	L9BOOL amessageV2(int ptr,int msg,int w[],int c[])
+	boolean amessageV2(int ptr,int msg,int w[],int c[])
 	{
 		int n;
-		byte a;
+		int a;
 		if (msg==0) return false;
 		while (--msg!=0)
 		{
-			ptr+=msglenV2(&ptr);
+			ptr+=msglenV2(ptr);
 		}
 		if (ptr >= startdata+FileSize) return false;
-		n=msglenV2(&ptr);
+		n=msglenV2(ptr);
 
-		while (--n>0)
-		{
-			a=*++ptr;
+		while (--n>0) {
+			a=startfile[++ptr];
 			if (a<3) return true;
-
 			if (a>=0x5e)
 			{
-				if (++depth>10 || !amessageV2(startmdV2-1,a-0x5d,w,c))
+				if (++amessageV2_depth>10 || !amessageV2(startmdV2-1,a-0x5d,w,c))
 				{
-					depth--;
+					amessageV2_depth--;
 					return false;
 				}
-				depth--;
+				amessageV2_depth--;
 			}
 			else
 			{
-				char ch=a+0x1d;
-				if (ch==0x5f || ch==' ') (*w)++;
-				else (*c)++;
+				char ch=(char)(a+0x1d);
+				if (ch==0x5f || ch==' ') w[0]++;
+				else c[0]++;
 			}
 		}
 		return true;
@@ -811,10 +818,10 @@ int V2MsgType;
 		
 		while (msg--!=0)
 		{
-			ptr+=msglenV25(&ptr);
+			ptr+=msglenV25(ptr);
 		}
 		if (ptr >= startdata+FileSize) return false;
-		n=msglenV25(&ptr);
+		n=msglenV25(ptr);
 
 		while (--n>0)
 		{
@@ -823,7 +830,7 @@ int V2MsgType;
 
 			if (a>=0x5e)
 			{
-				if (++depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
+				if (++amessageV25_depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
 				{
 					amessageV25_depth--;
 					return false;
@@ -832,7 +839,7 @@ int V2MsgType;
 			}
 			else
 			{
-				char ch=a+0x1d;
+				char ch=(char)(a+0x1d);
 				if (ch==0x5f || ch==' ') w[0]++;
 				else c[0]++;
 			}
@@ -840,19 +847,6 @@ int V2MsgType;
 		return true;
 	}
 	
-	/*--was-- int msglenV25(L9BYTE **ptr)
-	{
-		L9BYTE *ptr2=*ptr;
-		while (ptr2<startdata+FileSize && *ptr2++!=1) ;
-		return ptr2-*ptr;
-	}*/
-	int msglenV25(int ptr)
-	{
-		L9BYTE *ptr2=*ptr;
-		while (ptr2<startdata+FileSize && startfile[ptr2++]!=1) ;
-		return ptr2-*ptr;
-	}
-
 	/* v2 message stuff */
 	/*--was-- int msglenV2(L9BYTE **ptr)
 	{
@@ -873,26 +867,36 @@ int V2MsgType;
 		i+=a;
 		return i;
 	}*/
-	
 	int msglenV2(int ptr)
 	{
 		int i=0;
-		byte a;
+		int a;
 
 		/* catch berzerking code */
 		if (ptr >= startdata+FileSize) return 0;
 
-		while ((a=**ptr)==0)
-		{
-		 (*ptr)++;
-		 
-		 if (ptr >= startdata+FileSize) return 0;
-
-		 i+=255;
+		while ((a=startfile[ptr])==0) {
+			ptr++;
+			if (ptr >= startdata+FileSize) return 0;
+			i+=255;
 		}
 		i+=a;
 		return i;
 	}
+	
+	/*--was-- int msglenV25(L9BYTE **ptr)
+	{
+		L9BYTE *ptr2=*ptr;
+		while (ptr2<startdata+FileSize && *ptr2++!=1) ;
+		return ptr2-*ptr;
+	}*/
+	int msglenV25(int ptr)
+	{
+		int ptr2=ptr;
+		while (ptr2<startdata+FileSize && startfile[ptr2++]!=1) ;
+		return ptr2-ptr;
+	}
+
 	
 	/*--was-- long Scan(L9BYTE* StartFile,L9UINT32 FileSize)
 		{
@@ -1040,6 +1044,8 @@ int V2MsgType;
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
 	//#endif
+						error("Found valid header at %ld",i);
+						error(", code size %ld",scandata.Size);
 						if (scandata.Size>MaxSize)
 						{
 							Offset=i;
@@ -1050,8 +1056,6 @@ int V2MsgType;
 				}
 			}
 		}
-		//free(Chk);
-		//free(Image);
 		return Offset;
 	}
 	
@@ -1620,13 +1624,13 @@ int V2MsgType;
 		Chk[0]=0;
 		for (i=1;i<=FileSize;i++)
 			//Chk[i]=Chk[i-1]+StartFile[i-1];
-			Chk[i]=(byte)(((Chk[i-1]&255)+StartFile[i-1]&255)&0xff);
+			Chk[i]=(byte)(((Chk[i-1]&0xff)+(StartFile[i-1]&0xff))&0xff);
 	
 		//BUGFIXbyTSAP, possible out of array on L9WORD - Filesize-28+28=Filesize
 		for (i=0;i<FileSize-28-1;i++)
 		{
 			num=L9WORD(StartFile,i+28)+1;
-			if (i+num<=FileSize && ((Chk[i+num]&0xff-Chk[i+32]&0xff)&0xff)==(StartFile[i+0x1e]&0xff))
+			if (i+num<=FileSize && (((Chk[i+num]&0xff)-(Chk[i+32]&0xff))&0xff)==(StartFile[i+0x1e]&0xff))
 			{
 				for (j=0;j<14;j++)
 				{
@@ -1651,6 +1655,8 @@ int V2MsgType;
 //	#ifdef L9DEBUG 
 //					printf("Found valid V2 header at %ld, code size %ld",i,Size);
 //	#endif
+					error("Found valid V2 header at %d",i);
+					error(", code size %d",scandata.Size);
 					if (scandata.Size>MaxSize)
 					{
 						Offset=i;
