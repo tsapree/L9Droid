@@ -1032,7 +1032,7 @@ int V2MsgType;
 					scandata.Size=0;
 					scandata.Min=scandata.Max=i+d0;
 					scandata.DriverV4=false;
-					if (ValidateSequence(StartFile,Image,i+d0,i+d0,scandata,FileSize,false,true))
+					if (ValidateSequence(Image,i+d0,i+d0,scandata,false,true))
 					{
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
@@ -1223,9 +1223,10 @@ int V2MsgType;
 		return Valid; // && Strange==0; 
 	}
 	*/
-	boolean ValidateSequence(byte[] Base,byte[] Image,int iPos,int acode,ScanData sdat,int FileSize,boolean Rts, boolean checkDriverV4)
+	boolean ValidateSequence(byte[] Image,int iPos,int acode,ScanData sdat,boolean Rts, boolean checkDriverV4)
 	{
 
+		byte Base[]=startfile;
 		boolean Finished=false,Valid;
 		int Strange=0;
 		int Code;
@@ -1242,7 +1243,7 @@ int V2MsgType;
 	
 		do
 		{
-			Code=Base[pscm.Pos];
+			Code=Base[pscm.Pos]&0xff;
 			Valid=true;
 			if (Image[pscm.Pos]!=0) break; // converged to found code 
 			Image[pscm.Pos++]=2;
@@ -1261,14 +1262,14 @@ int V2MsgType;
 				case 0: // goto 
 				{
 					int Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true,checkDriverV4);
+					Valid=ValidateSequence(Image,Val,acode,sdat,true,checkDriverV4);
 					Finished=true;
 					break;
 				}
 				case 1: // intgosub 
 				{
 					int Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,true,checkDriverV4);
+					Valid=ValidateSequence(Image,Val,acode,sdat,true,checkDriverV4);
 					break;
 				}
 				case 2: // intreturn 
@@ -1285,7 +1286,7 @@ int V2MsgType;
 					scangetcon(Code,pscm);
 					break;
 				case 6: // function 
-					switch ((int)Base[pscm.Pos++])
+					switch ((int)(Base[pscm.Pos++]&0xff))
 					{
 						case 2:// random 
 							pscm.Pos++;
@@ -1347,7 +1348,7 @@ int V2MsgType;
 					int Val;
 					pscm.Pos+=2;
 					Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts,checkDriverV4);
+					Valid=ValidateSequence(Image,Val,acode,sdat,Rts,checkDriverV4);
 					break;
 				}
 				case 20: // screen 
@@ -1371,7 +1372,7 @@ int V2MsgType;
 					pscm.Pos++;
 					scangetcon(Code,pscm);
 					Val=scangetaddr(Code,Base,pscm,acode);
-					Valid=ValidateSequence(Base,Image,Val,acode,sdat,FileSize,Rts,checkDriverV4);
+					Valid=ValidateSequence(Image,Val,acode,sdat,Rts,checkDriverV4);
 					break;
 				}
 				case 28: // printinput 
@@ -1643,7 +1644,7 @@ int V2MsgType;
 	
 				scandata.Size=0;
 				scandata.Min=scandata.Max=i+d0;
-				if (ValidateSequence(StartFile,Image,i+d0,i+d0,scandata,FileSize,false,false))
+				if (ValidateSequence(Image,i+d0,i+d0,scandata,false,false))
 				{
 //	#ifdef L9DEBUG 
 //					printf("Found valid V2 header at %ld, code size %ld",i,Size);
