@@ -10,7 +10,8 @@ package com.realife.l9droid;
 //
 //0=false
 //1=true 
-//if (var) -> if(var!=0) 
+//if (var) -> if(var!=0)
+//*getvar()->workspace.vartable[getvar()]
 
 public class L9 {
 	
@@ -76,7 +77,7 @@ int V2M_ERIK=2;
 //L9UINT32 picturesize;
 //
 	int L9Pointers[];
-//L9BYTE *absdatablock
+	int absdatablock;
 //L9BYTE *list2ptr
 //L9BYTE *list3ptr
 //L9BYTE *list9startptr
@@ -99,10 +100,11 @@ int V2M_ERIK=2;
 	int startmdV2;
 //
 	int wordcase;
-//int unpackcount;
-	char unpackbuf[];
+	int unpackcount;
+	byte unpackbuf[];
 //L9BYTE* dictptr;
-//char threechars[34];
+	int dictptr;
+	byte threechars[];
 int L9GameType;
 int V2MsgType;
 //
@@ -138,7 +140,7 @@ int code;		// instruction codes - code
 //
 //int unpackd3;
 //
-//L9BYTE exitreversaltable[16]= {0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
+short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
 //
 //L9UINT16 gnostack[128];
 //L9BYTE gnoscratch[32];
@@ -147,11 +149,14 @@ int code;		// instruction codes - code
 //vars added by tsap
 	int amessageV2_depth=0;
 	int amessageV25_depth=0;
+	int displaywordref_mdtmode=0;
+
 	
 	L9() {
 		workspace=new GameState();
-		unpackbuf=new char[8];
+		unpackbuf=new byte[8];
 		L9Pointers=new int[12];
+		threechars=new byte[34];
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -1861,6 +1866,1212 @@ int code;		// instruction codes - code
 		l9memory[x+2]=(byte)((val & 0xff0000)>>16);
 		l9memory[x+3]=(byte)((val & 0xff000000)>>24);
 	}
+	
+/*--was--	void executeinstruction(void)
+	{
+	#ifdef CODEFOLLOW
+		f=fopen(CODEFOLLOWFILE,"a");
+		fprintf(f,"%ld (s:%d) %x",(L9UINT32) (codeptr-acodeptr)-1,workspace.stackptr,code);
+		if (!(code&0x80))
+			fprintf(f," = %s",codes[code&0x1f]);
+	#endif
+
+		if (code & 0x80) listhandler();
+		else switch (code & 0x1f)
+		{
+			case 0:		Goto();break;
+			case 1: 	intgosub();break;
+			case 2:		intreturn();break;
+			case 3:		printnumber();break;
+			case 4:		messagev();break;
+			case 5:		messagec();break;
+			case 6:		function();break;
+			case 7:		input();break;
+			case 8:		varcon();break;
+			case 9:		varvar();break;
+			case 10:	_add();break;
+			case 11:	_sub();break;
+			case 12:	ilins(code & 0x1f);break;
+			case 13:	ilins(code & 0x1f);break;
+			case 14:	jump();break;
+			case 15:	Exit();break;
+			case 16:	ifeqvt();break;
+			case 17:	ifnevt();break;
+			case 18:	ifltvt();break;
+			case 19:	ifgtvt();break;
+			case 20:	_screen();break;
+			case 21:	cleartg();break;
+			case 22:	picture();break;
+			case 23:	getnextobject();break;
+			case 24:	ifeqct();break;
+			case 25:	ifnect();break;
+			case 26:	ifltct();break;
+			case 27:	ifgtct();break;
+			case 28:	printinput();break;
+			case 29:	ilins(code & 0x1f);break;
+			case 30:	ilins(code & 0x1f);break;
+			case 31:	ilins(code & 0x1f);break;
+		}
+	#ifdef CODEFOLLOW
+		fprintf(f,"\n");
+		fclose(f);
+	#endif
+	}
+*/
+	void executeinstruction()
+	{
+//	#ifdef CODEFOLLOW
+//		f=fopen(CODEFOLLOWFILE,"a");
+//		fprintf(f,"%ld (s:%d) %x",(L9UINT32) (codeptr-acodeptr)-1,workspace.stackptr,code);
+//		if (!(code&0x80))
+//			fprintf(f," = %s",codes[code&0x1f]);
+//	#endif
+
+		if ((code & 0x80)!=0) listhandler();
+		else switch (code & 0x1f)
+		{
+			case 0:		Goto();break;
+			case 1: 	intgosub();break;
+			case 2:		intreturn();break;
+			case 3:		printnumber();break;
+			case 4:		messagev();break;
+			case 5:		messagec();break;
+			//TODO: case 6:		function();break;
+			//TODO: case 7:		input();break;
+			case 8:		varcon();break;
+			case 9:		varvar();break;
+			case 10:	_add();break;
+			case 11:	_sub();break;
+			case 12:	ilins(code & 0x1f);break;
+			case 13:	ilins(code & 0x1f);break;
+			case 14:	jump();break;
+			case 15:	Exit();break;
+			case 16:	ifeqvt();break;
+			case 17:	ifnevt();break;
+			case 18:	ifltvt();break;
+			case 19:	ifgtvt();break;
+			//TODO: case 20:	_screen();break;
+			//TODO: case 21:	cleartg();break;
+			case 22:	picture();break;
+			//TODO: case 23:	getnextobject();break;
+			case 24:	ifeqct();break;
+			case 25:	ifnect();break;
+			case 26:	ifltct();break;
+			case 27:	ifgtct();break;
+			case 28:	printinput();break;
+			case 29:	ilins(code & 0x1f);break;
+			case 30:	ilins(code & 0x1f);break;
+			case 31:	ilins(code & 0x1f);break;
+		}
+	}
+
+	/*--was--	void listhandler(void)
+	{
+		L9BYTE *a4,*MinAccess,*MaxAccess;
+		L9UINT16 val;
+		L9UINT16 *var;
+	#ifdef CODEFOLLOW
+		int offset; 
+	#endif
+
+		if ((code&0x1f)>0xa)
+		{
+			error("\rillegal list access %d\r",code&0x1f);
+			Running=FALSE;
+			return;
+		}
+		a4=L9Pointers[1+code&0x1f];
+
+		if (a4>=workspace.listarea && a4<workspace.listarea+LISTAREASIZE)
+		{
+			MinAccess=workspace.listarea;
+			MaxAccess=workspace.listarea+LISTAREASIZE;
+		}
+		else
+		{
+			MinAccess=startdata;
+			MaxAccess=startdata+FileSize;
+		}
+
+		if (code>=0xe0)
+		{
+			// listvv 
+	#ifndef CODEFOLLOW
+			a4+=*getvar();
+			val=*getvar();
+	#else
+			offset=*getvar();
+			a4+=offset;
+			var=getvar();
+			val=*var;
+			fprintf(f," list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var-workspace.vartable,val);
+	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) *a4=(L9BYTE) val;
+			#ifdef L9DEBUG
+			else printf("Out of range list access");
+			#endif
+		}
+		else if (code>=0xc0)
+		{
+			// listv1c 
+	#ifndef CODEFOLLOW
+			a4+=*codeptr++;
+			var=getvar();
+	#else
+			offset=*codeptr++;
+			a4+=offset;
+			var=getvar();
+			fprintf(f," Var[%d]= list %d [%d])",var-workspace.vartable,code&0x1f,offset);
+			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
+	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) *var=*a4;
+			else
+			{
+				*var=0;
+				#ifdef L9DEBUG
+				printf("Out of range list access");
+				#endif
+			}
+		}
+		else if (code>=0xa0)
+		{
+			// listv1v 
+	#ifndef CODEFOLLOW
+			a4+=*getvar();
+			var=getvar();
+	#else
+			offset=*getvar();
+			a4+=offset;
+			var=getvar();
+
+			fprintf(f," Var[%d] =list %d [%d]",var-workspace.vartable,code&0x1f,offset);
+			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
+	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) *var=*a4;
+			else
+			{
+				*var=0;
+				#ifdef L9DEBUG
+				printf("Out of range list access");
+				#endif
+			}
+		}
+		else
+		{
+	#ifndef CODEFOLLOW
+			a4+=*codeptr++;
+			val=*getvar();
+	#else
+			offset=*codeptr++;
+			a4+=offset;
+			var=getvar();
+			val=*var;
+			fprintf(f," list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var-workspace.vartable,val);
+	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) *a4=(L9BYTE) val;
+			#ifdef L9DEBUG
+			else printf("Out of range list access");
+			#endif
+		}
+	}*/
+	void listhandler()
+	{
+		int a4, MinAccess, MaxAccess;
+		short val;
+		int var;
+//	#ifdef CODEFOLLOW
+//		int offset; 
+//	#endif
+
+		if ((code&0x1f)>0xa) {
+			error("\rillegal list access %d\r",code&0x1f);
+			Running=false;
+			return;
+		}
+		a4=L9Pointers[1+code&0x1f];
+
+		if (a4>=listarea && a4<listarea+LISTAREASIZE) {
+			MinAccess=listarea;
+			MaxAccess=listarea+LISTAREASIZE;
+		}
+		else {
+			MinAccess=startdata;
+			MaxAccess=startdata+datasize;
+		}
+
+		if (code>=0xe0)			// listvv 
+		{
+
+//	#ifndef CODEFOLLOW
+			a4+=workspace.vartable[getvar()];
+			val=workspace.vartable[getvar()];
+//	#else
+//			offset=*getvar();
+//			a4+=offset;
+//			var=getvar();
+//			val=*var;
+//			fprintf(f," list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var-workspace.vartable,val);
+//	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte)(val&0xff);
+			L9DEBUG("Out of range list access");
+		}
+		else if (code>=0xc0) 	// listv1c 
+		{
+
+//	#ifndef CODEFOLLOW
+			a4+=l9memory[codeptr++];
+			var=getvar();
+//	#else
+//			offset=*codeptr++;
+//			a4+=offset;
+//			var=getvar();
+//			fprintf(f," Var[%d]= list %d [%d])",var-workspace.vartable,code&0x1f,offset);
+//			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
+//	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=l9memory[a4];
+			else
+			{
+				workspace.vartable[var]=0;
+				L9DEBUG("Out of range list access");
+
+			}
+		}
+		else if (code>=0xa0)	// listv1v 
+		{
+//	#ifndef CODEFOLLOW
+			a4+=workspace.vartable[getvar()];
+			var=getvar();
+//	#else
+//			offset=*getvar();
+//			a4+=offset;
+//			var=getvar();
+//
+//			fprintf(f," Var[%d] =list %d [%d]",var-workspace.vartable,code&0x1f,offset);
+//			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
+//	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=l9memory[a4];
+			else
+			{
+				workspace.vartable[var]=0;
+				L9DEBUG("Out of range list access");
+			}
+		}
+		else
+		{
+//	#ifndef CODEFOLLOW
+			a4+=l9memory[codeptr++];
+			val=workspace.vartable[getvar()];
+//	#else
+//			offset=*codeptr++;
+//			a4+=offset;
+//			var=getvar();
+//			val=*var;
+//			fprintf(f," list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var-workspace.vartable,val);
+//	#endif
+
+			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte) (val&0xff);
+			L9DEBUG("Out of range list access");
+		}
+	}
+
+	/*--was-- void ilins(int d0)
+		{
+			error("\rIllegal instruction: %d\r",d0);
+			Running=FALSE;
+		}*/
+	void ilins(int d0)
+	{
+		error("\rIllegal instruction: %d\r",d0);
+		Running=false;
+	}
+
+	/*--was-- L9UINT16 *getvar(void)
+	{
+	#ifndef CODEFOLLOW
+		return workspace.vartable + *codeptr++;
+	#else
+		cfvar2=cfvar;
+		return cfvar=workspace.vartable + *codeptr++;
+	#endif
+	}*/
+	int getvar() {
+//	#ifndef CODEFOLLOW
+		return l9memory[codeptr++];
+//	#else
+//		cfvar2=cfvar;
+//		return cfvar=workspace.vartable + *codeptr++;
+//	#endif
+	}
+	
+	/*--was--	L9BYTE* getaddr(void)
+	{
+		if (code&0x20)
+		{
+			//getaddrshort
+			signed char diff=*codeptr++;
+			return codeptr+ diff-1;
+		}
+		else
+		{
+			return acodeptr+movewa5d0();
+		}
+	}*/
+	int getaddr()
+	{
+		if ((code&0x20)!=0)
+		{
+			//diff-signed!
+			byte diff=l9memory[codeptr++];
+			return codeptr+ diff-1;
+		}
+		else
+		{
+			return acodeptr+movewa5d0();
+		}
+	}
+	
+	/*--was--	L9UINT16 movewa5d0(void)
+	{
+		L9UINT16 ret=L9WORD(codeptr);
+		codeptr+=2;
+		return ret;
+	}*/
+	int movewa5d0()
+	{
+		int ret=L9WORD(codeptr);
+		codeptr+=2;
+		return ret;
+	}
+
+	/*--was-- void Goto(void)
+	{
+		codeptr=getaddr();
+	}*/
+	void Goto() {
+		codeptr=getaddr();
+	}
+	
+	/*--was--	void intgosub(void)
+	{
+		L9BYTE* newcodeptr=getaddr();
+		if (workspace.stackptr==STACKSIZE)
+		{
+			error("\rStack overflow error\r");
+			Running=FALSE;
+			return;
+		}
+		workspace.stack[workspace.stackptr++]=(L9UINT16) (codeptr-acodeptr);
+		codeptr=newcodeptr;
+	}*/
+	void intgosub() {
+		int newcodeptr=getaddr();
+		if (workspace.stackptr==STACKSIZE)
+		{
+			error("\rStack overflow error\r");
+			Running=false;
+			return;
+		}
+		workspace.stack[workspace.stackptr++]=(short)((codeptr-acodeptr)&0xffff);
+		codeptr=newcodeptr;
+	}
+	
+	/*--was--	void intreturn(void)
+	{
+		if (workspace.stackptr==0)
+		{
+			error("\rStack underflow error\r");
+			Running=FALSE;
+			return;
+		}
+		codeptr=acodeptr+workspace.stack[--workspace.stackptr];
+	}*/
+	void intreturn()
+	{
+		if (workspace.stackptr==0)
+		{
+			error("\rStack underflow error\r");
+			Running=false;
+			return;
+		}
+		codeptr=acodeptr+workspace.stack[--workspace.stackptr];
+	}
+	
+	/*--was--	void printnumber(void)
+	{
+		printdecimald0(*getvar());
+	}*/
+	void printnumber()
+	{
+		printdecimald0(workspace.vartable[getvar()]);
+	}
+	
+	/*--was--	L9UINT16 getcon(void)
+	{
+		if (code & 64)
+		{
+			// getconsmall
+			return *codeptr++;
+		}
+		else return movewa5d0();
+	}*/
+	int getcon()
+	{
+		if ((code & 64)!=0)
+		{
+			// getconsmall 
+			return codeptr++;
+		}
+		else return movewa5d0();
+	}
+
+	/*--was--	void messagec(void)
+	{
+		if (L9GameType==L9_V2)
+			printmessageV2(getcon());
+		else
+			printmessage(getcon());
+	}*/
+	void messagec()
+	{
+		if (L9GameType==L9_V2)
+			printmessageV2(getcon());
+		else
+			printmessage(getcon());
+	}
+
+	/*--was--	void messagev(void)
+	{
+		if (L9GameType==L9_V2)
+			printmessageV2(*getvar());
+		else
+			printmessage(*getvar());
+	}*/
+	void messagev()
+	{
+		if (L9GameType==L9_V2)
+			printmessageV2(workspace.vartable[getvar()]);
+		else
+			printmessage(workspace.vartable[getvar()]);
+	}
+	
+	
+	/*--was--	void displaywordref(L9UINT16 Off)
+	{
+		static int mdtmode=0;
+
+		wordcase=0;
+		d5=(Off>>12)&7;
+		Off&=0xfff;
+		if (Off<0xf80)
+		{
+		// dwr01 
+			L9BYTE *a0,*oPtr,*a3;
+			int d0,d2,i;
+
+			if (mdtmode==1) printchar(0x20);
+			mdtmode=1;
+
+			// setindex 
+			a0=dictdata;
+			d2=dictdatalen;
+
+		// dwr02 
+			oPtr=a0;
+			while (d2 && Off >= L9WORD(a0+2))
+			{
+				a0+=4;
+				d2--;
+			}
+		// dwr04 
+			if (a0==oPtr)
+			{
+				a0=defdict;
+			}
+			else
+			{
+				a0-=4;
+				Off-=L9WORD(a0+2);
+				a0=startdata+L9WORD(a0);
+			}
+		// dwr04b
+			Off++;
+			initdict(a0);
+			a3=(L9BYTE*) threechars; // a3 not set in original, prevent possible spam 
+
+			// dwr05 
+			while (TRUE)
+			{
+				d0=getdictionarycode();
+				if (d0<0x1c)
+				{
+					// dwr06 
+					if (d0>=0x1a) d0=getlongcode();
+					else d0+=0x61;
+					*a3++=d0;
+				}
+				else
+				{
+					d0&=3;
+					a3=(L9BYTE*) threechars+d0;
+					if (--Off==0) break;
+				}
+			}
+			for (i=0;i<d0;i++) printautocase(threechars[i]);
+
+			// dwr10 
+			while (TRUE)
+			{
+				d0=getdictionarycode();
+				if (d0>=0x1b) return;
+				printautocase(getdictionary(d0));
+			}
+		}
+
+		else
+		{
+			if (d5&2) printchar(0x20); // prespace 
+			mdtmode=2;
+			Off&=0x7f;
+			if (Off!=0x7e) printchar((char)Off);
+			if (d5&1) printchar(0x20); // postspace
+		}
+	}*/
+	void displaywordref(int Off)
+	{
+		//static int mdtmode=0;
+		//	int displaywordref_mdtmode=0;
+
+		wordcase=0;
+		d5=(Off>>12)&7;
+		Off&=0xfff;
+		if (Off<0xf80)
+		{
+		// dwr01 
+			int a0,oPtr,a3;
+			int d0,d2,i;
+
+			if (displaywordref_mdtmode==1) printchar(' ');
+			displaywordref_mdtmode=1;
+
+			// setindex 
+			a0=dictdata;
+			d2=dictdatalen;
+
+		// dwr02 
+			oPtr=a0;
+			while (d2!=0 && Off >= L9WORD(a0+2))
+			{
+				a0+=4;
+				d2--;
+			}
+		// dwr04 
+			if (a0==oPtr)
+			{
+				a0=defdict;
+			}
+			else
+			{
+				a0-=4;
+				Off-=L9WORD(a0+2);
+				a0=startdata+L9WORD(a0);
+			}
+		// dwr04b
+			Off++;
+			initdict(a0);
+			a3=0; // a3 not set in original, prevent possible spam 
+
+			// dwr05 
+			while (true)
+			{
+				d0=getdictionarycode();
+				if (d0<0x1c)
+				{
+					// dwr06 
+					if (d0>=0x1a) d0=getlongcode();
+					else d0+=0x61;
+					threechars[a3++]=(byte)(d0&0xff);
+				}
+				else
+				{
+					d0&=3;
+					a3=d0;
+					if (--Off==0) break;
+				}
+			}
+			for (i=0;i<d0;i++) printautocase(threechars[i]);
+
+			// dwr10 
+			while (true)
+			{
+				d0=getdictionarycode();
+				if (d0>=0x1b) return;
+				printautocase(getdictionary(d0));
+			}
+		}
+
+		else
+		{
+			if ((d5&2)!=0) printchar(' '); // prespace 
+			displaywordref_mdtmode=2;
+			Off&=0x7f;
+			if (Off!=0x7e) printchar((char)Off);
+			if ((d5&1)!=0) printchar(' '); // postspace
+		}
+	}
+	
+	/*--was--	void initdict(L9BYTE *ptr)
+	{
+		dictptr=ptr;
+		unpackcount=8;
+	}*/
+	void initdict(int ptr)
+	{
+		dictptr=ptr;
+		unpackcount=8;
+	};
+	
+	/*--was--	char getdictionarycode(void)
+	{
+		if (unpackcount!=8) return unpackbuf[unpackcount++];
+		else
+		{
+			// unpackbytes 
+			L9BYTE d1=*dictptr++,d2;
+			unpackbuf[0]=d1>>3;
+			d2=*dictptr++;
+			unpackbuf[1]=((d2>>6) + (d1<<2)) & 0x1f;
+			d1=*dictptr++;
+			unpackbuf[2]=(d2>>1) & 0x1f;
+			unpackbuf[3]=((d1>>4) + (d2<<4)) & 0x1f;
+			d2=*dictptr++;
+			unpackbuf[4]=((d1<<1) + (d2>>7)) & 0x1f;
+			d1=*dictptr++;
+			unpackbuf[5]=(d2>>2) & 0x1f;
+			unpackbuf[6]=((d2<<3) + (d1>>5)) & 0x1f;
+			unpackbuf[7]=d1 & 0x1f;
+			unpackcount=1;
+			return unpackbuf[0];
+		}
+	}*/
+	byte getdictionarycode()
+	{
+		if (unpackcount!=8) return unpackbuf[unpackcount++];
+		else
+		{
+			// unpackbytes 
+			byte d1=l9memory[dictptr++],d2;
+			unpackbuf[0]=(byte)(d1>>3);
+			d2=l9memory[dictptr++];
+			unpackbuf[1]=(byte)(((d2>>6) + (d1<<2)) & 0x1f);
+			d1=l9memory[dictptr++];
+			unpackbuf[2]=(byte)((d2>>1) & 0x1f);
+			unpackbuf[3]=(byte)(((d1>>4) + (d2<<4)) & 0x1f);
+			d2=l9memory[dictptr++];
+			unpackbuf[4]=(byte)(((d1<<1) + (d2>>7)) & 0x1f);
+			d1=l9memory[dictptr++];
+			unpackbuf[5]=(byte)((d2>>2) & 0x1f);
+			unpackbuf[6]=(byte)(((d2<<3) + (d1>>5)) & 0x1f);
+			unpackbuf[7]=(byte)(d1 & 0x1f);
+			unpackcount=1;
+			return unpackbuf[0];
+		}
+	}
+
+	/*--was--	int getdictionary(int d0)
+	{
+		if (d0>=0x1a) return getlongcode();
+		else return d0+0x61;
+	}*/
+	int getdictionary(int d0)
+	{
+		if (d0>=0x1a) return getlongcode();
+		else return d0+0x61;
+	}
+
+	/*--was--	int getlongcode(void)
+	{
+		int d0,d1;
+		d0=getdictionarycode();
+		if (d0==0x10)
+		{
+			wordcase=1;
+			d0=getdictionarycode();
+			return getdictionary(d0); // reentrant?
+		}
+		d1=getdictionarycode();
+		return 0x80 | ((d0<<5) & 0xe0) | (d1 & 0x1f);
+	}*/
+	int getlongcode()
+	{
+		int d0,d1;
+		d0=getdictionarycode();
+		if (d0==0x10)
+		{
+			wordcase=1;
+			d0=getdictionarycode();
+			return getdictionary(d0); // reentrant?
+		}
+		d1=getdictionarycode();
+		return 0x80 | ((d0<<5) & 0xe0) | (d1 & 0x1f);
+	}
+
+	/*--was--	int getmdlength(L9BYTE **Ptr)
+	{
+		int tot=0,len;
+		do
+		{
+			len=(*(*Ptr)++ -1) & 0x3f;
+			tot+=len;
+		} while (len==0x3f);
+		return tot;
+	}*/
+	int getmdlength(int Ptr[])
+	{
+		int tot=0,len;
+		do
+		{
+			//len=(*(*Ptr)++ -1) & 0x3f;
+			len=(l9memory[Ptr[0]++]&0xff -1) & 0x3f;
+			tot+=len;
+		} while (len==0x3f);
+		return tot;
+	}
+
+	/*--was--void printmessage(int Msg)
+	{
+		L9BYTE* Msgptr=startmd;
+		L9BYTE Data;
+
+		int len,msgtmp;
+		L9UINT16 Off;
+
+		while (Msg>0 && Msgptr-endmd<=0)
+		{
+			Data=*Msgptr;
+			if (Data&128)
+			{
+				Msgptr++;
+				Msg-=Data&0x7f;
+			}
+			else {
+				msgtmp=getmdlength(&Msgptr);
+				Msgptr+=msgtmp;
+			}
+			Msg--;
+		}
+		if (Msg<0 || *Msgptr & 128) return;
+
+		len=getmdlength(&Msgptr);
+		if (len==0) return;
+
+		while (len)
+		{
+			Data=*Msgptr++;
+			len--;
+			if (Data&128)
+			{
+			// long form (reverse word)
+				Off=(Data<<8) + *Msgptr++;
+				len--;
+			}
+			else
+			{
+				Off=(wordtable[Data*2]<<8) + wordtable[Data*2+1];
+			}
+			if (Off==0x8f80) break;
+			displaywordref(Off);
+		}
+	}*/
+	void printmessage(int Msg)
+	{
+		int Msgptr[]={startmd};
+		byte Data;
+
+		int len,msgtmp;
+		int Off;
+
+		while (Msg>0 && Msgptr[0]-endmd<=0)
+		{
+			Data=l9memory[Msgptr[0]];
+			if ((Data&128)!=0)
+			{
+				Msgptr[0]++;
+				Msg-=Data&0x7f;
+			}
+			else {
+				msgtmp=getmdlength(Msgptr);
+				Msgptr[0]+=msgtmp;
+			}
+			Msg--;
+		}
+		if (Msg<0 || ((l9memory[Msgptr[0]]&128)!=0)) return;
+
+		len=getmdlength(Msgptr);
+		if (len==0) return;
+
+		while (len!=0)
+		{
+			Data=l9memory[Msgptr[0]++];
+			len--;
+			if ((Data&128)!=0)
+			{
+			// long form (reverse word)
+				Off=(Data<<8) + l9memory[Msgptr[0]++];
+				len--;
+			}
+			else
+			{
+				Off=(l9memory[wordtable+Data*2]<<8) + l9memory[wordtable+Data*2+1]&0xff;
+			}
+			if (Off==0x8f80) break;
+			displaywordref(Off);
+		}
+	}
+	
+	/*--was--	void printcharV2(char c)
+	{
+		if (c==0x25) c=0xd;
+		else if (c==0x5f) c=0x20;
+		printautocase(c);
+	}*/
+	void printcharV2(int c)
+	{
+		if (c==0x25) c=0xd;
+		else if (c==0x5f) c=0x20;
+		printautocase(c);
+	}
+
+	/*--was--	void displaywordV2(L9BYTE *ptr,int msg)
+	{
+		int n;
+		L9BYTE a;
+		if (msg==0) return;
+		while (--msg)
+		{
+			ptr+=msglenV2(&ptr);
+		}
+		n=msglenV2(&ptr);
+
+		while (--n>0)
+		{
+			a=*++ptr;
+			if (a<3) return;
+
+			if (a>=0x5e) displaywordV2(startmdV2-1,a-0x5d);
+			else printcharV2((char)(a+0x1d));
+		}
+	}*/
+	void displaywordV2(int ptr,int msg)
+	{
+		int n;
+		int a;
+		if (msg==0) return;
+		while (--msg!=0)
+		{
+			ptr+=msglenV2(ptr);
+		}
+		n=msglenV2(ptr);
+
+		while (--n>0)
+		{
+			a=l9memory[++ptr]&0xff;
+			if (a<3) return;
+
+			if (a>=0x5e) displaywordV2(startmdV2-1,a-0x5d);
+			else printcharV2(a+0x1d);
+		}
+	}
+
+	/*--was--	void displaywordV25(L9BYTE *ptr,int msg)
+	{
+		int n;
+		L9BYTE a;
+		while (msg--)
+		{
+			ptr+=msglenV25(&ptr);
+		}
+		n=msglenV25(&ptr);
+
+		while (--n>0)
+		{
+			a=*ptr++;
+			if (a<3) return;
+
+			if (a>=0x5e) displaywordV25(startmdV2,a-0x5e);
+			else printcharV2((char)(a+0x1d));
+		}
+	}*/
+	void displaywordV25(int ptr,int msg)
+	{
+		int n;
+		int a;
+		while (msg--!=0)
+		{
+			ptr+=msglenV25(ptr);
+		}
+		n=msglenV25(ptr);
+
+		while (--n>0)
+		{
+			a=l9memory[ptr++]&0xff;
+			if (a<3) return;
+
+			if (a>=0x5e) displaywordV25(startmdV2,a-0x5e);
+			else printcharV2(a+0x1d);
+		}
+	}
+
+	/*--was--	void printmessageV2(int Msg)
+	{
+		if (V2MsgType==V2M_NORMAL) displaywordV2(startmd,Msg);
+		else displaywordV25(startmd,Msg);
+	}*/
+	void printmessageV2(int Msg)
+	{
+		if (V2MsgType==V2M_NORMAL) displaywordV2(startmd,Msg);
+		else displaywordV25(startmd,Msg);
+	};
+	
+	void picture()
+	{
+		//TODO: show_picture(*getvar());
+	}
+	
+	void varcon()
+	{
+		int d6=getcon();
+		workspace.vartable[getvar()]=(short)d6;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," Var[%d]=%d)",cfvar-workspace.vartable,*cfvar);
+//	#endif
+	}
+
+	void varvar()
+	{
+		int d6=workspace.vartable[getvar()];
+		workspace.vartable[getvar()]=(short)d6;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," Var[%d]=Var[%d] (=%d)",cfvar-workspace.vartable,cfvar2-workspace.vartable,d6);
+//	#endif
+	}
+
+	void _add()
+	{
+		int d0=workspace.vartable[getvar()];
+		workspace.vartable[getvar()]+=d0;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," Var[%d]+=Var[%d] (+=%d)",cfvar-workspace.vartable,cfvar2-workspace.vartable,d0);
+//	#endif
+	}
+
+	void _sub()
+	{
+		int d0=workspace.vartable[getvar()];
+		workspace.vartable[getvar()]-=d0;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," Var[%d]-=Var[%d] (-=%d)",cfvar-workspace.vartable,cfvar2-workspace.vartable,d0);
+//	#endif
+	}
+
+	void jump()
+	{
+		int d0=L9WORD(codeptr);
+		int a0;
+		codeptr+=2;
+
+		a0=acodeptr+((d0+((workspace.vartable[getvar()])<<1))&0xffff);
+		codeptr=acodeptr+L9WORD(a0);
+	}
+
+	/* bug */
+	void exit1(byte d4[],byte d5[],byte d6,byte d7)
+	{
+		int a0=absdatablock;
+		byte d1=d7,d0;
+		boolean skip=false;
+		if (--d1!=0)
+		{
+			do
+			{
+				d0=l9memory[a0];
+				if (L9GameType==L9_V4)
+				{
+					if ((d0==0) && (l9memory[a0+1]==0)) {
+						//TODO: проверить, что break уходит за while
+						skip=true;
+						break;
+					}
+				}
+				a0+=2;
+			}
+			while ((d0&0x80)==0 || (--d1!=0));
+		}
+		if (!skip) {
+			do
+			{
+				d4[0]=l9memory[a0++];
+				if (((d4[0])&0xf)==d6)
+				{
+					d5[0]=l9memory[a0];
+					return;
+				}
+				a0++;
+			}
+			while (((d4[0])&0x80)==0);
+		}
+
+		/* notfn4 */
+	//notfn4:
+		d6=(byte)(exitreversaltable[d6]&0xff);
+		a0=absdatablock;
+		d5[0]=1;
+
+		do
+		{
+			d4[0]=l9memory[a0++];
+			if (((d4[0])&0x10)==0 || ((d4[0])&0xf)!=d6) a0++;
+			else if (l9memory[a0++]==d7) return;
+			/* exit6noinc */
+			if (((d4[0])&0x80)!=0) d5[0]++;
+		} while (d4[0]!=0);
+		d5[0]=0;
+	}
+
+	void Exit()
+	{
+		byte d4[]={0};
+		byte d5[]={0};
+		byte d7=(byte) (workspace.vartable[getvar()]&0xff);
+		byte d6=(byte) (workspace.vartable[getvar()]&0xff);
+//	#ifdef CODEFOLLOW
+//		fprintf(f," d7=%d d6=%d",d7,d6);
+//	#endif
+		exit1(d4,d5,d6,d7);
+
+		workspace.vartable[getvar()]=(short)((d4[0]&0x70)>>4);
+		workspace.vartable[getvar()]=d5[0];
+//	#ifdef CODEFOLLOW
+//		fprintf(f," Var[%d]=%d(d4=%d) Var[%d]=%d",
+//			cfvar2-workspace.vartable,(d4&0x70)>>4,d4,cfvar-workspace.vartable,d5);
+//	#endif
+	}
+
+	void ifeqvt()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=workspace.vartable[getvar()];
+		int a0=getaddr();
+		if (d0==d1) codeptr=a0;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]=Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0==d1 ? "Yes":"No");
+//	#endif
+	}
+
+	void ifnevt()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=workspace.vartable[getvar()];
+		int a0=getaddr();
+		if (d0!=d1) codeptr=a0;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]!=Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0!=d1 ? "Yes":"No");
+//	#endif
+	}
+
+	void ifltvt()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=workspace.vartable[getvar()];
+		int a0=getaddr();
+		if (d0<d1) codeptr=a0;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]<Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0<d1 ? "Yes":"No");
+//	#endif
+	}
+
+	void ifgtvt()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=workspace.vartable[getvar()];
+		int a0=getaddr();
+		if (d0>d1) codeptr=a0;
+
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]>Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0>d1 ? "Yes":"No");
+//	#endif
+	}
+
+	
+	
+	void ifeqct()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=getcon();
+		int a0=getaddr();
+		if (d0==d1) codeptr=a0;
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]=%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0==d1 ? "Yes":"No");
+//	#endif
+	}
+
+	void ifnect()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=getcon();
+		int a0=getaddr();
+		if (d0!=d1) codeptr=a0;
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]!=%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0!=d1 ? "Yes":"No");
+//	#endif
+	}
+
+	void ifltct()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=getcon();
+		int a0=getaddr();
+		if (d0<d1) codeptr=a0;
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]<%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0<d1 ? "Yes":"No");
+//	#endif
+	}
+
+	void ifgtct()
+	{
+		int d0=workspace.vartable[getvar()];
+		int d1=getcon();
+		int a0=getaddr();
+		if (d0>d1) codeptr=a0;
+//	#ifdef CODEFOLLOW
+//		fprintf(f," if Var[%d]>%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0>d1 ? "Yes":"No");
+//	#endif
+	}
+	
+	void printinput()
+	{
+//TODO:		L9BYTE* ptr=(L9BYTE*) obuff;
+//TODO:		char c;
+//TODO:		while ((c=*ptr++)!=' ') printchar(c);
+
+//	#ifdef L9DEBUG
+//		printf("printinput");
+//	#endif
+	}
+	
 	
 	///////////////////// New (tsap) implementations ////////////////////
 	
