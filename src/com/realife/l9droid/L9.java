@@ -453,24 +453,8 @@ int V2MsgType;
 			error("\rUnable to load: %s\r",filename);
 			return false;
 		}
-		//TODO:kill debug code =)
-		error("Loaded ok, size=%d\r",FileSize);
 		
-//		printdecimald0(startfile[0]);
-//		printchar(',');
-//		printdecimald0(startfile[1]);
-//		printchar(',');
-//		printdecimald0(startfile[2]);
-//		printchar(',');
-//		error("word gamedata[0]= %h\r",L9WORD(startfile,0));
-//		error("word gamedata[2]= %h\r",L9WORD(startfile,2));
-//		//L9SETWORD(startfile, 4, 0xfeaa);
-//		//L9SETDWORD(startfile, 6, 0xfffefdfc);
-//		error("word gamedata[4]= %h\r",L9WORD(startfile,4));
-//		error("word gamedata[6]= %h\r",L9WORD(startfile,6));
-//		error("word gamedata[8]= %h\r",L9WORD(startfile,8));
-//		error("word gamedata[10]= %h\r",L9WORD(startfile,10));
-		
+		L9DEBUG("Loaded ok, size=%d\r",FileSize);
 		
 		/*TODO:
 		// try to load graphics
@@ -500,16 +484,16 @@ int V2MsgType;
 
 		*/
 		Offset=Scan(startfile,FileSize);
-		error("Offset1=%d\r",Offset);
+		L9DEBUG("Offset1=%d\r",Offset);
 		if (Offset<0)
 		{
 			Offset=ScanV2(startfile,FileSize);
-			error("Offset2=%d\r",Offset);
+			L9DEBUG("Offset2=%d\r",Offset);
 			L9GameType=L9_V2;
 			if (Offset<0)
 			{
 				Offset=ScanV1(startfile,FileSize);
-				error("Offset3=%d\r",Offset);
+				L9DEBUG("Offset3=%d\r",Offset);
 				L9GameType=L9_V1;
 				if (Offset<0)
 				{
@@ -520,8 +504,8 @@ int V2MsgType;
 		}
 
 		//TODO:kill debug code =)
-		error("Found header v%d\r",L9GameType);
-		error("Offset=%d\r",Offset);
+		L9DEBUG("Found header v%d\r",L9GameType);
+		L9DEBUG("Offset=%d\r",Offset);
 
 		startdata=Offset;
 		FileSize-=Offset;
@@ -570,7 +554,7 @@ int V2MsgType;
 				}
 				else {
 					a25=analyseV25();
-					error("a25=%d/100\r",(int)(a25*100));
+					L9DEBUG("a25=%d/100\r",(int)(a25*100));
 					if (a25>0 && a25>2 && a25<10)
 					{
 						V2MsgType=V2M_ERIK;
@@ -598,8 +582,8 @@ int V2MsgType;
 				break;
 		};
 		//TODO: tsap, kill debug code
-		error("L9GameType=%d\r",L9GameType);
-		error("V2MsgType=%d\r",V2MsgType);
+		L9DEBUG("L9GameType=%d\r",L9GameType);
+		L9DEBUG("V2MsgType=%d\r",V2MsgType);
 
 //TODO:	#ifndef NO_SCAN_GRAPHICS
 //TODO:		// If there was no graphics file, look in the game data 
@@ -1037,8 +1021,8 @@ int V2MsgType;
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
 	//#endif
-						error("Found valid header at %d",i);
-						error(", code size %d",scandata.Size);
+						L9DEBUG("Found valid header at %d",i);
+						L9DEBUG(", code size %d",scandata.Size);
 						if (scandata.Size>MaxSize)
 						{
 							Offset=i;
@@ -1649,8 +1633,8 @@ int V2MsgType;
 //	#ifdef L9DEBUG 
 //					printf("Found valid V2 header at %ld, code size %ld",i,Size);
 //	#endif
-					error("Found valid V2 header at %d",i);
-					error(", code size %d\r",scandata.Size);
+					L9DEBUG("Found valid V2 header at %d",i);
+					L9DEBUG(", code size %d\r",scandata.Size);
 					if (scandata.Size>MaxSize)
 					{
 						Offset=i;
@@ -1805,6 +1789,18 @@ int V2MsgType;
 	{
 		String str=String.format(txt, val);
 		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
+	}
+	
+	void L9DEBUG(String txt) {
+		error(txt);
+	}
+	
+	void L9DEBUG(String txt1, String txt2) {
+		error(txt1,txt2);
+	}
+	
+	void L9DEBUG(String txt, int val) {
+		error(txt,val);
 	}
 
 	/*--was---------------
