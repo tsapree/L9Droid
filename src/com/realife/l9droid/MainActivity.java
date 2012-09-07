@@ -34,7 +34,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
         etCmd.setText("GO WEST");
         etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
-        etLog.append("hey!\n");
         
         gamedata=new byte[49179];
         

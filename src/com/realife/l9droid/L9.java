@@ -69,11 +69,13 @@ int V2M_ERIK=2;
 //L9BYTE* startfile=NULL,*pictureaddress=NULL,*picturedata=NULL;
 	byte l9memory[];
 	int startfile;
+	int filesize;
 	int startdata;
-	int FileSize;
+	int datasize;
+	int listarea;
 //L9UINT32 picturesize;
 //
-	L9Pointer L9Pointers[];
+	int L9Pointers[];
 //L9BYTE *absdatablock
 //L9BYTE *list2ptr
 //L9BYTE *list3ptr
@@ -149,7 +151,7 @@ int code;		// instruction codes - code
 	L9() {
 		workspace=new GameState();
 		unpackbuf=new char[8];
-		L9Pointers=new L9Pointer[12];
+		L9Pointers=new int[12];
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -172,7 +174,7 @@ int code;		// instruction codes - code
 		/* need to clear listarea as well */
 		//TODO: возможно, поискать более красивое решение - метод memset (как и clearworkspace)
 		//TODO: вообще перенести очистку в класс GameState
-		for (int i=0;i<workspace.listarea.length;i++) workspace.listarea[i]=0;
+		for (int i=0;i<LISTAREASIZE;i++) l9memory[listarea+i]=0;
 		return ret;
 
 	}
@@ -185,8 +187,8 @@ int code;		// instruction codes - code
 		return Running;
 	}*/
 	public boolean RunGame() {
-		code=*codeptr++;
-		executeinstruction();
+		code=l9memory[codeptr++];
+		//TODO: executeinstruction();
 		return Running;
 	}
 	
@@ -459,7 +461,7 @@ int code;		// instruction codes - code
 			return false;
 		}
 		
-		L9DEBUG("Loaded ok, size=%d\r",FileSize);
+		L9DEBUG("Loaded ok, size=%d\r",filesize);
 		
 		/*TODO:
 		// try to load graphics
@@ -488,14 +490,14 @@ int code;		// instruction codes - code
 	#endif
 
 		*/
-		Offset=Scan(startfile,FileSize);
+		Offset=Scan();
 		if (Offset<0)
 		{
-			Offset=ScanV2(startfile,FileSize);
+			Offset=ScanV2();
 			L9GameType=L9_V2;
 			if (Offset<0)
 			{
-				Offset=ScanV1(startfile,FileSize);
+				Offset=ScanV1();
 				L9GameType=L9_V1;
 				if (Offset<0)
 				{
@@ -505,11 +507,8 @@ int code;		// instruction codes - code
 			}
 		}
 
-		L9DEBUG("Found header v%d\r",L9GameType);
-		L9DEBUG("Offset=%d\r",Offset);
-
-		startdata=Offset;
-		FileSize-=Offset;
+		startdata=startfile+Offset;
+		datasize-=filesize-Offset;
 
 	// setup pointers 
 		if (L9GameType!=L9_V1)
@@ -521,24 +520,13 @@ int code;		// instruction codes - code
 			for (i=0;i<12;i++)
 			{
 				int d0=L9WORD(startdata+hdoffset+i*2);
-				//TODO: L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
-				//if (i!=11 && d0>=0x8000 && d0<=0x9000) {
-				//	L9Pointers[i].array=workspace.listarea;
-				//	L9Pointers[i].ptr=d0-0x8000;
-				//} else {
-				//	L9Pointers[i].array=startfile;
-				//	L9Pointers[i].ptr=startdata+d0;
-				//}
+				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? listarea+d0-0x8000 : startdata+d0;
 			}
 			//TODO: absdatablock=L9Pointers[0];
 			//TODO: list2ptr=L9Pointers[3];
 			//TODO: list3ptr=L9Pointers[4];
-			//list9startptr 
-
-			// if ((((L9UINT32) L9Pointers[10])&1)==0) L9Pointers[10]++; amiga word access hack
-
 			//TODO: list9startptr=L9Pointers[10];
-			//acodeptr=L9Pointers[11].ptr;
+			acodeptr=L9Pointers[11];
 		}
 
 		switch (L9GameType)
@@ -556,20 +544,14 @@ int code;		// instruction codes - code
 				if (a2>0.0 && a2>2 && a2<10)
 				{
 					V2MsgType=V2M_NORMAL;
-//					#ifdef L9DEBUG
-//					printf("V2 msg table: normal, wordlen=%.2lf",a2);
-//					#endif
 					L9DEBUG("V2 msg table: normal, wordlen=%d/10\r",(int)a2*10);
 				}
 				else {
 					a25=analyseV25();
-					L9DEBUG("a25=%d/100\r",(int)(a25*100));
 					if (a25>0 && a25>2 && a25<10)
 					{
 						V2MsgType=V2M_ERIK;
-//TODO:					#ifdef L9DEBUG
-//TODO:					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
-//TODO:					#endif
+						L9DEBUG("V2 msg table: Erik, wordlen=%d/10\r",(int)a25*10);
 					}
 					else
 					{
@@ -590,9 +572,6 @@ int code;		// instruction codes - code
 				wordtable=startdata + L9WORD(startdata+0xe);
 				break;
 		};
-
-		L9DEBUG("L9GameType=%d\r",L9GameType);
-		L9DEBUG("V2MsgType=%d\r",V2MsgType);
 
 //TODO:	#ifndef NO_SCAN_GRAPHICS
 //TODO:		// If there was no graphics file, look in the game data 
@@ -736,7 +715,7 @@ int code;		// instruction codes - code
 		{
 			ptr+=msglenV2(ptr);
 		}
-		if (ptr >= startdata+FileSize) return false;
+		if (ptr >= startdata+datasize) return false;
 		n=msglenV2(ptr);
 
 		while (--n>0) {
@@ -806,7 +785,7 @@ int code;		// instruction codes - code
 		{
 			ptr+=msglenV25(ptr);
 		}
-		if (ptr >= startdata+FileSize) return false;
+		if (ptr >= startdata+datasize) return false;
 		n=msglenV25(ptr);
 
 		while (--n>0)
@@ -859,11 +838,11 @@ int code;		// instruction codes - code
 		int a;
 
 		/* catch berzerking code */
-		if (ptr >= startdata+FileSize) return 0;
+		if (ptr >= startdata+datasize) return 0;
 
 		while ((a=l9memory[ptr])==0) {
 			ptr++;
-			if (ptr >= startdata+FileSize) return 0;
+			if (ptr >= startdata+datasize) return 0;
 			i+=255;
 		}
 		i+=a;
@@ -879,7 +858,7 @@ int code;		// instruction codes - code
 	int msglenV25(int ptr)
 	{
 		int ptr2=ptr;
-		while (ptr2<startdata+FileSize && l9memory[ptr2++]!=1) ;
+		while (ptr2<startdata+datasize && l9memory[ptr2++]!=1) ;
 		return ptr2-ptr;
 	}
 
@@ -963,12 +942,13 @@ int code;		// instruction codes - code
 		}
 
 	 */
-	int Scan(int StartFile, int FileSize)
+	int Scan()
 	{
+		
 		//L9BYTE *Chk=malloc(FileSize+1);
-		byte Chk[] = new byte[FileSize+1];
+		byte Chk[] = new byte[filesize+1];
 		//L9BYTE *Image=calloc(FileSize,1);
-		byte Image[] = new byte[FileSize];
+		byte Image[] = new byte[filesize];
 		int i,num,MaxSize=0;
 		int j;
 		int d0=0,l9,md,ml,dd,dl;
@@ -984,11 +964,11 @@ int code;		// instruction codes - code
 		//}
 
 		Chk[0]=0;
-		for (i=1;i<=FileSize;i++)
+		for (i=1;i<=filesize;i++)
 			//Chk[i]=Chk[i-1]+StartFile[i-1];
-			Chk[i]=(byte)(((Chk[i-1]&255)+(l9memory[i-1]&255))&0xff);
+			Chk[i]=(byte)(((Chk[i-1]&0xff)+(l9memory[startfile+i-1]&0xff))&0xff);
 
-		for (i=0;i<FileSize-33-1;i++)
+		for (i=0;i<filesize-33-1;i++)
 		{
 			num=L9WORD(i)+1;
 	
@@ -996,14 +976,14 @@ int code;		// instruction codes - code
 			//Chk[i+n] = 0 +...+ i+n-1
 			//Chk[i+n] - Chk[i] = i + ... + i+n
 
-			if (num>0x2000 && i+num<=FileSize && Chk[i+num]==Chk[i])
+			if (num>0x2000 && i+num<=filesize && Chk[i+num]==Chk[i])
 			{
 				md=L9WORD(i+0x2);
 				ml=L9WORD(i+0x4);
 				dd=L9WORD(i+0xa);
 				dl=L9WORD(i+0xc);
 
-				if (ml>0 && md>0 && i+md+ml<=FileSize && dd>0 && dl>0 && i+dd+dl*4<=FileSize)
+				if (ml>0 && md>0 && i+md+ml<=filesize && dd>0 && dl>0 && i+dd+dl*4<=filesize)
 				{
 					// v4 files may have acodeptr in 8000-9000, need to fix 
 					for (j=0;j<12;j++)
@@ -1013,7 +993,7 @@ int code;		// instruction codes - code
 						{
 							if (d0>=0x8000+LISTAREASIZE) break;
 						}
-						else if (i+d0>FileSize) break;
+						else if (i+d0>filesize) break;
 					}
 					// list9 ptr must be in listarea, acode ptr in data 
 					//if (j<12 || (d0>=0x8000 && d0<0x9000)) continue;
@@ -1027,9 +1007,6 @@ int code;		// instruction codes - code
 					scandata.DriverV4=false;
 					if (ValidateSequence(Image,i+d0,i+d0,scandata,false,true))
 					{
-	//#ifdef L9DEBUG
-	//					printf("Found valid header at %ld, code size %ld",i,Size);
-	//#endif
 						L9DEBUG("Found valid header at %d, code size %d\r",i,scandata.Size);
 						if (scandata.Size>MaxSize)
 						{
@@ -1218,7 +1195,7 @@ int code;		// instruction codes - code
 	boolean ValidateSequence(byte[] Image,int iPos,int acode,ScanData sdat,boolean Rts, boolean checkDriverV4)
 	{
 
-		byte Base[]=l9memory;
+		//byte Base[]=l9memory;
 		boolean Finished=false,Valid;
 		int Strange=0;
 		int Code;
@@ -1226,7 +1203,7 @@ int code;		// instruction codes - code
 		
 		PosScanCodeMask pscm=new PosScanCodeMask();
 	
-		if (iPos>=FileSize)
+		if (iPos>=filesize)
 			return false;
 		pscm.Pos=iPos;
 		if (pscm.Pos<sdat.Min) sdat.Min=pscm.Pos;
@@ -1235,7 +1212,7 @@ int code;		// instruction codes - code
 	
 		do
 		{
-			Code=Base[pscm.Pos]&0xff;
+			Code=l9memory[pscm.Pos]&0xff;
 			Valid=true;
 			if (Image[pscm.Pos]!=0) break; // converged to found code 
 			Image[pscm.Pos++]=2;
@@ -1253,14 +1230,14 @@ int code;		// instruction codes - code
 			{
 				case 0: // goto 
 				{
-					int Val=scangetaddr(Code,Base,pscm,acode);
+					int Val=scangetaddr(Code,pscm,acode);
 					Valid=ValidateSequence(Image,Val,acode,sdat,true,checkDriverV4);
 					Finished=true;
 					break;
 				}
 				case 1: // intgosub 
 				{
-					int Val=scangetaddr(Code,Base,pscm,acode);
+					int Val=scangetaddr(Code,pscm,acode);
 					Valid=ValidateSequence(Image,Val,acode,sdat,true,checkDriverV4);
 					break;
 				}
@@ -1278,14 +1255,14 @@ int code;		// instruction codes - code
 					scangetcon(Code,pscm);
 					break;
 				case 6: // function 
-					switch ((int)(Base[pscm.Pos++]&0xff))
+					switch ((int)(l9memory[pscm.Pos++]&0xff))
 					{
 						case 2:// random 
 							pscm.Pos++;
 							break;
 						case 1:// calldriver
 							if (checkDriverV4) {
-								if (CheckCallDriverV4(Base,pscm.Pos-2))
+								if (CheckCallDriverV4(pscm.Pos-2))
 									sdat.DriverV4 = true;
 							}
 							break;
@@ -1295,14 +1272,11 @@ int code;		// instruction codes - code
 						case 6:// clear stack 
 							break;
 						case 250: // printstr 
-							while (Base[pscm.Pos++]!=0);
+							while (l9memory[pscm.Pos++]!=0);
 							break;
 	
 						default:
-	//#ifdef L9DEBUG
-	//						// printf("scan: illegal function call: %d",Base[Pos-1]); 
-	//#endif
-							L9DEBUG("scan: illegal function call: %d",Base[pscm.Pos-1]);
+							L9DEBUG("scan: illegal function call: %d\r",l9memory[pscm.Pos-1]);
 							Valid=false;
 							break;
 					}
@@ -1324,9 +1298,6 @@ int code;		// instruction codes - code
 					pscm.Pos+=2;
 					break;
 				case 14: // jump 
-	//#ifdef L9DEBUG
-	//				// printf("jmp at codestart: %ld",acode); 
-	//#endif
 					L9DEBUG("jmp at codestart: %ld",acode);
 					sdat.JumpKill=true;
 					Finished=true;
@@ -1341,12 +1312,12 @@ int code;		// instruction codes - code
 				{
 					int Val;
 					pscm.Pos+=2;
-					Val=scangetaddr(Code,Base,pscm,acode);
+					Val=scangetaddr(Code,pscm,acode);
 					Valid=ValidateSequence(Image,Val,acode,sdat,Rts,checkDriverV4);
 					break;
 				}
 				case 20: // screen 
-					if (Base[pscm.Pos++]!=0) pscm.Pos++;
+					if (l9memory[pscm.Pos++]!=0) pscm.Pos++;
 					break;
 				case 21: // cleartg 
 					pscm.Pos++;
@@ -1365,7 +1336,7 @@ int code;		// instruction codes - code
 					int Val;
 					pscm.Pos++;
 					scangetcon(Code,pscm);
-					Val=scangetaddr(Code,Base,pscm,acode);
+					Val=scangetaddr(Code,pscm,acode);
 					Valid=ValidateSequence(Image,Val,acode,sdat,Rts,checkDriverV4);
 					break;
 				}
@@ -1376,16 +1347,13 @@ int code;		// instruction codes - code
 				case 29: // ilins 
 				case 30: // ilins 
 				case 31: // ilins 
-	//#ifdef L9DEBUG 
-	//				// printf("scan: illegal instruction"); 
-	//#endif
 					L9DEBUG("scan: illegal instruction\r");
 					Valid=false;
 					break;
 			}
 		if (Valid && ((Code & ~pscm.ScanCodeMask)!=0))
 			Strange++;
-		} while (Valid && !Finished && pscm.Pos<FileSize); // && Strange==0); 
+		} while (Valid && !Finished && pscm.Pos<filesize); // && Strange==0); 
 		(sdat.Size)+=pscm.Pos-iPos;
 		return Valid; // && Strange==0; 
 	}
@@ -1406,19 +1374,19 @@ int code;		// instruction codes - code
 			}
 		}
 		*/
-	int scangetaddr(int Code,byte[] Base,PosScanCodeMask dat,int acode)
+	int scangetaddr(int Code,PosScanCodeMask dat,int acode)
 	{
 		(dat.ScanCodeMask)|=0x20;
 		if ((Code&0x20)!=0)
 		{
 			// getaddrshort 
-			byte diff=Base[dat.Pos];
+			byte diff=l9memory[dat.Pos];
 			(dat.Pos)++;
 			return (dat.Pos)+diff-1;
 		}
 		else
 		{
-			return acode+scanmovewa5d0(Base,dat);
+			return acode+scanmovewa5d0(dat);
 		}
 	}
 	
@@ -1428,9 +1396,9 @@ int code;		// instruction codes - code
 		(*Pos)+=2;
 		return ret;
 	}*/
-	int scanmovewa5d0(byte[] Base,PosScanCodeMask dat)
+	int scanmovewa5d0(PosScanCodeMask dat)
 	{
-		int ret=L9WORD(Base, dat.Pos);
+		int ret=L9WORD(dat.Pos);
 		(dat.Pos)+=2;
 		return ret;
 	}
@@ -1487,7 +1455,7 @@ int code;		// instruction codes - code
 			return FALSE;
 		}
 	 */
-	boolean CheckCallDriverV4(byte[] Base,int Pos)
+	boolean CheckCallDriverV4(int Pos)
 	{
 		int i,j;
 	
@@ -1498,19 +1466,19 @@ int code;		// instruction codes - code
 		for (i = 0; i < 2; i++)
 		{
 			int x = Pos - ((i+1)*3);
-			if ((Base[x] == 0x89) && (Base[x+1] == 0x00))
+			if ((l9memory[x] == 0x89) && (l9memory[x+1] == 0x00))
 			{
 				// Get the variable being copied to list9[0] 
-				int var = Base[x+2];
+				int var = l9memory[x+2];
 	
 				// Look back for an assignment to the variable. 
 				for (j = 0; j < 2; j++)
 				{
 					int y = x - ((j+1)*3);
-					if ((Base[y] == 0x48) && (Base[y+2] == var))
+					if ((l9memory[y] == 0x48) && (l9memory[y+2] == var))
 					{
 						// If this a V4 driver call? 
-						switch (Base[y+1])
+						switch (l9memory[y+1]&0xff)
 						{
 						case 0x0E:
 						case 0x20:
@@ -1587,12 +1555,12 @@ int code;		// instruction codes - code
 		return Offset;
 	}
 */
-	int ScanV2(byte[] StartFile,int FileSize)
+	int ScanV2()
 	{
 		//L9BYTE *Chk=malloc(FileSize+1);
-		byte Chk[] = new byte[FileSize+1];
+		byte Chk[] = new byte[filesize+1];
 		//L9BYTE *Image=calloc(FileSize,1);
-		byte Image[] = new byte[FileSize];
+		byte Image[] = new byte[filesize];
 		
 		int i,MaxSize=0,num;
 		int j;
@@ -1611,39 +1579,36 @@ int code;		// instruction codes - code
 		}*/
 	
 		Chk[0]=0;
-		for (i=1;i<=FileSize;i++)
+		for (i=1;i<=filesize;i++)
 			//Chk[i]=Chk[i-1]+StartFile[i-1];
-			Chk[i]=(byte)(((Chk[i-1]&0xff)+(StartFile[i-1]&0xff))&0xff);
+			Chk[i]=(byte)(((Chk[i-1]&0xff)+(l9memory[i-1]&0xff))&0xff);
 	
 		//BUGFIXbyTSAP, possible out of array on L9WORD - Filesize-28+28=Filesize
-		for (i=0;i<FileSize-28-1;i++)
+		for (i=0;i<filesize-28-1;i++)
 		{
 			num=L9WORD(i+28)+1;
-			if (i+num<=FileSize && (((Chk[i+num]&0xff)-(Chk[i+32]&0xff))&0xff)==(StartFile[i+0x1e]&0xff))
+			if (i+num<=filesize && (((Chk[i+num]&0xff)-(Chk[i+32]&0xff))&0xff)==(l9memory[i+0x1e]&0xff))
 			{
 				for (j=0;j<14;j++)
 				{
-					 d0=L9WORD (StartFile,i+ j*2);
+					 d0=L9WORD (i+ j*2);
 					 if (j!=13 && d0>=0x8000 && d0<0x9000)
 					 {
 						if (d0>=0x8000+LISTAREASIZE) break;
 					 }
-					 else if (i+d0>FileSize) break;
+					 else if (i+d0>filesize) break;
 				}
 				// list9 ptr must be in listarea, acode ptr in data 
 				//if (j<14 || (d0>=0x8000 && d0<0x9000)) continue;
 				if (j<14) continue;
 	
-				l9=L9WORD(StartFile,i+6 + 9*2);
+				l9=L9WORD(i+6 + 9*2);
 				if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
 	
 				scandata.Size=0;
 				scandata.Min=scandata.Max=i+d0;
 				if (ValidateSequence(Image,i+d0,i+d0,scandata,false,false))
 				{
-//	#ifdef L9DEBUG 
-//					printf("Found valid V2 header at %ld, code size %ld",i,Size);
-//	#endif
 					L9DEBUG("Found valid V2 header at %d, code size %d\r",i,scandata.Size);
 					if (scandata.Size>MaxSize)
 					{
@@ -1728,7 +1693,7 @@ int code;		// instruction codes - code
 //	
 	}*/
 	//TODO: в оригинале - большой закоментированный блок. вернуть?
-	int ScanV1(byte[] StartFile,int FileSize) {
+	int ScanV1() {
 		return -1;
 	}
 	
@@ -1750,9 +1715,13 @@ int code;		// instruction codes - code
 	*/
 	boolean load(String filename)
 	{
-		startfile=os_load(filename);
-		if (startfile==null) return false;
-		FileSize=startfile.length;
+		byte filedata[]=os_load(filename);
+		if (filedata==null) return false;
+		filesize=filedata.length;
+		l9memory=new byte[filesize+LISTAREASIZE];
+		listarea=filesize;
+		startfile=0;
+		for (int i=0;i<filesize;i++) l9memory[startfile+i]=filedata[i];
 		return true;
 	}
 	
@@ -1933,19 +1902,19 @@ int code;		// instruction codes - code
 class GameState {
 
 	//TODO: перенести LISTAREASIZE и STACKSIZE в глобальные константы 
-	private static final int LISTAREASIZE = 0x800;
+	//private static final int LISTAREASIZE = 0x800;
 	private static final int STACKSIZE = 1024;
 	
 	int Id;
 	short codeptr,stackptr,listsize,stacksize,filenamesize,checksum;
 	short vartable[];
-	byte listarea[];
+	//byte listarea[];
 	short stack[];
 	String filename;
 	
 	GameState() {
 		vartable=new short[256];
-		listarea=new byte[LISTAREASIZE];
+		//listarea=new byte[LISTAREASIZE];
 		stack=new short[STACKSIZE];
 	}
 	
@@ -1960,12 +1929,4 @@ class ScanData {
 class PosScanCodeMask {
 	int Pos;
 	int ScanCodeMask;
-}
-
-class L9Pointer {
-	int ptr;
-	byte array[];
-	int get() {
-		return array[ptr]&0xff;
-	}
-}
+};
