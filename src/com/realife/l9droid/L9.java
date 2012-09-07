@@ -151,8 +151,7 @@ int V2MsgType;
 		L9Pointers=new int[12];
 	};
 	
-	/*-- was ------------------------------------------
-	L9BOOL LoadGame(char *filename,char *picname)
+	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
 	{
 		L9BOOL ret=LoadGame2(filename,picname);
 		showtitle=1;
@@ -220,8 +219,7 @@ int V2MsgType;
 	
 ////////////////////////////////////////////////////////////////////////
 	
-	/*-- was ----------------
-	void clearworkspace(void)
+	/*--was--	void clearworkspace(void)
 	{
 		memset(workspace.vartable,0,sizeof(workspace.vartable));
 	}
@@ -233,8 +231,7 @@ int V2MsgType;
 		for (int i=0;i<workspace.vartable.length;i++) workspace.vartable[i]=0; 
 	}
 	
-	/*-- was -------------------------------------
-	L9BOOL LoadGame2(char *filename,char *picname)
+	/*--was-- L9BOOL LoadGame2(char *filename,char *picname)
 	{
 	#ifdef CODEFOLLOW
 		f=fopen(CODEFOLLOWFILE,"w");
@@ -268,8 +265,7 @@ int V2MsgType;
 		return Running;
 	}
 	
-	/*-- was --------------------------------------
-	L9BOOL intinitialise(char*filename,char*picname)
+	/*--was-- L9BOOL intinitialise(char*filename,char*picname)
 	{
 	// init 
 	// driverclg 
@@ -428,7 +424,6 @@ int V2MsgType;
 		return TRUE;
 	}
 	*/
-
 	boolean intinitialise(String filename, String picname)
 	{
 	// init 
@@ -484,16 +479,13 @@ int V2MsgType;
 
 		*/
 		Offset=Scan(startfile,FileSize);
-		L9DEBUG("Offset1=%d\r",Offset);
 		if (Offset<0)
 		{
 			Offset=ScanV2(startfile,FileSize);
-			L9DEBUG("Offset2=%d\r",Offset);
 			L9GameType=L9_V2;
 			if (Offset<0)
 			{
 				Offset=ScanV1(startfile,FileSize);
-				L9DEBUG("Offset3=%d\r",Offset);
 				L9GameType=L9_V1;
 				if (Offset<0)
 				{
@@ -503,7 +495,6 @@ int V2MsgType;
 			}
 		}
 
-		//TODO:kill debug code =)
 		L9DEBUG("Found header v%d\r",L9GameType);
 		L9DEBUG("Offset=%d\r",Offset);
 
@@ -548,9 +539,10 @@ int V2MsgType;
 				if (a2>0.0 && a2>2 && a2<10)
 				{
 					V2MsgType=V2M_NORMAL;
-//TODO:				#ifdef L9DEBUG
-//TODO:				printf("V2 msg table: normal, wordlen=%.2lf",a2);
-//TODO:				#endif
+//					#ifdef L9DEBUG
+//					printf("V2 msg table: normal, wordlen=%.2lf",a2);
+//					#endif
+					L9DEBUG("V2 msg table: normal, wordlen=%d/10\r",(int)a2*10);
 				}
 				else {
 					a25=analyseV25();
@@ -581,7 +573,7 @@ int V2MsgType;
 				wordtable=startdata + L9WORD(startfile,startdata+0xe);
 				break;
 		};
-		//TODO: tsap, kill debug code
+
 		L9DEBUG("L9GameType=%d\r",L9GameType);
 		L9DEBUG("V2MsgType=%d\r",V2MsgType);
 
@@ -1021,8 +1013,7 @@ int V2MsgType;
 	//#ifdef L9DEBUG
 	//					printf("Found valid header at %ld, code size %ld",i,Size);
 	//#endif
-						L9DEBUG("Found valid header at %d",i);
-						L9DEBUG(", code size %d",scandata.Size);
+						L9DEBUG("Found valid header at %d, code size %d\r",i,scandata.Size);
 						if (scandata.Size>MaxSize)
 						{
 							Offset=i;
@@ -1294,6 +1285,7 @@ int V2MsgType;
 	//#ifdef L9DEBUG
 	//						// printf("scan: illegal function call: %d",Base[Pos-1]); 
 	//#endif
+							L9DEBUG("scan: illegal function call: %d",Base[pscm.Pos-1]);
 							Valid=false;
 							break;
 					}
@@ -1318,6 +1310,7 @@ int V2MsgType;
 	//#ifdef L9DEBUG
 	//				// printf("jmp at codestart: %ld",acode); 
 	//#endif
+					L9DEBUG("jmp at codestart: %ld",acode);
 					sdat.JumpKill=true;
 					Finished=true;
 					break;
@@ -1369,6 +1362,7 @@ int V2MsgType;
 	//#ifdef L9DEBUG 
 	//				// printf("scan: illegal instruction"); 
 	//#endif
+					L9DEBUG("scan: illegal instruction\r");
 					Valid=false;
 					break;
 			}
@@ -1633,8 +1627,7 @@ int V2MsgType;
 //	#ifdef L9DEBUG 
 //					printf("Found valid V2 header at %ld, code size %ld",i,Size);
 //	#endif
-					L9DEBUG("Found valid V2 header at %d",i);
-					L9DEBUG(", code size %d\r",scandata.Size);
+					L9DEBUG("Found valid V2 header at %d, code size %d\r",i,scandata.Size);
 					if (scandata.Size>MaxSize)
 					{
 						Offset=i;
@@ -1722,8 +1715,7 @@ int V2MsgType;
 		return -1;
 	}
 	
-	/*-- was ------------------
-	L9BOOL load(char *filename)
+	/*--was--	L9BOOL load(char *filename)
 	{
 		FILE *f=fopen(filename,"rb");
 		if (!f) return FALSE;
@@ -1739,29 +1731,15 @@ int V2MsgType;
 		return TRUE;
 	}
 	*/
-	
 	boolean load(String filename)
 	{
-		//FILE *f=fopen(filename,"rb");
-		//if (!f) return FALSE;
-		//FileSize=filelength(f);
-		//L9Allocate(&startfile,FileSize);
-		//
-		//if (fread(startfile,1,FileSize,f)!=FileSize)
-		//{
-		//	fclose(f);
-		//	return FALSE;
-		//}
-	 	//fclose(f);
-		//return TRUE;
 		startfile=os_load(filename);
 		if (startfile==null) return false;
 		FileSize=startfile.length;
 		return true;
 	}
 	
-	/*-- was ----------------
-	void error(char *fmt,...)
+	/*--was--	void error(char *fmt,...)
 	{
 		char buf[256];
 		int i;
@@ -1774,37 +1752,26 @@ int V2MsgType;
 	*/
 	//TODO: error*3 - Изврат
 	//TODO: может error выводить инфу во всплывающем окне?
-	void error(String txt)
-	{
+	void error(String txt) {
 		for (int i=0;i<txt.length();i++) os_printchar(txt.charAt(i));
 	}
 	
-	void error(String txt1, String txt2)
-	{
+	void error(String txt1, String txt2) {
 		String str=String.format(txt1, txt2);
 		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
 	}
 
-	void error(String txt, int val)
-	{
+	void error(String txt, int val) {
 		String str=String.format(txt, val);
 		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
 	}
 	
-	void L9DEBUG(String txt) {
-		error(txt);
-	}
-	
-	void L9DEBUG(String txt1, String txt2) {
-		error(txt1,txt2);
-	}
-	
-	void L9DEBUG(String txt, int val) {
-		error(txt,val);
+	void error(String txt, int val1, int val2) {
+		String str=String.format(txt, val1, val2);
+		for (int i=0;i<str.length();i++) os_printchar(str.charAt(i));
 	}
 
-	/*--was---------------
-	void printchar(char c)
+	/*--was--	void printchar(char c)
 	{
 		if (Cheating) return;
 
@@ -1835,8 +1802,7 @@ int V2MsgType;
 		lastactualchar=c;
 	}
  
-	/*--was---------------
-	void printstring(char*buf)
+	/*--was--	void printstring(char*buf)
 	{
 		int i;
 		for (i=0;i< (int) strlen(buf);i++) printchar(buf[i]);
@@ -1847,8 +1813,7 @@ int V2MsgType;
 		for (int i=0;i<str.length();i++) printchar(str.charAt(i));
 	}
 	
-	/*--was---------------
-	void printdecimald0(int d0)
+	/*--was--	void printdecimald0(int d0)
 	{
 		char temp[12];
 		sprintf(temp,"%d",d0);
@@ -1860,8 +1825,7 @@ int V2MsgType;
 		printstring(String.valueOf(d0));
 	}
 
-	/*--was---------------
-	void printautocase(int d0)
+	/*--was--	void printautocase(int d0)
 	{
 		if (d0 & 128) printchar((char) d0);
 		else
@@ -1919,7 +1883,21 @@ int V2MsgType;
 		else return c;
 	}
 	
+	void L9DEBUG(String txt) {
+		error(txt);
+	}
 	
+	void L9DEBUG(String txt1, String txt2) {
+		error(txt1,txt2);
+	}
+	
+	void L9DEBUG(String txt, int val) {
+		error(txt,val);
+	}
+	
+	void L9DEBUG(String txt, int val1, int val2) {
+		error(txt,val1,val2);
+	}
 
 }
 
