@@ -2516,14 +2516,6 @@ void StopGame(void)
 	Running=FALSE;
 }
 
-L9BOOL RunGame(void)
-{
-	code=*codeptr++;
-/*	printf("%d",code); */
-	executeinstruction();
-	return Running;
-}
-
 void RestoreGame(char* filename)
 {
 	int Bytes;

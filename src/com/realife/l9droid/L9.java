@@ -67,17 +67,18 @@ int V2M_ERIK=2;
 
 // Global Variables
 //L9BYTE* startfile=NULL,*pictureaddress=NULL,*picturedata=NULL;
-	byte startfile[];
+	byte l9memory[];
+	int startfile;
 	int startdata;
 	int FileSize;
 //L9UINT32 picturesize;
 //
-	int L9Pointers[];
+	L9Pointer L9Pointers[];
 //L9BYTE *absdatablock
 //L9BYTE *list2ptr
 //L9BYTE *list3ptr
 //L9BYTE *list9startptr
-//L9BYTE *acodeptr;
+	int acodeptr;
 //L9BYTE *startmd
 	int startmd;
 //L9BYTE *endmd
@@ -128,8 +129,8 @@ int V2MsgType;
 	char lastactualchar=0;
 	int d5;
 //
-//L9BYTE* codeptr;	// instruction codes 
-//L9BYTE code;		// instruction codes 
+int codeptr;	// instruction codes - pointer 
+int code;		// instruction codes - code
 //
 //L9BYTE* list9ptr;
 //
@@ -148,7 +149,7 @@ int V2MsgType;
 	L9() {
 		workspace=new GameState();
 		unpackbuf=new char[8];
-		L9Pointers=new int[12];
+		L9Pointers=new L9Pointer[12];
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -176,8 +177,17 @@ int V2MsgType;
 
 	}
 	
+	/*--was-- L9BOOL RunGame(void)
+	{
+		code=*codeptr++;
+	//	printf("%d",code); 
+		executeinstruction();
+		return Running;
+	}*/
 	public boolean RunGame() {
-		return true;
+		code=*codeptr++;
+		executeinstruction();
+		return Running;
 	}
 	
 	public void StopGame () {
@@ -258,7 +268,7 @@ int V2MsgType;
 		Running=false;
 		//TODO: ibuffptr=NULL;
 		if (!intinitialise(filename,picname)) return false;
-		//TODO: codeptr=acodeptr;
+		codeptr=acodeptr;
 		randomseed = (short)(Math.random()*32767);
 		LastGame=filename;
 		Running=true;
@@ -510,8 +520,15 @@ int V2MsgType;
 
 			for (i=0;i<12;i++)
 			{
-				int d0=L9WORD(startfile,startdata+hdoffset+i*2);
+				int d0=L9WORD(startdata+hdoffset+i*2);
 				//TODO: L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
+				//if (i!=11 && d0>=0x8000 && d0<=0x9000) {
+				//	L9Pointers[i].array=workspace.listarea;
+				//	L9Pointers[i].ptr=d0-0x8000;
+				//} else {
+				//	L9Pointers[i].array=startfile;
+				//	L9Pointers[i].ptr=startdata+d0;
+				//}
 			}
 			//TODO: absdatablock=L9Pointers[0];
 			//TODO: list2ptr=L9Pointers[3];
@@ -521,7 +538,7 @@ int V2MsgType;
 			// if ((((L9UINT32) L9Pointers[10])&1)==0) L9Pointers[10]++; amiga word access hack
 
 			//TODO: list9startptr=L9Pointers[10];
-			//TODO: acodeptr=L9Pointers[11];
+			//acodeptr=L9Pointers[11].ptr;
 		}
 
 		switch (L9GameType)
@@ -531,8 +548,8 @@ int V2MsgType;
 			case L9_V2:
 			{
 				double a2,a25;
-				startmd=startdata + L9WORD(startfile,startdata+0x0);
-				startmdV2=startdata + L9WORD(startfile,startdata+0x2);
+				startmd=startdata + L9WORD(startdata+0x0);
+				startmdV2=startdata + L9WORD(startdata+0x2);
 
 				// determine message type
 				a2=analyseV2();
@@ -564,13 +581,13 @@ int V2MsgType;
 			}
 			case L9_V3:
 			case L9_V4:
-				startmd=startdata + L9WORD(startfile,startdata+0x2);
-				endmd=startmd + L9WORD(startfile,startdata+0x4);
-				defdict=startdata+L9WORD(startfile,startdata+6);
-				endwdp5=defdict + 5 + L9WORD(startfile,startdata+0x8);
-				dictdata=startdata+L9WORD(startfile,startdata+0x0a);
-				dictdatalen=L9WORD(startfile,startdata+0x0c);
-				wordtable=startdata + L9WORD(startfile,startdata+0xe);
+				startmd=startdata + L9WORD(startdata+0x2);
+				endmd=startmd + L9WORD(startdata+0x4);
+				defdict=startdata+L9WORD(startdata+6);
+				endwdp5=defdict + 5 + L9WORD(startdata+0x8);
+				dictdata=startdata+L9WORD(startdata+0x0a);
+				dictdatalen=L9WORD(startdata+0x0c);
+				wordtable=startdata + L9WORD(startdata+0xe);
 				break;
 		};
 
@@ -723,7 +740,7 @@ int V2MsgType;
 		n=msglenV2(ptr);
 
 		while (--n>0) {
-			a=startfile[++ptr]&0xff;
+			a=l9memory[++ptr]&0xff;
 			if (a<3) return true;
 			if (a>=0x5e)
 			{
@@ -794,7 +811,7 @@ int V2MsgType;
 
 		while (--n>0)
 		{
-			a=startfile[ptr++]&0xff;
+			a=l9memory[ptr++]&0xff;
 			if (a<3) return true;
 
 			if (a>=0x5e)
@@ -844,7 +861,7 @@ int V2MsgType;
 		/* catch berzerking code */
 		if (ptr >= startdata+FileSize) return 0;
 
-		while ((a=startfile[ptr])==0) {
+		while ((a=l9memory[ptr])==0) {
 			ptr++;
 			if (ptr >= startdata+FileSize) return 0;
 			i+=255;
@@ -862,7 +879,7 @@ int V2MsgType;
 	int msglenV25(int ptr)
 	{
 		int ptr2=ptr;
-		while (ptr2<startdata+FileSize && startfile[ptr2++]!=1) ;
+		while (ptr2<startdata+FileSize && l9memory[ptr2++]!=1) ;
 		return ptr2-ptr;
 	}
 
@@ -946,7 +963,7 @@ int V2MsgType;
 		}
 
 	 */
-	int Scan(byte[] StartFile, int FileSize)
+	int Scan(int StartFile, int FileSize)
 	{
 		//L9BYTE *Chk=malloc(FileSize+1);
 		byte Chk[] = new byte[FileSize+1];
@@ -969,11 +986,11 @@ int V2MsgType;
 		Chk[0]=0;
 		for (i=1;i<=FileSize;i++)
 			//Chk[i]=Chk[i-1]+StartFile[i-1];
-			Chk[i]=(byte)(((Chk[i-1]&255)+(StartFile[i-1]&255))&0xff);
+			Chk[i]=(byte)(((Chk[i-1]&255)+(l9memory[i-1]&255))&0xff);
 
 		for (i=0;i<FileSize-33-1;i++)
 		{
-			num=L9WORD(StartFile,i)+1;
+			num=L9WORD(i)+1;
 	
 			//Chk[i] = 0 +...+ i-1
 			//Chk[i+n] = 0 +...+ i+n-1
@@ -981,17 +998,17 @@ int V2MsgType;
 
 			if (num>0x2000 && i+num<=FileSize && Chk[i+num]==Chk[i])
 			{
-				md=L9WORD(StartFile,i+0x2);
-				ml=L9WORD(StartFile,i+0x4);
-				dd=L9WORD(StartFile,i+0xa);
-				dl=L9WORD(StartFile,i+0xc);
+				md=L9WORD(i+0x2);
+				ml=L9WORD(i+0x4);
+				dd=L9WORD(i+0xa);
+				dl=L9WORD(i+0xc);
 
 				if (ml>0 && md>0 && i+md+ml<=FileSize && dd>0 && dl>0 && i+dd+dl*4<=FileSize)
 				{
 					// v4 files may have acodeptr in 8000-9000, need to fix 
 					for (j=0;j<12;j++)
 					{
-						d0=L9WORD (StartFile,i+0x12 + j*2);
+						d0=L9WORD (i+0x12 + j*2);
 						if (j!=11 && d0>=0x8000 && d0<0x9000)
 						{
 							if (d0>=0x8000+LISTAREASIZE) break;
@@ -1002,7 +1019,7 @@ int V2MsgType;
 					//if (j<12 || (d0>=0x8000 && d0<0x9000)) continue;
 					//if (j<12) continue;
 
-					l9=L9WORD(StartFile, i+0x12 + 10*2);
+					l9=L9WORD(i+0x12 + 10*2);
 					if (l9<0x8000 || l9>=0x8000+LISTAREASIZE) continue;
 
 					scandata.Size=0;
@@ -1201,7 +1218,7 @@ int V2MsgType;
 	boolean ValidateSequence(byte[] Image,int iPos,int acode,ScanData sdat,boolean Rts, boolean checkDriverV4)
 	{
 
-		byte Base[]=startfile;
+		byte Base[]=l9memory;
 		boolean Finished=false,Valid;
 		int Strange=0;
 		int Code;
@@ -1601,7 +1618,7 @@ int V2MsgType;
 		//BUGFIXbyTSAP, possible out of array on L9WORD - Filesize-28+28=Filesize
 		for (i=0;i<FileSize-28-1;i++)
 		{
-			num=L9WORD(StartFile,i+28)+1;
+			num=L9WORD(i+28)+1;
 			if (i+num<=FileSize && (((Chk[i+num]&0xff)-(Chk[i+32]&0xff))&0xff)==(StartFile[i+0x1e]&0xff))
 			{
 				for (j=0;j<14;j++)
@@ -1858,22 +1875,22 @@ int V2MsgType;
 	
 	//#define L9WORD(x) (*(x) + ((*(x+1))<<8))
 	//!! возвращаю int, чтобы не заморачиватьс€ с +/-
-	int L9WORD(byte[] arr, int x) {
-		return (arr[x]&255)+((arr[x+1]&255)<<8); //&255 дл€ конверсии в int без учета знака.
+	int L9WORD(int x) {
+		return (l9memory[x]&255)+((l9memory[x+1]&255)<<8); //&255 дл€ конверсии в int без учета знака.
 	}
 	
 	//#define L9SETWORD(x,val) *(x)=(L9BYTE) val; *(x+1)=(L9BYTE)(val>>8);
-	void L9SETWORD(byte[] arr, int x, int val) {
-		arr[x]=(byte)(val & 0xff);
-		arr[x+1]=(byte)((val & 0xff00)>>8);
+	void L9SETWORD(int x, int val) {
+		l9memory[x]=(byte)(val & 0xff);
+		l9memory[x+1]=(byte)((val & 0xff00)>>8);
 	}
 	
 	//#define L9SETDWORD(x,val) *(x)=(L9BYTE)val; *(x+1)=(L9BYTE)(val>>8); *(x+2)=(L9BYTE)(val>>16); *(x+3)=(L9BYTE)(val>>24);
-	void L9SETDWORD(byte[] arr, int x, int val) {
-		arr[x]=(byte)(val & 0xff);
-		arr[x+1]=(byte)((val & 0xff00)>>8);
-		arr[x+2]=(byte)((val & 0xff0000)>>16);
-		arr[x+3]=(byte)((val & 0xff000000)>>24);
+	void L9SETDWORD(int x, int val) {
+		l9memory[x]=(byte)(val & 0xff);
+		l9memory[x+1]=(byte)((val & 0xff00)>>8);
+		l9memory[x+2]=(byte)((val & 0xff0000)>>16);
+		l9memory[x+3]=(byte)((val & 0xff000000)>>24);
 	}
 	
 	///////////////////// New (tsap) implementations ////////////////////
@@ -1943,4 +1960,12 @@ class ScanData {
 class PosScanCodeMask {
 	int Pos;
 	int ScanCodeMask;
+}
+
+class L9Pointer {
+	int ptr;
+	byte array[];
+	int get() {
+		return array[ptr]&0xff;
+	}
 }
