@@ -105,21 +105,22 @@ int V2M_ERIK=2;
 //L9BYTE* dictptr;
 	int dictptr;
 	byte threechars[];
-int L9GameType;
-int V2MsgType;
+	int L9GameType;
+	int V2MsgType;
 //
 //SaveStruct ramsavearea[RAMSAVESLOTS];
 //
 //char ibuff[IBUFFSIZE];
 //L9BYTE* ibuffptr;
-//char obuff[34];
+	char obuff[];
 //
 	boolean Cheating=false;
 //int CheatWord;
 //GameState CheatWorkspace;
 //
 //int reflectflag,scale,gintcolour,option;
-//int l9textmode=0,drawx=0,drawy=0,screencalled=0;
+	int l9textmode=0;
+//int drawx=0,drawy=0,screencalled=0;
 //L9BYTE *gfxa5=NULL;
 //L9BOOL scalegfx=TRUE;
 //Bitmap* bitmap=NULL;
@@ -157,6 +158,7 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 		unpackbuf=new byte[8];
 		L9Pointers=new int[12];
 		threechars=new byte[34];
+		obuff=new char[34];
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -193,7 +195,7 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 	}*/
 	public boolean RunGame() {
 		code=l9memory[codeptr++];
-		//TODO: executeinstruction();
+		executeinstruction();
 		return Running;
 	}
 	
@@ -225,12 +227,12 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
 	//L9BOOL os_get_game_file(char* NewName, int Size)
 	//void os_set_filenumber(char* NewName, int Size, int n)
-	//void os_graphics(int mode)
-	//void os_cleargraphics(void)
+	void os_graphics(int mode) {};
+	void os_cleargraphics() {};
 	//void os_setcolour(int colour, int index)
 	//void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2)
 	//void os_fill(int x, int y, int colour1, int colour2)
-	//void os_show_bitmap(int pic, int x, int y)
+	void os_show_bitmap(int pic, int x, int y) {};
 	
 	byte[] os_load(String filename) { return null; };
 	
@@ -1804,6 +1806,13 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 		for (int i=0;i<str.length();i++) printchar(str.charAt(i));
 	}
 	
+	void printstringb(int ptr) {
+		char c;
+		while((c=(char)l9memory[ptr++])!=0) {
+			printchar(c);
+		}
+	}
+	
 	/*--was--	void printdecimald0(int d0)
 	{
 		char temp[12];
@@ -1936,8 +1945,8 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 			case 3:		printnumber();break;
 			case 4:		messagev();break;
 			case 5:		messagec();break;
-			//TODO: case 6:		function();break;
-			//TODO: case 7:		input();break;
+			case 6:		function();break;
+			case 7:		input();break;
 			case 8:		varcon();break;
 			case 9:		varvar();break;
 			case 10:	_add();break;
@@ -1950,10 +1959,10 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 			case 17:	ifnevt();break;
 			case 18:	ifltvt();break;
 			case 19:	ifgtvt();break;
-			//TODO: case 20:	_screen();break;
-			//TODO: case 21:	cleartg();break;
+			case 20:	_screen();break;
+			case 21:	cleartg();break;
 			case 22:	picture();break;
-			//TODO: case 23:	getnextobject();break;
+			case 23:	getnextobject();break;
 			case 24:	ifeqct();break;
 			case 25:	ifnect();break;
 			case 26:	ifltct();break;
@@ -2844,6 +2853,78 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 		//TODO: show_picture(*getvar());
 	}
 	
+	/*--was--	void _screen(void)
+	{
+		int mode = 0;
+
+		l9textmode = *codeptr++;
+		if (l9textmode)
+		{
+			if (L9GameType==L9_V4)
+				mode = 2;
+			else if (picturedata)
+				mode = 1;
+		}
+		os_graphics(mode);
+
+		screencalled = 1;
+
+	#ifdef L9DEBUG
+		printf("screen %s",l9textmode ? "graphics" : "text");
+	#endif
+
+		if (l9textmode)
+		{
+			codeptr++;
+	// clearg 
+	// gintclearg 
+			os_cleargraphics();
+
+			// title pic
+			if (showtitle==1 && mode==2)
+			{
+				showtitle = 0;
+				os_show_bitmap(0,0,0);
+			}
+		}
+	// screent 
+	}*/
+	void _screen()
+	{
+		int mode = 0;
+
+		l9textmode = l9memory[codeptr++];
+		if (l9textmode!=0)
+		{
+			if (L9GameType==L9_V4)
+				mode = 2;
+			//TODO: else if (picturedata)
+			//TODO:	mode = 1;
+		}
+		os_graphics(mode);
+
+		//TODO: screencalled = 1;
+
+		L9DEBUG ("screen %s",l9textmode!=0 ? "graphics" : "text");
+
+
+		if (l9textmode!=0)
+		{
+			codeptr++;
+	// clearg 
+	// gintclearg 
+			os_cleargraphics();
+
+			/* title pic */
+			if (showtitle==1 && mode==2)
+			{
+				showtitle = 0;
+				os_show_bitmap(0,0,0);
+			}
+		}
+	// screent 
+	}
+	
 	void varcon()
 	{
 		int d6=getcon();
@@ -3063,15 +3144,114 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 	
 	void printinput()
 	{
-//TODO:		L9BYTE* ptr=(L9BYTE*) obuff;
-//TODO:		char c;
-//TODO:		while ((c=*ptr++)!=' ') printchar(c);
+		int ptr=0;//(L9BYTE*) obuff;
+		char c;
+		while ((c=obuff[ptr++])!=' ') printchar(c);
+		L9DEBUG ("printinput");
+	}
 
-//	#ifdef L9DEBUG
-//		printf("printinput");
-//	#endif
+	/*void cleartg(void)
+	{
+		int d0 = *codeptr++;
+	#ifdef L9DEBUG
+		printf("cleartg %s",d0 ? "graphics" : "text");
+	#endif
+
+		if (d0)
+		{
+	// clearg 
+			if (l9textmode)
+	// gintclearg 
+				os_cleargraphics();
+		}
+	// cleart 
+	// oswrch(0x0c) 
+	}*/
+	void cleartg()
+	{
+		int d0 = l9memory[codeptr++];
+		L9DEBUG ("cleartg %s",d0!=0 ? "graphics" : "text");
+
+		if (d0!=0)
+		{
+	// clearg 
+			if (l9textmode!=0)
+	// gintclearg 
+				os_cleargraphics();
+		}
+	// cleart 
+	// oswrch(0x0c) 
 	}
 	
+	/*--was--	void function(void)
+	{
+		int d0=*codeptr++;
+	#ifdef CODEFOLLOW
+		fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
+	#endif
+
+		switch (d0)
+		{
+			case 1: calldriver(); break;
+			case 2: L9Random(); break;
+			case 3: save(); break;
+			case 4: NormalRestore(); break;
+			case 5: clearworkspace(); break;
+			case 6: workspace.stackptr=0; break;
+			case 250:
+				printstring((char*) codeptr);
+				while (*codeptr++);
+				break;
+
+			default: ilins(d0);
+		}
+	}*/
+	void function()
+	{
+		int d0=l9memory[codeptr++];
+//	#ifdef CODEFOLLOW
+//		fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
+//	#endif
+
+		switch (d0)
+		{
+			case 1: calldriver(); break;
+			case 2: L9Random(); break;
+			//TODO: case 3: save(); break;
+			//TODO: case 4: NormalRestore(); break;
+			case 5: clearworkspace(); break;
+			case 6: workspace.stackptr=0; break;
+			case 250:
+				printstringb(codeptr);
+				while (l9memory[codeptr++]!=0);
+				break;
+
+			default: ilins(d0);
+		}
+	}
+
+	/*--was--	void L9Random(void)
+	{
+	#ifdef CODEFOLLOW
+		fprintf(f," %d",randomseed);
+	#endif
+		randomseed=(((randomseed<<8) + 0x0a - randomseed) <<2) + randomseed + 1;
+		*getvar()=randomseed & 0xff;
+	#ifdef CODEFOLLOW
+		fprintf(f," %d",randomseed);
+	#endif
+	}*/
+	void L9Random() {
+//	#ifdef CODEFOLLOW
+//		fprintf(f," %d",randomseed);
+//	#endif
+		//TODO: проверить генерацию randomseed
+		randomseed=(short)((((randomseed<<8) + 0x0a - randomseed) <<2) + randomseed + 1);
+		workspace.vartable[getvar()]=(short)(randomseed & 0xff);
+//	#ifdef CODEFOLLOW
+//		fprintf(f," %d",randomseed);
+//	#endif
+	}
 	
 	///////////////////// New (tsap) implementations ////////////////////
 	

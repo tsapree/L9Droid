@@ -434,18 +434,6 @@ void calldriver(void)
 	else driver(d0,a6);
 }
 
-void L9Random(void)
-{
-#ifdef CODEFOLLOW
-	fprintf(f," %d",randomseed);
-#endif
-	randomseed=(((randomseed<<8) + 0x0a - randomseed) <<2) + randomseed + 1;
-	*getvar()=randomseed & 0xff;
-#ifdef CODEFOLLOW
-	fprintf(f," %d",randomseed);
-#endif
-}
-
 void save(void)
 {
 	L9UINT16 checksum;
@@ -559,30 +547,6 @@ void restore(void)
 		}
 	}
 	else printstring("\rUnable to restore game.\r");
-}
-
-void function(void)
-{
-	int d0=*codeptr++;
-#ifdef CODEFOLLOW
-	fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
-#endif
-
-	switch (d0)
-	{
-		case 1: calldriver(); break;
-		case 2: L9Random(); break;
-		case 3: save(); break;
-		case 4: NormalRestore(); break;
-		case 5: clearworkspace(); break;
-		case 6: workspace.stackptr=0; break;
-		case 250:
-			printstring((char*) codeptr);
-			while (*codeptr++);
-			break;
-
-		default: ilins(d0);
-	}
 }
 
 void findmsgequiv(int d7)
@@ -1142,61 +1106,6 @@ int scaley(int y)
 	if (scalegfx)
 		return 96 - (((y>>5)+(y>>6))>>3);
 	return (96<<3) - ((y>>5)+(y>>6));
-}
-
-void _screen(void)
-{
-	int mode = 0;
-
-	l9textmode = *codeptr++;
-	if (l9textmode)
-	{
-		if (L9GameType==L9_V4)
-			mode = 2;
-		else if (picturedata)
-			mode = 1;
-	}
-	os_graphics(mode);
-
-	screencalled = 1;
-
-#ifdef L9DEBUG
-	printf("screen %s",l9textmode ? "graphics" : "text");
-#endif
-
-	if (l9textmode)
-	{
-		codeptr++;
-/* clearg */
-/* gintclearg */
-		os_cleargraphics();
-
-		/* title pic */
-		if (showtitle==1 && mode==2)
-		{
-			showtitle = 0;
-			os_show_bitmap(0,0,0);
-		}
-	}
-/* screent */
-}
-
-void cleartg(void)
-{
-	int d0 = *codeptr++;
-#ifdef L9DEBUG
-	printf("cleartg %s",d0 ? "graphics" : "text");
-#endif
-
-	if (d0)
-	{
-/* clearg */
-		if (l9textmode)
-/* gintclearg */
-			os_cleargraphics();
-	}
-/* cleart */
-/* oswrch(0x0c) */
 }
 
 L9BOOL validgfxptr(L9BYTE* a5)
