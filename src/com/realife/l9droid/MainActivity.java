@@ -39,8 +39,8 @@ public class MainActivity extends Activity implements OnClickListener {
         gamedata=new byte[49179];
         
         try {
-            //InputStream is=getResources().openRawResource(R.raw.timev2);
-        	InputStream is=getResources().openRawResource(R.raw.wormv3);
+            InputStream is=getResources().openRawResource(R.raw.timev2);
+        	//InputStream is=getResources().openRawResource(R.raw.wormv3);
             is.read(gamedata);            
           } catch (IOException e) {
             e.printStackTrace();
@@ -63,7 +63,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
-			l9.RunGame();
+			int i=400;
+			while (l9.RunGame() && (i-->0) && l9.codeptr!=20631);
 			if (etCmd.length()>0) {
 				etLog.append(">"+etCmd.getText()+"\n");
 				etCmd.setText("");
@@ -75,11 +76,28 @@ public class MainActivity extends Activity implements OnClickListener {
 }
 
 class L9implement extends L9 {
+	
+    //0 - default
+    //1 - waiting for command from user
+    //2 - command entered, need to put it into parser
+    //TODO: заменить на enum?
+    int inputSelected;
+    private static final int NoInputAllowed	= 0;
+    private static final int CommandEditorEnabled =	1;
+    private static final int CommandAvailable = 2;
+//    private static final int CharEditorEnabled = 3;
+//    private static final int CharAvailable = 4;
+//    private static final int CharEditorTick = 5;
+//    private static final int CharUnAvailable = 6;
+	
+    String cmdStr;
+	
 	EditText et;
 	byte gamedata[];
 	L9implement(EditText et1, byte dat[]) {
 		et=et1;
 		gamedata=dat;
+		cmdStr=null;
 	};
 	
 	void os_printchar(char c) {
@@ -94,6 +112,19 @@ class L9implement extends L9 {
 	void os_debug(String str) {
 		final String LOG_TAG = "l9droid";
 		Log.d(LOG_TAG, str);
+	};
+	
+	String os_input(int size) {
+		Running=false;
+		return null;
+		/*if (inputSelected==CommandAvailable) {
+			inputSelected=NoInputAllowed;
+			//iApV->GetCommand(ibuff,size);
+			//if (ibuff[0]==0) return null;
+			return cmdStr;
+		};
+		inputSelected=CommandEditorEnabled;
+		return null;*/
 	};
 
 

@@ -1,7 +1,5 @@
 package com.realife.l9droid;
 
-import android.util.Log;
-
 //started: 01.09.2012
 
 //char		16 bit
@@ -3743,10 +3741,11 @@ int code;		// instruction codes - code
 		L9DEBUG("Function %d\r",d0);
 		switch (d0)
 		{
-			//TODO: case 1: calldriver(); break;
 			case 2: L9Random(); break;
+			//TODO: case 1: calldriver(); break;
 			//TODO: case 3: save(); break;
 			//TODO: case 4: NormalRestore(); break;
+			case 1: case 3: case 4: break;
 			case 5: clearworkspace(); break;
 			case 6: workspace.stackptr=0; break;
 			case 250:
