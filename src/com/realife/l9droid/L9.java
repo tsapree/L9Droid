@@ -1,5 +1,7 @@
 package com.realife.l9droid;
 
+import android.util.Log;
+
 //started: 01.09.2012
 
 //char		16 bit
@@ -212,7 +214,8 @@ int code;		// instruction codes - code
 		return Running;
 	}*/
 	public boolean RunGame() {
-		code=l9memory[codeptr++];
+		code=l9memory[codeptr++]&0xff;
+		os_debug(String.format("codeptr=%d, code=%d", codeptr-1, code));
 		executeinstruction();
 		return Running;
 	}
@@ -258,7 +261,9 @@ int code;		// instruction codes - code
 	//void os_fill(int x, int y, int colour1, int colour2)
 	void os_show_bitmap(int pic, int x, int y) {};
 	
+	//TODO: added by tsap
 	byte[] os_load(String filename) { return null; };
+	void os_debug(String str) {};
 	
 ////////////////////////////////////////////////////////////////////////
 	
@@ -539,7 +544,7 @@ int code;		// instruction codes - code
 		}
 
 		startdata=startfile+Offset;
-		datasize-=filesize-Offset;
+		datasize=filesize-Offset;
 
 	// setup pointers 
 		if (L9GameType!=L9_V1)
@@ -575,14 +580,14 @@ int code;		// instruction codes - code
 				if (a2>0.0 && a2>2 && a2<10)
 				{
 					V2MsgType=V2M_NORMAL;
-					L9DEBUG("V2 msg table: normal, wordlen=%d/10\r",(int)a2*10);
+					L9DEBUG("V2 msg table: normal, wordlen=%d/10\r",(int)(a2*10));
 				}
 				else {
 					a25=analyseV25();
 					if (a25>0 && a25>2 && a25<10)
 					{
 						V2MsgType=V2M_ERIK;
-						L9DEBUG("V2 msg table: Erik, wordlen=%d/10\r",(int)a25*10);
+						L9DEBUG("V2 msg table: Erik, wordlen=%d/10\r",(int)(a25*10));
 					}
 					else
 					{
@@ -871,7 +876,7 @@ int code;		// instruction codes - code
 		/* catch berzerking code */
 		if (ptr >= startdata+datasize) return 0;
 
-		while ((a=l9memory[ptr])==0) {
+		while ((a=(l9memory[ptr]&0xff))==0) {
 			ptr++;
 			if (ptr >= startdata+datasize) return 0;
 			i+=255;
@@ -1223,9 +1228,16 @@ int code;		// instruction codes - code
 		return Valid; // && Strange==0; 
 	}
 	*/
+	
 	boolean ValidateSequence(byte[] Image,int iPos,int acode,ScanData sdat,boolean Rts, boolean checkDriverV4)
 	{
 
+//		if (count_of_validatesequence++>10) {
+//			int i;
+//			i=0;
+//		};
+
+		
 		//byte Base[]=l9memory;
 		boolean Finished=false,Valid;
 		int Strange=0;
@@ -1329,7 +1341,7 @@ int code;		// instruction codes - code
 					pscm.Pos+=2;
 					break;
 				case 14: // jump 
-					L9DEBUG("jmp at codestart: %ld",acode);
+					//L9DEBUG("jmp at codestart: %d",acode);
 					sdat.JumpKill=true;
 					Finished=true;
 					break;
@@ -1497,16 +1509,16 @@ int code;		// instruction codes - code
 		for (i = 0; i < 2; i++)
 		{
 			int x = Pos - ((i+1)*3);
-			if ((l9memory[x] == 0x89) && (l9memory[x+1] == 0x00))
+			if (((l9memory[x]&0xff) == 0x89) && ((l9memory[x+1]&0xff) == 0x00))
 			{
 				// Get the variable being copied to list9[0] 
-				int var = l9memory[x+2];
+				int var = l9memory[x+2]&0xff;
 	
 				// Look back for an assignment to the variable. 
 				for (j = 0; j < 2; j++)
 				{
 					int y = x - ((j+1)*3);
-					if ((l9memory[y] == 0x48) && (l9memory[y+2] == var))
+					if ((l9memory[y] == 0x48) && ((l9memory[y+2]&0xff) == var))
 					{
 						// If this a V4 driver call? 
 						switch (l9memory[y+1]&0xff)
@@ -1832,7 +1844,7 @@ int code;		// instruction codes - code
 	
 	void printstringb(int ptr) {
 		char c;
-		while((c=(char)l9memory[ptr++])!=0) {
+		while((c=(char)(l9memory[ptr++]&0xff))!=0) {
 			printchar(c);
 		}
 	}
@@ -2157,7 +2169,7 @@ int code;		// instruction codes - code
 		{
 
 //	#ifndef CODEFOLLOW
-			a4+=l9memory[codeptr++];
+			a4+=l9memory[codeptr++]&0xff;
 			var=getvar();
 //	#else
 //			offset=*codeptr++;
@@ -2167,7 +2179,7 @@ int code;		// instruction codes - code
 //			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
 //	#endif
 
-			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=l9memory[a4];
+			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=(short)(l9memory[a4]&0xff);
 			else
 			{
 				workspace.vartable[var]=0;
@@ -2189,7 +2201,7 @@ int code;		// instruction codes - code
 //			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
 //	#endif
 
-			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=l9memory[a4];
+			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=(short)(l9memory[a4]&0xff);
 			else
 			{
 				workspace.vartable[var]=0;
@@ -2199,7 +2211,7 @@ int code;		// instruction codes - code
 		else
 		{
 //	#ifndef CODEFOLLOW
-			a4+=l9memory[codeptr++];
+			a4+=l9memory[codeptr++]&0xff;
 			val=workspace.vartable[getvar()];
 //	#else
 //			offset=*codeptr++;
@@ -2236,7 +2248,7 @@ int code;		// instruction codes - code
 	}*/
 	int getvar() {
 //	#ifndef CODEFOLLOW
-		return l9memory[codeptr++];
+		return l9memory[codeptr++]&0xff;
 //	#else
 //		cfvar2=cfvar;
 //		return cfvar=workspace.vartable + *codeptr++;
@@ -2359,7 +2371,7 @@ int code;		// instruction codes - code
 		if ((code & 64)!=0)
 		{
 			// getconsmall 
-			return codeptr++;
+			return l9memory[codeptr++]&0xff;
 		}
 		else return movewa5d0();
 	}
@@ -2756,12 +2768,12 @@ int code;		// instruction codes - code
 			if ((Data&128)!=0)
 			{
 			// long form (reverse word)
-				Off=(Data<<8) + l9memory[Msgptr[0]++];
+				Off=(Data<<8) + (l9memory[Msgptr[0]++]&0xff);
 				len--;
 			}
 			else
 			{
-				Off=(l9memory[wordtable+Data*2]<<8) + l9memory[wordtable+Data*2+1]&0xff;
+				Off=(l9memory[wordtable+Data*2]<<8) + (l9memory[wordtable+Data*2+1]&0xff);
 			}
 			if (Off==0x8f80) break;
 			displaywordref(Off);
@@ -2918,7 +2930,7 @@ int code;		// instruction codes - code
 	{
 		int mode = 0;
 
-		l9textmode = l9memory[codeptr++];
+		l9textmode = l9memory[codeptr++]&0xff;
 		if (l9textmode!=0)
 		{
 			if (L9GameType==L9_V4)
@@ -3553,7 +3565,7 @@ int code;		// instruction codes - code
 			while (true)
 			{
 				a=ibuff[ibuffptr];
-				x=(char)l9memory[list0ptr++];
+				x=(char)(l9memory[list0ptr++]&0xff);
 
 				if (a==32) break;
 				if (a==0)
@@ -3565,7 +3577,7 @@ int code;		// instruction codes - code
 				++ibuffptr;
 				if (tolower((char)(x&0x7f)) != tolower(a))
 				{
-					while (x>0 && x<0x7f) x=(char)l9memory[list0ptr++];
+					while (x>0 && x<0x7f) x=(char)(l9memory[list0ptr++]&0xff);
 					if (x==0)
 					{
 						do
@@ -3598,8 +3610,8 @@ int code;		// instruction codes - code
 				continue;
 			}
 			--list0ptr;
-			while (l9memory[list0ptr]++<0x7e);
-			obuff[obuffptr++]=(char)l9memory[list0ptr];
+			while ((l9memory[list0ptr++]&0xff)<0x7e);
+			obuff[obuffptr++]=(char)(l9memory[list0ptr]&0xff);
 			while (ibuff[ibuffptr]==32) ++ibuffptr;
 			list0ptr=L9Pointers[1];
 		}
@@ -3672,7 +3684,7 @@ int code;		// instruction codes - code
 	}*/
 	void cleartg()
 	{
-		int d0 = l9memory[codeptr++];
+		int d0 = l9memory[codeptr++]&0xff;
 		L9DEBUG ("cleartg %s\r",d0!=0 ? "graphics" : "text");
 
 		if (d0!=0)
@@ -3711,7 +3723,7 @@ int code;		// instruction codes - code
 	}*/
 	void function()
 	{
-		int d0=l9memory[codeptr++];
+		int d0=l9memory[codeptr++]&0xff;
 //	#ifdef CODEFOLLOW
 //		fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
 //	#endif

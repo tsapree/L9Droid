@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -88,6 +89,11 @@ class L9implement extends L9 {
 	
 	byte[] os_load(String filename) {
 		return gamedata;
+	};
+	
+	void os_debug(String str) {
+		final String LOG_TAG = "l9droid";
+		Log.d(LOG_TAG, str);
 	};
 
 
