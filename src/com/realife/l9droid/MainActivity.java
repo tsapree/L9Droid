@@ -38,8 +38,8 @@ public class MainActivity extends Activity implements OnClickListener {
         gamedata=new byte[49179];
         
         try {
-            //InputStream is=getResources().openRawResource(R.raw.timev2);
-        	InputStream is=getResources().openRawResource(R.raw.wormv3);
+            InputStream is=getResources().openRawResource(R.raw.timev2);
+        	//InputStream is=getResources().openRawResource(R.raw.wormv3);
             is.read(gamedata);            
           } catch (IOException e) {
             e.printStackTrace();
@@ -62,9 +62,11 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
-			etLog.append(">"+etCmd.getText()+"\n");
-			etCmd.setText("");
-
+			l9.RunGame();
+			if (etCmd.length()>0) {
+				etLog.append(">"+etCmd.getText()+"\n");
+				etCmd.setText("");
+			};
 			break;
 		}
 		

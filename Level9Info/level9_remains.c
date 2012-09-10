@@ -1372,38 +1372,7 @@ void absrunsub(int d0)
 	while (getinstruction(&a5));
 }
 
-void show_picture(int pic)
-{
-	if (picturedata)
-	{
-		/* Some games don't call the screen() opcode before drawing
-		   graphics, so here graphics are enabled if necessary. */
-		if ((screencalled == 0) && (l9textmode == 0))
-		{
-			l9textmode = 1;
-			os_graphics(1);
-		}
 
-#ifdef L9DEBUG
-		printf("picture %d",pic);
-#endif
-
-		os_cleargraphics();
-/* gintinit */
-		gintcolour = 3;
-		option = 0x80;
-		reflectflag = 0;
-		drawx = 0x1400;
-		drawy = 0x1400;
-/* sizereset */
-		scale = 0x80;
-
-		GfxStackPos=0;
-		absrunsub(0);
-		if (!findsub(pic,&gfxa5))
-			gfxa5 = NULL;
-	}
-}
 
 void GetPictureSize(int* width, int* height)
 {

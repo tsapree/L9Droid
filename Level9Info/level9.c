@@ -44,7 +44,7 @@
 
 #include "level9.h"
 
-/* #define L9DEBUG */
+#define L9DEBUG
 /* #define CODEFOLLOW */
 /* #define FULLSCAN */
 
@@ -888,7 +888,7 @@ L9BOOL ValidateSequence(L9BYTE* Base,L9BYTE* Image,L9UINT32 iPos,L9UINT32 acode,
 
 					default:
 #ifdef L9DEBUG
-						/* printf("scan: illegal function call: %d",Base[Pos-1]); */
+						/* printf("scan: illegal function call: %d\n",Base[Pos-1]); */
 #endif
 						Valid=FALSE;
 						break;
@@ -912,7 +912,7 @@ L9BOOL ValidateSequence(L9BYTE* Base,L9BYTE* Image,L9UINT32 iPos,L9UINT32 acode,
 				break;
 			case 14: /* jump */
 #ifdef L9DEBUG
-				/* printf("jmp at codestart: %ld",acode); */
+				/* printf("jmp at codestart: %ld\n",acode); */
 #endif
 				*JumpKill=TRUE;
 				Finished=TRUE;
@@ -963,7 +963,7 @@ L9BOOL ValidateSequence(L9BYTE* Base,L9BYTE* Image,L9UINT32 iPos,L9UINT32 acode,
 			case 30: /* ilins */
 			case 31: /* ilins */
 #ifdef L9DEBUG 
-				/* printf("scan: illegal instruction"); */
+				/* printf("scan: illegal instruction\n"); */
 #endif
 				Valid=FALSE;
 				break;
@@ -1070,7 +1070,7 @@ long Scan(L9BYTE* StartFile,L9UINT32 FileSize)
 				if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,&DriverV4))
 				{
 #ifdef L9DEBUG
-					printf("Found valid header at %ld, code size %ld",i,Size);
+					printf("Found valid header at %ld, code size %ld\n",i,Size);
 #endif
 					if (Size>MaxSize)
 					{
@@ -1133,7 +1133,7 @@ long ScanV2(L9BYTE* StartFile,L9UINT32 FileSize)
 			if (ValidateSequence(StartFile,Image,i+d0,i+d0,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,NULL))
 			{
 #ifdef L9DEBUG 
-				printf("Found valid V2 header at %ld, code size %ld",i,Size);
+				printf("Found valid V2 header at %ld, code size %ld\n",i,Size);
 #endif
 				if (Size>MaxSize)
 				{
@@ -1186,7 +1186,7 @@ long ScanV1(L9BYTE* StartFile,L9UINT32 FileSize)
 		for (ImagePtr=Image+Min;ImagePtr<=Image+Max;ImagePtr++) if (*ImagePtr==2) *ImagePtr=Replace;
 	}
 #ifdef L9DEBUG
-	printf("V1scan found code at %ld size %ld",MaxPos,MaxCount);
+	printf("V1scan found code at %ld size %ld\n",MaxPos,MaxCount);
 #endif
 
 	ptr=StartFile;
@@ -1210,7 +1210,7 @@ long ScanV1(L9BYTE* StartFile,L9UINT32 FileSize)
 		}
 	} while (ptr<StartFile+FileSize);
 #ifdef L9DEBUG
-	if (maxdictlen>0) printf("V1scan found dictionary at %ld size %ld",maxdict,maxdictlen);
+	if (maxdictlen>0) printf("V1scan found dictionary at %ld size %ld\n",maxdict,maxdictlen);
 #endif
 
 	MaxPos=-1;
@@ -1381,14 +1381,14 @@ L9BOOL intinitialise(char*filename,char*picname)
 			{
 				V2MsgType=V2M_NORMAL;
 				#ifdef L9DEBUG
-				printf("V2 msg table: normal, wordlen=%.2lf",a2);
+				printf("V2 msg table: normal, wordlen=%.2lf\n",a2);
 				#endif
 			}
 			else if (analyseV25(&a25) && a25>2 && a25<10)
 			{
 				V2MsgType=V2M_ERIK;
 				#ifdef L9DEBUG
-				printf("V2 msg table: Erik, wordlen=%.2lf",a25);
+				printf("V2 msg table: Erik, wordlen=%.2lf\n",a25);
 				#endif
 			}
 			else
@@ -1531,14 +1531,14 @@ void messagev(void)
 void init(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - init");
+	printf("driver - init\n");
 #endif
 }
 
 void randomnumber(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - randomnumber");
+	printf("driver - randomnumber\n");
 #endif
 	L9SETWORD(a6,rand());
 }
@@ -1546,49 +1546,49 @@ void randomnumber(L9BYTE* a6)
 void driverclg(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driverclg");
+	printf("driver - driverclg\n");
 #endif
 }
 
 void _line(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - line");
+	printf("driver - line\n");
 #endif
 }
 
 void fill(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - fill");
+	printf("driver - fill\n");
 #endif
 }
 
 void driverchgcol(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driverchgcol");
+	printf("driver - driverchgcol\n");
 #endif
 }
 
 void drivercalcchecksum(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - calcchecksum");
+	printf("driver - calcchecksum\n");
 #endif
 }
 
 void driveroswrch(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driveroswrch");
+	printf("driver - driveroswrch\n");
 #endif
 }
 
 void driverosrdch(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driverosrdch");
+	printf("driver - driverosrdch\n");
 #endif
 
 	os_flush();
@@ -1603,49 +1603,49 @@ void driverosrdch(L9BYTE* a6)
 void driversavefile(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driversavefile");
+	printf("driver - driversavefile\n");
 #endif
 }
 
 void driverloadfile(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driverloadfile");
+	printf("driver - driverloadfile\n");
 #endif
 }
 
 void settext(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - settext");
+	printf("driver - settext\n");
 #endif
 }
 
 void resettask(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - resettask");
+	printf("driver - resettask\n");
 #endif
 }
 
 void driverinputline(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - driverinputline");
+	printf("driver - driverinputline\n");
 #endif
 }
 
 void returntogem(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - returntogem");
+	printf("driver - returntogem\n");
 #endif
 }
 
 void lensdisplay(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - lensdisplay");
+	printf("driver - lensdisplay\n");
 #endif
 
 	printstring("\rLenslok code is ");
@@ -1657,14 +1657,14 @@ void lensdisplay(L9BYTE* a6)
 void allocspace(L9BYTE* a6)
 {
 #ifdef L9DEBUG
-	printf("driver - allocspace");
+	printf("driver - allocspace\n");
 #endif
 }
 
 void driver14(L9BYTE *a6)
 {
 #ifdef L9DEBUG
-	printf("driver - call 14");
+	printf("driver - call 14\n");
 #endif
 
 	*a6 = 0;
@@ -1673,7 +1673,7 @@ void driver14(L9BYTE *a6)
 void showbitmap(L9BYTE *a6)
 {
 #ifdef L9DEBUG
-	printf("driver - showbitmap");
+	printf("driver - showbitmap\n");
 #endif
 
 	os_show_bitmap(a6[1],a6[3],a6[5]);
@@ -1682,7 +1682,7 @@ void showbitmap(L9BYTE *a6)
 void checkfordisc(L9BYTE *a6)
 {
 #ifdef L9DEBUG
-	printf("driver - checkfordisc");
+	printf("driver - checkfordisc\n");
 #endif
 
 	*a6 = 0;
@@ -1724,7 +1724,7 @@ void driver(int d0,L9BYTE* a6)
 void ramsave(int i)
 {
 #ifdef L9DEBUG
-	printf("driver - ramsave %d",i);
+	printf("driver - ramsave %d\n",i);
 #endif
 
 	memmove(ramsavearea+i,workspace.vartable,sizeof(SaveStruct));
@@ -1733,7 +1733,7 @@ void ramsave(int i)
 void ramload(int i)
 {
 #ifdef L9DEBUG
-	printf("driver - ramload %d",i);
+	printf("driver - ramload %d\n",i);
 #endif
 
 	memmove(workspace.vartable,ramsavearea+i,sizeof(SaveStruct));
@@ -1798,7 +1798,7 @@ void save(void)
 	L9UINT16 checksum;
 	int i;
 #ifdef L9DEBUG
-	printf("function - save");
+	printf("function - save\n");
 #endif
 /* does a full save, workpace, stack, codeptr, stackptr, game name, checksum */
 
@@ -1849,7 +1849,7 @@ void NormalRestore(void)
 	GameState temp;
 	int Bytes;
 #ifdef L9DEBUG
-	printf("function - restore");
+	printf("function - restore\n");
 #endif
 	if (Cheating)
 	{
@@ -2683,7 +2683,7 @@ void _screen(void)
 	screencalled = 1;
 
 #ifdef L9DEBUG
-	printf("screen %s",l9textmode ? "graphics" : "text");
+	printf("screen %s\n",l9textmode ? "graphics" : "text");
 #endif
 
 	if (l9textmode)
@@ -2707,7 +2707,7 @@ void cleartg(void)
 {
 	int d0 = *codeptr++;
 #ifdef L9DEBUG
-	printf("cleartg %s",d0 ? "graphics" : "text");
+	printf("cleartg %s\n",d0 ? "graphics" : "text");
 #endif
 
 	if (d0)
@@ -2833,7 +2833,7 @@ void sdraw(int d7)
 	newxy(x,y);
 
 #ifdef L9DEBUG
-	printf("gfx - sdraw (%d,%d) (%d,%d) colours %d,%d",
+	printf("gfx - sdraw (%d,%d) (%d,%d) colours %d,%d\n",
 		x1,y1,drawx,drawy,gintcolour&3,option&3);
 #endif
 
@@ -2871,7 +2871,7 @@ void sgosub(int d7, L9BYTE** a5)
 {
 	int d0 = d7&0x3f;
 #ifdef L9DEBUG
-	printf("gfx - sgosub 0x%.2x",d0);
+	printf("gfx - sgosub 0x%.2x\n",d0);
 #endif
 	gosubd0(d0,a5);
 }
@@ -2907,7 +2907,7 @@ void draw(int d7, L9BYTE** a5)
 	newxy(x,y);
 
 #ifdef L9DEBUG
-	printf("gfx - draw (%d,%d) (%d,%d) colours %d,%d",
+	printf("gfx - draw (%d,%d) (%d,%d) colours %d,%d\n",
 		x1,y1,drawx,drawy,gintcolour&3,option&3);
 #endif
 
@@ -2946,7 +2946,7 @@ void icolour(int d7)
 {
 	gintcolour = d7&3;
 #ifdef L9DEBUG
-	printf("gfx - icolour 0x%.2x",gintcolour);
+	printf("gfx - icolour 0x%.2x\n",gintcolour);
 #endif
 }
 
@@ -2965,7 +2965,7 @@ void size(int d7)
 		scale = 0x80;
 
 #ifdef L9DEBUG
-	printf("gfx - size 0x%.2x",scale);
+	printf("gfx - size 0x%.2x\n",scale);
 #endif
 }
 
@@ -2979,7 +2979,7 @@ void gintfill(int d7)
 /* fillb */
 
 #ifdef L9DEBUG
-	printf("gfx - gintfill (%d,%d) colours %d,%d",drawx,drawy,d7&3,option&3);
+	printf("gfx - gintfill (%d,%d) colours %d,%d\n",drawx,drawy,d7&3,option&3);
 #endif
 
 	os_fill(scalex(drawx),scaley(drawy),d7&3,option&3);
@@ -2989,7 +2989,7 @@ void gosub(int d7, L9BYTE** a5)
 {
 	int d0 = ((d7&7)<<8)+(*(*a5)++);
 #ifdef L9DEBUG
-	printf("gfx - gosub 0x%.2x",d0);
+	printf("gfx - gosub 0x%.2x\n",d0);
 #endif
 	gosubd0(d0,a5);
 }
@@ -2997,7 +2997,7 @@ void gosub(int d7, L9BYTE** a5)
 void reflect(int d7)
 {
 #ifdef L9DEBUG
-	printf("gfx - reflect 0x%.2x",d7);
+	printf("gfx - reflect 0x%.2x\n",d7);
 #endif
 
 	if (d7&4)
@@ -3012,7 +3012,7 @@ void reflect(int d7)
 void notimp(void)
 {
 #ifdef L9DEBUG
-	printf("gfx - notimp");
+	printf("gfx - notimp\n");
 #endif
 }
 
@@ -3021,7 +3021,7 @@ void gintchgcol(L9BYTE** a5)
 	int d0 = *(*a5)++;
 
 #ifdef L9DEBUG
-	printf("gfx - gintchgcol %d %d",(d0>>3)&3,d0&7);
+	printf("gfx - gintchgcol %d %d\n",(d0>>3)&3,d0&7);
 #endif
 
 	os_setcolour((d0>>3)&3,d0&7);
@@ -3032,7 +3032,7 @@ void amove(L9BYTE** a5)
 	drawx = 0x40*(*(*a5)++);
 	drawy = 0x40*(*(*a5)++);
 #ifdef L9DEBUG
-	printf("gfx - amove (%d,%d)",drawx,drawy);
+	printf("gfx - amove (%d,%d)\n",drawx,drawy);
 #endif
 }
 
@@ -3040,7 +3040,7 @@ void opt(L9BYTE** a5)
 {
 	int d0 = *(*a5)++;
 #ifdef L9DEBUG
-	printf("gfx - opt 0x%.2x",d0);
+	printf("gfx - opt 0x%.2x\n",d0);
 #endif
 
 	if (d0)
@@ -3052,7 +3052,7 @@ void opt(L9BYTE** a5)
 void restorescale(void)
 {
 #ifdef L9DEBUG
-	printf("gfx - restorescale");
+	printf("gfx - restorescale\n");
 #endif
 	if (GfxStackPos > 0)
 		scale = GfxStack[GfxStackPos-1].scale;
@@ -3133,7 +3133,7 @@ void show_picture(int pic)
 		}
 
 #ifdef L9DEBUG
-		printf("picture %d",pic);
+		printf("picture %d\n",pic);
 #endif
 
 		os_cleargraphics();
@@ -3213,7 +3213,7 @@ void getnextobject(void)
 	L9UINT16 *hisearchposvar,*searchposvar;
 
 #ifdef L9DEBUG
-	printf("getnextobject");
+	printf("getnextobject\n");
 #endif
 
 	d2=*getvar();
@@ -3356,7 +3356,7 @@ void printinput(void)
 	while ((c=*ptr++)!=' ') printchar(c);
 
 #ifdef L9DEBUG
-	printf("printinput");
+	printf("printinput\n");
 #endif
 }
 
@@ -3404,7 +3404,7 @@ void listhandler(void)
 
 		if (a4>=MinAccess && a4<MaxAccess) *a4=(L9BYTE) val;
 		#ifdef L9DEBUG
-		else printf("Out of range list access");
+		else printf("Out of range list access\n");
 		#endif
 	}
 	else if (code>=0xc0)
@@ -3426,7 +3426,7 @@ void listhandler(void)
 		{
 			*var=0;
 			#ifdef L9DEBUG
-			printf("Out of range list access");
+			printf("Out of range list access\n");
 			#endif
 		}
 	}
@@ -3450,7 +3450,7 @@ void listhandler(void)
 		{
 			*var=0;
 			#ifdef L9DEBUG
-			printf("Out of range list access");
+			printf("Out of range list access\n");
 			#endif
 		}
 	}
@@ -3469,7 +3469,7 @@ void listhandler(void)
 
 		if (a4>=MinAccess && a4<MaxAccess) *a4=(L9BYTE) val;
 		#ifdef L9DEBUG
-		else printf("Out of range list access");
+		else printf("Out of range list access\n");
 		#endif
 	}
 }

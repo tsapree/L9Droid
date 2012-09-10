@@ -2151,7 +2151,7 @@ int code;		// instruction codes - code
 //	#endif
 
 			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte)(val&0xff);
-			L9DEBUG("Out of range list access");
+			L9DEBUG("Out of range list access\r");
 		}
 		else if (code>=0xc0) 	// listv1c 
 		{
@@ -2171,7 +2171,7 @@ int code;		// instruction codes - code
 			else
 			{
 				workspace.vartable[var]=0;
-				L9DEBUG("Out of range list access");
+				L9DEBUG("Out of range list access\r");
 
 			}
 		}
@@ -2193,7 +2193,7 @@ int code;		// instruction codes - code
 			else
 			{
 				workspace.vartable[var]=0;
-				L9DEBUG("Out of range list access");
+				L9DEBUG("Out of range list access\r");
 			}
 		}
 		else
@@ -2210,7 +2210,7 @@ int code;		// instruction codes - code
 //	#endif
 
 			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte) (val&0xff);
-			L9DEBUG("Out of range list access");
+			L9DEBUG("Out of range list access\r");
 		}
 	}
 
@@ -2874,7 +2874,8 @@ int code;		// instruction codes - code
 	
 	void picture()
 	{
-		//TODO: show_picture(*getvar());
+		L9DEBUG("picture\r");
+		show_picture(workspace.vartable[getvar()]);
 	}
 	
 	/*--was--	void _screen(void)
@@ -2929,7 +2930,7 @@ int code;		// instruction codes - code
 
 		//TODO: screencalled = 1;
 
-		L9DEBUG ("screen %s",l9textmode!=0 ? "graphics" : "text");
+		L9DEBUG ("screen %s\r",l9textmode!=0 ? "graphics" : "text");
 
 
 		if (l9textmode!=0)
@@ -3171,7 +3172,7 @@ int code;		// instruction codes - code
 		int ptr=0;//(L9BYTE*) obuff;
 		char c;
 		while ((c=obuff[ptr++])!=' ') printchar(c);
-		L9DEBUG ("printinput");
+		L9DEBUG ("printinput\r");
 	}
 	
 	/*--was--	void initgetobj(void)
@@ -3291,7 +3292,7 @@ int code;		// instruction codes - code
 		short d2,d3,d4;
 		int hisearchposvar,searchposvar;
 
-		L9DEBUG ("getnextobject");
+		L9DEBUG ("getnextobject\r");
 
 		d2=workspace.vartable[getvar()];
 		hisearchposvar=getvar();
@@ -3672,7 +3673,7 @@ int code;		// instruction codes - code
 	void cleartg()
 	{
 		int d0 = l9memory[codeptr++];
-		L9DEBUG ("cleartg %s",d0!=0 ? "graphics" : "text");
+		L9DEBUG ("cleartg %s\r",d0!=0 ? "graphics" : "text");
 
 		if (d0!=0)
 		{
@@ -3715,6 +3716,7 @@ int code;		// instruction codes - code
 //		fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
 //	#endif
 
+		L9DEBUG("Function %d\r",d0);
 		switch (d0)
 		{
 			//TODO: case 1: calldriver(); break;
@@ -3753,6 +3755,71 @@ int code;		// instruction codes - code
 //	#ifdef CODEFOLLOW
 //		fprintf(f," %d",randomseed);
 //	#endif
+	}
+	
+	/*--was-- void show_picture(int pic)
+	{
+		if (picturedata)
+		{
+			// Some games don't call the screen() opcode before drawing
+			// graphics, so here graphics are enabled if necessary. 
+			if ((screencalled == 0) && (l9textmode == 0))
+			{
+				l9textmode = 1;
+				os_graphics(1);
+			}
+
+	#ifdef L9DEBUG
+			printf("picture %d",pic);
+	#endif
+
+			os_cleargraphics();
+	// gintinit 
+			gintcolour = 3;
+			option = 0x80;
+			reflectflag = 0;
+			drawx = 0x1400;
+			drawy = 0x1400;
+	// sizereset 
+			scale = 0x80;
+
+			GfxStackPos=0;
+			absrunsub(0);
+			if (!findsub(pic,&gfxa5))
+				gfxa5 = NULL;
+		}
+	}*/
+	void show_picture(int pic)
+	{
+		/*TODO: if (picturedata)
+		{
+			// Some games don't call the screen() opcode before drawing
+			// graphics, so here graphics are enabled if necessary.
+			if ((screencalled == 0) && (l9textmode == 0))
+			{
+				l9textmode = 1;
+				os_graphics(1);
+			}
+
+	#ifdef L9DEBUG
+			printf("picture %d",pic);
+	#endif
+
+			os_cleargraphics();
+	// gintinit 
+			gintcolour = 3;
+			option = 0x80;
+			reflectflag = 0;
+			drawx = 0x1400;
+			drawy = 0x1400;
+	// sizereset 
+			scale = 0x80;
+
+			GfxStackPos=0;
+			absrunsub(0);
+			if (!findsub(pic,&gfxa5))
+				gfxa5 = NULL;
+		}*/
 	}
 	
 	///////////////////// New (tsap) implementations ////////////////////
