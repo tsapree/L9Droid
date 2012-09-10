@@ -19,6 +19,9 @@ public class L9 {
 	//TODO: может, перенести их в какой-либо класс, а не таскать по всем.
 	private static final int LISTAREASIZE = 0x800;
 	private static final int STACKSIZE = 1024;
+	
+	//#define IBUFFSIZE 500
+	private static final int IBUFFSIZE = 500; 
 
 	int showtitle=1;
 	
@@ -36,7 +39,7 @@ public class L9 {
 //// "L901"
 //#define L9_ID 0x4c393031
 //
-//#define IBUFFSIZE 500
+
 //#define RAMSAVESLOTS 10
 //#define GFXSTACKSIZE 100
 //
@@ -80,6 +83,8 @@ int V2M_ERIK=2;
 	int absdatablock;
 //L9BYTE *list2ptr
 //L9BYTE *list3ptr
+	int list2ptr;
+	int list3ptr;
 //L9BYTE *list9startptr
 	int acodeptr;
 //L9BYTE *startmd
@@ -113,6 +118,11 @@ int V2M_ERIK=2;
 //char ibuff[IBUFFSIZE];
 //L9BYTE* ibuffptr;
 	char obuff[];
+	int wordcount;
+	char ibuff[];
+	String ibuffstr;
+	
+	
 //
 	boolean Cheating=false;
 //int CheatWord;
@@ -141,11 +151,17 @@ int code;		// instruction codes - code
 //
 //int unpackd3;
 //
-short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
+	short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
 //
 //L9UINT16 gnostack[128];
-//L9BYTE gnoscratch[32];
-//int object,gnosp,numobjectfound,searchdepth,inithisearchpos;
+	//L9BYTE gnoscratch[32];
+	int gnostack[];
+	short gnoscratch[];
+	short searchdepth;
+	short inithisearchpos;
+	short gnosp;
+	short object;
+	short numobjectfound;
 
 //vars added by tsap
 	int amessageV2_depth=0;
@@ -159,6 +175,8 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 		L9Pointers=new int[12];
 		threechars=new byte[34];
 		obuff=new char[34];
+		gnoscratch=new short[32];
+		gnostack=new int [128];
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -199,8 +217,13 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 		return Running;
 	}
 	
+	/* can be called from input to cause fall through for exit */
+	/*--was-- void StopGame(void)
+	{
+		Running=FALSE;
+	}*/
 	public void StopGame () {
-		
+		Running=false;
 	}
 	
 	public void RestoreGame(String inFile) {
@@ -220,9 +243,10 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 
 	void os_printchar(char c) {};
 	//L9BOOL os_input(char* ibuff, int size)
+	String os_input(int size) {return null;}; 
 	//char os_readchar(L9UINT32 millis)
 	//L9BOOL os_stoplist(void)
-	//void os_flush(void)
+	void os_flush() {};
 	//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
 	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
 	//L9BOOL os_get_game_file(char* NewName, int Size)
@@ -529,9 +553,9 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 				int d0=L9WORD(startdata+hdoffset+i*2);
 				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? listarea+d0-0x8000 : startdata+d0;
 			}
-			//TODO: absdatablock=L9Pointers[0];
-			//TODO: list2ptr=L9Pointers[3];
-			//TODO: list3ptr=L9Pointers[4];
+			absdatablock=L9Pointers[0];
+			list2ptr=L9Pointers[3];
+			list3ptr=L9Pointers[4];
 			//TODO: list9startptr=L9Pointers[10];
 			acodeptr=L9Pointers[11];
 		}
@@ -3149,6 +3173,484 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 		while ((c=obuff[ptr++])!=' ') printchar(c);
 		L9DEBUG ("printinput");
 	}
+	
+	/*--was--	void initgetobj(void)
+	{
+		int i;
+		numobjectfound=0;
+		object=0;
+		for (i=0;i<32;i++) gnoscratch[i]=0;
+	}*/
+	void initgetobj()
+	{
+		int i;
+		numobjectfound=0;
+		object=0;
+		for (i=0;i<32;i++) gnoscratch[i]=0;
+	}
+
+	/*--was--	void getnextobject(void)
+	{
+		int d2,d3,d4;
+		L9UINT16 *hisearchposvar,*searchposvar;
+
+	#ifdef L9DEBUG
+		printf("getnextobject");
+	#endif
+
+		d2=*getvar();
+		hisearchposvar=getvar();
+		searchposvar=getvar();
+		d3=*hisearchposvar;
+		d4=*searchposvar;
+
+	// gnoabs 
+		do
+		{
+			if ((d3 | d4)==0)
+			{
+				// initgetobjsp
+				gnosp=128;
+				searchdepth=0;
+				initgetobj();
+				break;
+			}
+
+			if (numobjectfound==0) inithisearchpos=d3;
+
+		// gnonext 
+			do
+			{
+				if (d4==list2ptr[++object])
+				{
+					// gnomaybefound 
+					int d6=list3ptr[object]&0x1f;
+					if (d6!=d3)
+					{
+						if (d6==0 || d3==0) continue;
+						if (d3!=0x1f)
+						{
+							gnoscratch[d6]=d6;
+							continue;
+						}
+						d3=d6;
+					}
+					// gnofound 
+					numobjectfound++;
+					gnostack[--gnosp]=object;
+					gnostack[--gnosp]=0x1f;
+
+					*hisearchposvar=d3;
+					*searchposvar=d4;
+					*getvar()=object;
+					*getvar()=numobjectfound;
+					*getvar()=searchdepth;
+					return;
+				}
+			} while (object<=d2);
+
+			if (inithisearchpos==0x1f)
+			{
+				gnoscratch[d3]=0;
+				d3=0;
+
+			// gnoloop 
+				do
+				{
+					if (gnoscratch[d3])
+					{
+						gnostack[--gnosp]=d4;
+						gnostack[--gnosp]=d3;
+					}
+				} while (++d3<0x1f);
+			}
+		// gnonewlevel 
+			if (gnosp!=128)
+			{
+				d3=gnostack[gnosp++];
+				d4=gnostack[gnosp++];
+			}
+			else d3=d4=0;
+
+			numobjectfound=0;
+			if (d3==0x1f) searchdepth++;
+
+			initgetobj();
+		} while (d4);
+
+	// gnofinish 
+	// gnoreturnargs 
+		*hisearchposvar=0;
+		*searchposvar=0;
+		*getvar()=object=0;
+		*getvar()=numobjectfound;
+		*getvar()=searchdepth;
+	}*/
+	void getnextobject()
+	{
+		short d2,d3,d4;
+		int hisearchposvar,searchposvar;
+
+		L9DEBUG ("getnextobject");
+
+		d2=workspace.vartable[getvar()];
+		hisearchposvar=getvar();
+		searchposvar=getvar();
+		d3=workspace.vartable[hisearchposvar];
+		d4=workspace.vartable[searchposvar];
+
+	// gnoabs 
+		do
+		{
+			if ((d3 | d4)==0)
+			{
+				// initgetobjsp
+				gnosp=128;
+				searchdepth=0;
+				initgetobj();
+				break;
+			}
+
+			if (numobjectfound==0) inithisearchpos=d3;
+
+		// gnonext 
+			do
+			{
+				if (d4==l9memory[list2ptr+(++object)])
+				{
+					// gnomaybefound 
+					int d6=l9memory[list3ptr+object]&0x1f;
+					if (d6!=d3)
+					{
+						if (d6==0 || d3==0) continue;
+						if (d3!=0x1f)
+						{
+							gnoscratch[d6]=(short)d6;
+							continue;
+						}
+						d3=(short)d6;
+					}
+					// gnofound 
+					numobjectfound++;
+					gnostack[--gnosp]=object;
+					gnostack[--gnosp]=0x1f;
+
+					workspace.vartable[hisearchposvar]=d3;
+					workspace.vartable[searchposvar]=d4;
+					workspace.vartable[getvar()]=object;
+					workspace.vartable[getvar()]=numobjectfound;
+					workspace.vartable[getvar()]=searchdepth;
+					return;
+				}
+			} while (object<=d2);
+
+			if (inithisearchpos==0x1f)
+			{
+				gnoscratch[d3]=0;
+				d3=0;
+
+			// gnoloop 
+				do
+				{
+					if (gnoscratch[d3]!=0)
+					{
+						gnostack[--gnosp]=d4;
+						gnostack[--gnosp]=d3;
+					}
+				} while (++d3<0x1f);
+			}
+		// gnonewlevel 
+			if (gnosp!=128)
+			{
+				d3=(short)(gnostack[gnosp++]&0xffff);
+				d4=(short)(gnostack[gnosp++]&0xffff);
+			}
+			else d3=d4=0;
+
+			numobjectfound=0;
+			if (d3==0x1f) searchdepth++;
+
+			initgetobj();
+		} while (d4!=0);
+
+	// gnofinish 
+	// gnoreturnargs 
+		workspace.vartable[hisearchposvar]=0;
+		workspace.vartable[searchposvar]=0;
+		workspace.vartable[getvar()]=object=0;
+		workspace.vartable[getvar()]=numobjectfound;
+		workspace.vartable[getvar()]=searchdepth;
+	}
+
+	
+	
+	/*--was--	L9BOOL inputV2(int *wordcount)
+	{
+		L9BYTE a,x;
+		L9BYTE *ibuffptr,*obuffptr,*ptr,*list0ptr;
+		char *iptr;
+
+		if (Cheating) NextCheat();
+		else
+		{
+			os_flush();
+			lastchar='.';
+			// get input 
+			if (!os_input(ibuff,IBUFFSIZE)) return FALSE; // fall through 
+			if (CheckHash()) return FALSE;
+
+			// check for invalid chars 
+			for (iptr=ibuff;*iptr!=0;iptr++)
+			{
+				if (!isalnum(*iptr))
+					*iptr=' ';
+			}
+
+			// force CR but prevent others 
+			os_printchar(lastactualchar='\r');
+		}
+		// add space onto end 
+		ibuffptr=(L9BYTE*) strchr(ibuff,0);
+		*ibuffptr++=32;
+		*ibuffptr=0;
+
+		*wordcount=0;
+		ibuffptr=(L9BYTE*) ibuff;
+		obuffptr=(L9BYTE*) obuff;
+		// ibuffptr=76,77 
+		// obuffptr=84,85 
+		// list0ptr=7c,7d 
+		list0ptr=L9Pointers[1];
+
+		while (*ibuffptr==32) ++ibuffptr;
+
+		ptr=ibuffptr;
+		do
+		{
+			while (*ptr==32) ++ptr;
+			if (*ptr==0) break;
+			(*wordcount)++;
+			do
+			{
+				a=*++ptr;
+			} while (a!=32 && a!=0);
+		} while (*ptr>0);
+
+		while (TRUE)
+		{
+			ptr=ibuffptr; // 7a,7b 
+			while (*ibuffptr==32) ++ibuffptr;
+
+			while (TRUE)
+			{
+				a=*ibuffptr;
+				x=*list0ptr++;
+
+				if (a==32) break;
+				if (a==0)
+				{
+					*obuffptr++=0;
+					return TRUE;
+				}
+
+				++ibuffptr;
+				if (tolower(x&0x7f) != tolower(a))
+				{
+					while (x>0 && x<0x7f) x=*list0ptr++;
+					if (x==0)
+					{
+						do
+						{
+							a=*ibuffptr++;
+							if (a==0)
+							{
+								*obuffptr=0;
+								return TRUE;
+							}
+						} while (a!=32);
+						while (*ibuffptr==32) ++ibuffptr;
+						list0ptr=L9Pointers[1];
+						ptr=ibuffptr;
+					}
+					else
+					{
+						list0ptr++;
+						ibuffptr=ptr;
+					}
+				}
+				else if (x>=0x7f) break;
+			}
+
+			a=*ibuffptr;
+			if (a!=32)
+			{
+				ibuffptr=ptr;
+				list0ptr+=2;
+				continue;
+			}
+			--list0ptr;
+			while (*list0ptr++<0x7e);
+			*obuffptr++=*list0ptr;
+			while (*ibuffptr==32) ++ibuffptr;
+			list0ptr=L9Pointers[1];
+		}
+	}*/
+	boolean inputV2()
+	{
+		char a,x;
+		int ibuffptr,obuffptr,ptr;
+		int list0ptr;
+
+		if (Cheating) {} //TODO: NextCheat();
+		else
+		{
+			os_flush();
+			lastchar='.';
+			// get input 
+			if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
+			// add space and zero onto end
+			ibuffstr.concat(" \0");
+			ibuff=ibuffstr.toCharArray();
+			//TODO:if (CheckHash()) return false;
+
+			// check for invalid chars 
+			for (int i=0;i<ibuff.length;i++) {
+				if (!((ibuff[i]>='a' && ibuff[i]<='z') || (ibuff[i]>='A' && ibuff[i]<='Z') || (ibuff[i]>='0' && ibuff[i]<='9')))
+					ibuff[i]=' ';
+			}
+
+			// force CR but prevent others
+			os_printchar(lastactualchar='\r');
+		}
+		wordcount=0;
+		ibuffptr=0; //(L9BYTE*) ibuff;
+		obuffptr=0; //(L9BYTE*) obuff;
+		// ibuffptr=76,77
+		// obuffptr=84,85
+		// list0ptr=7c,7d
+		list0ptr=L9Pointers[1];
+
+		while (ibuff[ibuffptr]==32) ++ibuffptr;
+
+		ptr=ibuffptr;
+		do
+		{
+			while (ibuff[ptr]==32) ++ptr;
+			if (ibuff[ptr]==0) break;
+			(wordcount)++;
+			do
+			{
+				a=ibuff[++ptr];
+			} while (a!=32 && a!=0);
+		} while (ibuff[ptr]>0);
+
+		while (true)
+		{
+			ptr=ibuffptr; // 7a,7b
+			while (ibuff[ibuffptr]==32) ++ibuffptr;
+
+			while (true)
+			{
+				a=ibuff[ibuffptr];
+				x=(char)l9memory[list0ptr++];
+
+				if (a==32) break;
+				if (a==0)
+				{
+					obuff[obuffptr++]=0;
+					return true;
+				}
+
+				++ibuffptr;
+				if (tolower((char)(x&0x7f)) != tolower(a))
+				{
+					while (x>0 && x<0x7f) x=(char)l9memory[list0ptr++];
+					if (x==0)
+					{
+						do
+						{
+							a=ibuff[ibuffptr++];
+							if (a==0)
+							{
+								obuff[obuffptr]=0;
+								return true;
+							}
+						} while (a!=32);
+						while (ibuff[ibuffptr]==32) ++ibuffptr;
+						list0ptr=L9Pointers[1];
+						ptr=ibuffptr;
+					}
+					else
+					{
+						list0ptr++;
+						ibuffptr=ptr;
+					}
+				}
+				else if (x>=0x7f) break;
+			}
+
+			a=ibuff[ibuffptr];
+			if (a!=32)
+			{
+				ibuffptr=ptr;
+				list0ptr+=2;
+				continue;
+			}
+			--list0ptr;
+			while (l9memory[list0ptr]++<0x7e);
+			obuff[obuffptr++]=(char)l9memory[list0ptr];
+			while (ibuff[ibuffptr]==32) ++ibuffptr;
+			list0ptr=L9Pointers[1];
+		}
+	}
+
+	/*--was-- void input(void)
+	{
+		//  if corruptinginput() returns false then, input will be called again
+		//   next time around instructionloop, this is used when save() and restore()
+		//   are called out of line 
+
+		codeptr--;
+		if (L9GameType==L9_V2)
+		{
+			int wordcount;
+			if (inputV2(&wordcount))
+			{
+				L9BYTE *obuffptr=(L9BYTE*) obuff;
+				codeptr++;
+				*getvar()=*obuffptr++;
+				*getvar()=*obuffptr++;
+				*getvar()=*obuffptr;
+				*getvar()=wordcount;
+			}
+		}
+		else
+			if (corruptinginput()) codeptr+=5;
+	}*/
+	void input()
+	{
+		// if corruptinginput() returns false then, input will be called again
+		// next time around instructionloop, this is used when save() and restore()
+		// are called out of line 
+
+		codeptr--;
+		if (L9GameType==L9_V2)
+		{
+			if (inputV2())
+			{
+				//L9BYTE *obuffptr=(L9BYTE*) obuff;
+				codeptr++;
+				//todo: проверить правильность конвертации char в short
+				workspace.vartable[getvar()]=(short) obuff[0];//*obuffptr++;
+				workspace.vartable[getvar()]=(short) obuff[1];//*obuffptr++;
+				workspace.vartable[getvar()]=(short) obuff[2];//*obuffptr;
+				workspace.vartable[getvar()]=(short)wordcount;
+			}
+		}
+		else
+			{} //TODO: if (corruptinginput()) codeptr+=5;
+	}
+
 
 	/*void cleartg(void)
 	{
@@ -3215,7 +3717,7 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 
 		switch (d0)
 		{
-			case 1: calldriver(); break;
+			//TODO: case 1: calldriver(); break;
 			case 2: L9Random(); break;
 			//TODO: case 3: save(); break;
 			//TODO: case 4: NormalRestore(); break;
@@ -3256,8 +3758,13 @@ short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x0
 	///////////////////// New (tsap) implementations ////////////////////
 	
 	char toupper(char c) {
-		if (c>='a' && c<='z') return (char)(c-32);
-		else return c;
+		if (c>='a' && c<='z') c=(char)(c-32);
+		return c;
+	}
+	
+	char tolower(char c) {
+		if (c>='A' && c<='Z') c=(char)(c+32);
+		return c;
 	}
 	
 	void L9DEBUG(String txt) {
