@@ -2737,14 +2737,14 @@ int code;		// instruction codes - code
 	void printmessage(int Msg)
 	{
 		int Msgptr[]={startmd};
-		byte Data;
+		int Data;
 
 		int len,msgtmp;
 		int Off;
 
 		while (Msg>0 && Msgptr[0]-endmd<=0)
 		{
-			Data=l9memory[Msgptr[0]];
+			Data=l9memory[Msgptr[0]]&0xff;
 			if ((Data&128)!=0)
 			{
 				Msgptr[0]++;
@@ -2763,7 +2763,7 @@ int code;		// instruction codes - code
 
 		while (len!=0)
 		{
-			Data=l9memory[Msgptr[0]++];
+			Data=l9memory[Msgptr[0]++]&0xff;
 			len--;
 			if ((Data&128)!=0)
 			{
