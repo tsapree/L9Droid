@@ -108,7 +108,7 @@ int V2M_ERIK=2;
 //
 	int wordcase;
 	int unpackcount;
-	byte unpackbuf[];
+	int unpackbuf[];
 //L9BYTE* dictptr;
 	int dictptr;
 	byte threechars[];
@@ -173,7 +173,7 @@ int code;		// instruction codes - code
 	
 	L9() {
 		workspace=new GameState();
-		unpackbuf=new byte[8];
+		unpackbuf=new int[8];
 		L9Pointers=new int[12];
 		threechars=new byte[34];
 		obuff=new char[34];
@@ -215,6 +215,10 @@ int code;		// instruction codes - code
 	}*/
 	public boolean RunGame() {
 		code=l9memory[codeptr++]&0xff;
+		if(code==233) {
+			int t=code;
+			if (t>0) {};
+		}
 		os_debug(String.format("codeptr=%d, code=%d", codeptr-1, code));
 		executeinstruction();
 		return Running;
@@ -2163,7 +2167,9 @@ int code;		// instruction codes - code
 //	#endif
 
 			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte)(val&0xff);
-			L9DEBUG("Out of range list access\r");
+			else {
+				L9DEBUG("Out of range list access\r");
+			};
 		}
 		else if (code>=0xc0) 	// listv1c 
 		{
@@ -2222,7 +2228,9 @@ int code;		// instruction codes - code
 //	#endif
 
 			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte) (val&0xff);
-			L9DEBUG("Out of range list access\r");
+			else {
+				L9DEBUG("Out of range list access\r");
+			};
 		}
 	}
 
@@ -2492,8 +2500,11 @@ int code;		// instruction codes - code
 	{
 		//static int mdtmode=0;
 		//	int displaywordref_mdtmode=0;
-
+		
 		wordcase=0;
+		
+		//if (wordcase==0) return;
+		
 		d5=(Off>>12)&7;
 		Off&=0xfff;
 		if (Off<0xf80)
@@ -2605,25 +2616,26 @@ int code;		// instruction codes - code
 			return unpackbuf[0];
 		}
 	}*/
-	byte getdictionarycode()
+	//unpack from this form: 00000111 11222223 33334444 45555566 66677777
+	int getdictionarycode()
 	{
 		if (unpackcount!=8) return unpackbuf[unpackcount++];
 		else
 		{
 			// unpackbytes 
-			byte d1=l9memory[dictptr++],d2;
-			unpackbuf[0]=(byte)(d1>>3);
-			d2=l9memory[dictptr++];
-			unpackbuf[1]=(byte)(((d2>>6) + (d1<<2)) & 0x1f);
-			d1=l9memory[dictptr++];
-			unpackbuf[2]=(byte)((d2>>1) & 0x1f);
-			unpackbuf[3]=(byte)(((d1>>4) + (d2<<4)) & 0x1f);
-			d2=l9memory[dictptr++];
-			unpackbuf[4]=(byte)(((d1<<1) + (d2>>7)) & 0x1f);
-			d1=l9memory[dictptr++];
-			unpackbuf[5]=(byte)((d2>>2) & 0x1f);
-			unpackbuf[6]=(byte)(((d2<<3) + (d1>>5)) & 0x1f);
-			unpackbuf[7]=(byte)(d1 & 0x1f);
+			int d1=l9memory[dictptr++]&0xff,d2;
+			unpackbuf[0]=(d1>>3);
+			d2=l9memory[dictptr++]&0xff;
+			unpackbuf[1]=(((d2>>6) + (d1<<2)) & 0x1f);
+			d1=l9memory[dictptr++]&0xff;
+			unpackbuf[2]=((d2>>1) & 0x1f);
+			unpackbuf[3]=(((d1>>4) + (d2<<4)) & 0x1f);
+			d2=l9memory[dictptr++]&0xff;
+			unpackbuf[4]=(((d1<<1) + (d2>>7)) & 0x1f);
+			d1=l9memory[dictptr++]&0xff;
+			unpackbuf[5]=((d2>>2) & 0x1f);
+			unpackbuf[6]=(((d2<<3) + (d1>>5)) & 0x1f);
+			unpackbuf[7]=(d1 & 0x1f);
 			unpackcount=1;
 			return unpackbuf[0];
 		}
@@ -2683,7 +2695,7 @@ int code;		// instruction codes - code
 		do
 		{
 			//len=(*(*Ptr)++ -1) & 0x3f;
-			len=(l9memory[Ptr[0]++]&0xff -1) & 0x3f;
+			len=((l9memory[Ptr[0]++]&0xff) -1) & 0x3f;
 			tot+=len;
 		} while (len==0x3f);
 		return tot;
