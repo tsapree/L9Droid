@@ -3703,6 +3703,165 @@ int code;		// instruction codes - code
 			{} //TODO: if (corruptinginput()) codeptr+=5;
 	}
 
+	L9BOOL corruptinginput(void)
+	{
+		L9BYTE *a0,*a2,*a6;
+		int d0,d1,d2,keywordnumber,abrevword;
+		char *iptr;
+
+		list9ptr=list9startptr;
+
+		if (ibuffptr==NULL)
+		{
+			if (Cheating) NextCheat();
+			else
+			{
+				/* flush */
+				os_flush();
+				lastchar='.';
+				/* get input */
+				if (!os_input(ibuff,IBUFFSIZE)) return FALSE; /* fall through */
+				if (CheckHash()) return FALSE;
+
+				/* check for invalid chars */
+				for (iptr=ibuff;*iptr!=0;iptr++)
+				{
+					if (!isalnum(*iptr))
+						*iptr=' ';
+				}
+
+				/* force CR but prevent others */
+				os_printchar(lastactualchar='\r');
+			}
+			ibuffptr=(L9BYTE*) ibuff;
+		}
+
+		a2=(L9BYTE*) obuff;
+		a6=ibuffptr;
+
+	/*ip05 */
+		while (TRUE)
+		{
+			d0=*a6++;
+			if (d0==0)
+			{
+				ibuffptr=NULL;
+				L9SETWORD(list9ptr,0);
+				return TRUE;
+			}
+			if (partword((char)d0)==0) break;
+			if (d0!=0x20)
+			{
+				ibuffptr=a6;
+				L9SETWORD(list9ptr,d0);
+				L9SETWORD(list9ptr+2,0);
+				*a2=0x20;
+				keywordnumber=-1;
+				return TRUE;
+			}
+		}
+
+		a6--;
+	/*ip06loop */
+		do
+		{
+			d0=*a6++;
+			if (partword((char)d0)==1) break;
+			d0=tolower(d0);
+			*a2++=d0;
+		} while (a2<(L9BYTE*) obuff+0x1f);
+	/*ip06a */
+		*a2=0x20;
+		a6--;
+		ibuffptr=a6;
+		abrevword=-1;
+		keywordnumber=-1;
+		list9ptr=list9startptr;
+	/* setindex */
+		a0=dictdata;
+		d2=dictdatalen;
+		d0=*obuff-0x61;
+		if (d0<0)
+		{
+			a6=defdict;
+			d1=0;
+		}
+		else
+		{
+		/*ip10 */
+			d1=0x67;
+			if (d0<0x1a)
+			{
+				d1=d0<<2;
+				d0=obuff[1];
+				if (d0!=0x20) d1+=((d0-0x61)>>3)&3;
+			}
+		/*ip13 */
+			if (d1>=d2)
+			{
+				checknumber();
+				return TRUE;
+			}
+			a0+=d1<<2;
+			a6=startdata+L9WORD(a0);
+			d1=L9WORD(a0+2);
+		}
+	//ip13gotwordnumber 
+
+		initunpack(a6);
+	//ip14 
+		d1--;
+		do
+		{
+			d1++;
+			if (unpackword())
+			{// ip21b 
+				if (abrevword==-1) break; // goto ip22 
+				else d0=abrevword; // goto ip18b 
+			}
+			else
+			{
+				L9BYTE* a1=(L9BYTE*) threechars;
+				int d6=-1;
+
+				a0=(L9BYTE*) obuff;
+			//ip15 
+				do
+				{
+					d6++;
+					d0=tolower(*a1++ & 0x7f);
+					d2=*a0++;
+				} while (d0==d2);
+
+				if (d2!=0x20)
+				{// ip17 
+					if (abrevword==-1) continue;
+					else d0=-1;
+				}
+				else if (d0==0) d0=d1;
+				else if (abrevword!=-1) break;
+				else if (d6>=4) d0=d1;
+				else
+				{
+					abrevword=d1;
+					continue;
+				}
+			}
+			//ip18b 
+			findmsgequiv(d1);
+
+			abrevword=-1;
+			if (list9ptr!=list9startptr)
+			{
+				L9SETWORD(list9ptr,0);
+				return TRUE;
+			}
+		} while (TRUE);
+	// ip22 
+		checknumber();
+		return TRUE;
+	}
+	
 
 	/*--was--	void cleartg(void)
 	{
