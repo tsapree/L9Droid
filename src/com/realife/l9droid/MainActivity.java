@@ -63,11 +63,14 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
-			int i=400;
-			while (l9.RunGame() && (i-->0) && l9.codeptr!=20631);
+			//int i=400;
+			//while (l9.RunGame() && (i-->0) && l9.codeptr!=20631);
 			if (etCmd.length()>0) {
 				etLog.append(">"+etCmd.getText()+"\n");
 				etCmd.setText("");
+				l9.InputCommand(etCmd.getText().toString());
+				l9.step();
+
 			};
 			break;
 		}
@@ -81,14 +84,6 @@ class L9implement extends L9 {
     //1 - waiting for command from user
     //2 - command entered, need to put it into parser
     //TODO: заменить на enum?
-    int inputSelected;
-    private static final int NoInputAllowed	= 0;
-    private static final int CommandEditorEnabled =	1;
-    private static final int CommandAvailable = 2;
-//    private static final int CharEditorEnabled = 3;
-//    private static final int CharAvailable = 4;
-//    private static final int CharEditorTick = 5;
-//    private static final int CharUnAvailable = 6;
 	
     String cmdStr;
 	
@@ -114,17 +109,8 @@ class L9implement extends L9 {
 		Log.d(LOG_TAG, str);
 	};
 	
-	String os_input(int size) {
-		Running=false;
-		return null;
-		/*if (inputSelected==CommandAvailable) {
-			inputSelected=NoInputAllowed;
-			//iApV->GetCommand(ibuff,size);
-			//if (ibuff[0]==0) return null;
-			return cmdStr;
-		};
-		inputSelected=CommandEditorEnabled;
-		return null;*/
+	void step() {
+		while (L9State==L9StateRunning) RunGame();
 	};
 
 

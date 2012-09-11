@@ -30,7 +30,14 @@ public class L9 {
 	//L9UINT16 randomseed;
 	short randomseed;
 	//L9BOOL Running;
-	boolean Running;
+	//boolean Running;
+	int L9State;
+	static final int L9StateStopped=0;
+	static final int L9StateRunning=1;
+	static final int L9StateWaitForCommand=2;
+	static final int L9StateCommandReady = 3;	//TODO: Переназвать, глупо как-то звучит
+	static final int L9StateWaitForKey=4;
+	
 	
 	//char LastGame[MAX_PATH];
 	String LastGame;
@@ -122,6 +129,8 @@ int V2M_ERIK=2;
 	char ibuff[];
 	String ibuffstr;
 	
+	String InputString;
+	
 	
 //
 	boolean Cheating=false;
@@ -177,6 +186,7 @@ int code;		// instruction codes - code
 		obuff=new char[34];
 		gnoscratch=new short[32];
 		gnostack=new int [128];
+		InputString=null;
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -192,7 +202,7 @@ int code;		// instruction codes - code
 	*/
 	public boolean LoadGame(String fileName, String picName) {
 		
-		boolean ret=LoadGame2(fileName, picName);
+		int ret=LoadGame2(fileName, picName);
 		showtitle=1;
 		clearworkspace();
 		workspace.stackptr=0;
@@ -200,8 +210,7 @@ int code;		// instruction codes - code
 		//TODO: возможно, поискать более красивое решение - метод memset (как и clearworkspace)
 		//TODO: вообще перенести очистку в класс GameState
 		for (int i=0;i<LISTAREASIZE;i++) l9memory[listarea+i]=0;
-		return ret;
-
+		return ret==L9StateRunning; //true - L9StateRunning, false - otherway
 	}
 	
 	/*--was-- L9BOOL RunGame(void)
@@ -211,7 +220,8 @@ int code;		// instruction codes - code
 		executeinstruction();
 		return Running;
 	}*/
-	public boolean RunGame() {
+	public int RunGame() {
+		if (L9State!=L9StateRunning) return L9State;
 		code=l9memory[codeptr++]&0xff;
 		if(code==233) {
 			int t=code;
@@ -219,7 +229,7 @@ int code;		// instruction codes - code
 		}
 		os_debug(String.format("codeptr=%d, code=%d", codeptr-1, code));
 		executeinstruction();
-		return Running;
+		return L9State;
 	}
 	
 	/* can be called from input to cause fall through for exit */
@@ -228,7 +238,7 @@ int code;		// instruction codes - code
 		Running=FALSE;
 	}*/
 	public void StopGame () {
-		Running=false;
+		L9State=L9StateStopped;
 	}
 	
 	public void RestoreGame(String inFile) {
@@ -237,6 +247,12 @@ int code;		// instruction codes - code
 	
 	public void FreeMemory() {
 		
+	}
+	
+	public void InputCommand(String str) {
+		if (str==null) return; 
+		InputString=str;
+		L9State=L9StateRunning;
 	}
 	
 	//TODO: void GetPictureSize(int* width, int* height)
@@ -248,7 +264,7 @@ int code;		// instruction codes - code
 
 	void os_printchar(char c) {};
 	//L9BOOL os_input(char* ibuff, int size)
-	String os_input(int size) {return null;}; 
+	String os_input(int size) {return InputString;}; 
 	//char os_readchar(L9UINT32 millis)
 	//L9BOOL os_stoplist(void)
 	void os_flush() {};
@@ -303,16 +319,16 @@ int code;		// instruction codes - code
 		return Running=TRUE;
 	}
 	*/
-	boolean LoadGame2(String filename, String picname) {
+	int LoadGame2(String filename, String picname) {
 		// may be already running a game, maybe in input routine
-		Running=false;
+		L9State=L9StateStopped;
 		//TODO: ibuffptr=NULL;
-		if (!intinitialise(filename,picname)) return false;
+		if (!intinitialise(filename,picname)) return L9StateStopped;
 		codeptr=acodeptr;
 		randomseed = (short)(Math.random()*32767);
 		LastGame=filename;
-		Running=true;
-		return Running;
+		L9State=L9StateRunning;
+		return L9State;
 	}
 	
 	/*--was-- L9BOOL intinitialise(char*filename,char*picname)
@@ -2136,7 +2152,8 @@ int code;		// instruction codes - code
 
 		if ((code&0x1f)>0xa) {
 			error("\rillegal list access %d\r",code&0x1f);
-			Running=false;
+			//Running=false;
+			L9State=L9StateStopped;
 			return;
 		}
 		a4=L9Pointers[1+code&0x1f];
@@ -2240,7 +2257,8 @@ int code;		// instruction codes - code
 	void ilins(int d0)
 	{
 		error("\rIllegal instruction: %d\r",d0);
-		Running=false;
+		//Running=false;
+		L9State=L9StateStopped;
 	}
 
 	/*--was-- L9UINT16 *getvar(void)
@@ -2326,7 +2344,8 @@ int code;		// instruction codes - code
 		if (workspace.stackptr==STACKSIZE)
 		{
 			error("\rStack overflow error\r");
-			Running=false;
+			//Running=false;
+			L9State=L9StateStopped;
 			return;
 		}
 		workspace.stack[workspace.stackptr++]=(short)((codeptr-acodeptr)&0xffff);
@@ -2348,7 +2367,7 @@ int code;		// instruction codes - code
 		if (workspace.stackptr==0)
 		{
 			error("\rStack underflow error\r");
-			Running=false;
+			L9State=L9StateStopped;
 			return;
 		}
 		codeptr=acodeptr+workspace.stack[--workspace.stackptr];
@@ -3530,6 +3549,7 @@ int code;		// instruction codes - code
 			os_flush();
 			lastchar='.';
 			// get input 
+			//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
 			if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
 			// add space and zero onto end
 			ibuffstr.concat(" \0");
@@ -3657,6 +3677,15 @@ int code;		// instruction codes - code
 		// are called out of line 
 
 		codeptr--;
+		switch (L9State) {
+		case L9StateRunning:
+			L9State=L9StateWaitForCommand;
+			return;
+		case L9StateCommandReady:
+			L9State=L9StateRunning;
+			break;
+		}
+		
 		if (L9GameType==L9_V2)
 		{
 			if (inputV2())
@@ -3675,7 +3704,7 @@ int code;		// instruction codes - code
 	}
 
 
-	/*void cleartg(void)
+	/*--was--	void cleartg(void)
 	{
 		int d0 = *codeptr++;
 	#ifdef L9DEBUG
