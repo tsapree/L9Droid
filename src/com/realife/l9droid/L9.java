@@ -221,7 +221,7 @@ int code;		// instruction codes - code
 		return Running;
 	}*/
 	public int RunGame() {
-		if (L9State!=L9StateRunning) return L9State;
+		//if (L9State!=L9StateRunning && L9State!=L9StateCommandReady) return L9State;
 		code=l9memory[codeptr++]&0xff;
 		if(code==233) {
 			int t=code;
@@ -252,7 +252,7 @@ int code;		// instruction codes - code
 	public void InputCommand(String str) {
 		if (str==null) return; 
 		InputString=str;
-		L9State=L9StateRunning;
+		L9State=L9StateCommandReady;
 	}
 	
 	//TODO: void GetPictureSize(int* width, int* height)
@@ -263,7 +263,7 @@ int code;		// instruction codes - code
 ////////////////////////////////////////////////////////////////////////
 
 	void os_printchar(char c) {};
-	//L9BOOL os_input(char* ibuff, int size)
+	//TODO:KILL os_input()
 	String os_input(int size) {return InputString;}; 
 	//char os_readchar(L9UINT32 millis)
 	//L9BOOL os_stoplist(void)
@@ -3552,12 +3552,12 @@ int code;		// instruction codes - code
 			//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
 			if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
 			// add space and zero onto end
-			ibuffstr.concat(" \0");
+			ibuffstr=ibuffstr.concat(" \0");
 			ibuff=ibuffstr.toCharArray();
 			//TODO:if (CheckHash()) return false;
 
-			// check for invalid chars 
-			for (int i=0;i<ibuff.length;i++) {
+			// check for invalid chars
+			for (int i=0;i<ibuff.length-1;i++) {
 				if (!((ibuff[i]>='a' && ibuff[i]<='z') || (ibuff[i]>='A' && ibuff[i]<='Z') || (ibuff[i]>='0' && ibuff[i]<='9')))
 					ibuff[i]=' ';
 			}

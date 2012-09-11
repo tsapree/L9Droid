@@ -49,6 +49,7 @@ public class MainActivity extends Activity implements OnClickListener {
         l9=new L9implement(etLog,gamedata);
         
         l9.LoadGame("test", "");
+        l9.step();
         
     }
 
@@ -67,9 +68,11 @@ public class MainActivity extends Activity implements OnClickListener {
 			//while (l9.RunGame() && (i-->0) && l9.codeptr!=20631);
 			if (etCmd.length()>0) {
 				etLog.append(">"+etCmd.getText()+"\n");
-				etCmd.setText("");
 				l9.InputCommand(etCmd.getText().toString());
+				etCmd.setText("");
+				//l9.InputCommand("EXAM PICT");
 				l9.step();
+
 
 			};
 			break;
@@ -110,7 +113,7 @@ class L9implement extends L9 {
 	};
 	
 	void step() {
-		while (L9State==L9StateRunning) RunGame();
+		while (L9State==L9StateRunning || L9State==L9StateCommandReady) RunGame();
 	};
 
 
