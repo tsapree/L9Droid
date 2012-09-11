@@ -92,7 +92,7 @@ int V2M_ERIK=2;
 //L9BYTE *list3ptr
 	int list2ptr;
 	int list3ptr;
-//L9BYTE *list9startptr
+	int list9startptr;
 	int acodeptr;
 //L9BYTE *startmd
 	int startmd;
@@ -124,6 +124,7 @@ int V2M_ERIK=2;
 //
 //char ibuff[IBUFFSIZE];
 //L9BYTE* ibuffptr;
+	int ibuffptr;
 	char obuff[];
 	int wordcount;
 	char ibuff[];
@@ -153,12 +154,12 @@ int V2M_ERIK=2;
 	char lastactualchar=0;
 	int d5;
 //
-int codeptr;	// instruction codes - pointer 
-int code;		// instruction codes - code
+	int codeptr;	// instruction codes - pointer 
+	int code;		// instruction codes - code
 //
-//L9BYTE* list9ptr;
+	int list9ptr;
 //
-//int unpackd3;
+	int unpackd3;
 //
 	short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
 //
@@ -322,7 +323,7 @@ int code;		// instruction codes - code
 	int LoadGame2(String filename, String picname) {
 		// may be already running a game, maybe in input routine
 		L9State=L9StateStopped;
-		//TODO: ibuffptr=NULL;
+		ibuffptr=-1; //указатель на текст в строке команды для V3,4
 		if (!intinitialise(filename,picname)) return L9StateStopped;
 		codeptr=acodeptr;
 		randomseed = (short)(Math.random()*32767);
@@ -579,7 +580,7 @@ int code;		// instruction codes - code
 			absdatablock=L9Pointers[0];
 			list2ptr=L9Pointers[3];
 			list3ptr=L9Pointers[4];
-			//TODO: list9startptr=L9Pointers[10];
+			list9startptr=L9Pointers[10];
 			acodeptr=L9Pointers[11];
 		}
 
@@ -3700,46 +3701,45 @@ int code;		// instruction codes - code
 			}
 		}
 		else
-			{} //TODO: if (corruptinginput()) codeptr+=5;
+			if (corruptinginput()) codeptr+=5;
 	}
 
-	L9BOOL corruptinginput(void)
-	{
+	/*--was--	L9BOOL corruptinginput(void) {
 		L9BYTE *a0,*a2,*a6;
 		int d0,d1,d2,keywordnumber,abrevword;
 		char *iptr;
-
+	
 		list9ptr=list9startptr;
-
+	
 		if (ibuffptr==NULL)
 		{
 			if (Cheating) NextCheat();
 			else
 			{
-				/* flush */
+				// flush 
 				os_flush();
 				lastchar='.';
-				/* get input */
-				if (!os_input(ibuff,IBUFFSIZE)) return FALSE; /* fall through */
+				// get input 
+				if (!os_input(ibuff,IBUFFSIZE)) return FALSE; // fall through 
 				if (CheckHash()) return FALSE;
-
-				/* check for invalid chars */
+	
+				// check for invalid chars 
 				for (iptr=ibuff;*iptr!=0;iptr++)
 				{
 					if (!isalnum(*iptr))
 						*iptr=' ';
 				}
-
-				/* force CR but prevent others */
+	
+				// force CR but prevent others 
 				os_printchar(lastactualchar='\r');
 			}
 			ibuffptr=(L9BYTE*) ibuff;
 		}
-
+	
 		a2=(L9BYTE*) obuff;
 		a6=ibuffptr;
-
-	/*ip05 */
+	
+	//ip05 
 		while (TRUE)
 		{
 			d0=*a6++;
@@ -3760,9 +3760,9 @@ int code;		// instruction codes - code
 				return TRUE;
 			}
 		}
-
+	
 		a6--;
-	/*ip06loop */
+	//ip06loop 
 		do
 		{
 			d0=*a6++;
@@ -3770,8 +3770,168 @@ int code;		// instruction codes - code
 			d0=tolower(d0);
 			*a2++=d0;
 		} while (a2<(L9BYTE*) obuff+0x1f);
-	/*ip06a */
+	//ip06a 
 		*a2=0x20;
+		a6--;
+		ibuffptr=a6;
+		abrevword=-1;
+		keywordnumber=-1;
+		list9ptr=list9startptr;
+	// setindex 
+		a0=dictdata;
+		d2=dictdatalen;
+		d0=*obuff-0x61;
+		if (d0<0)
+		{
+			a6=defdict;
+			d1=0;
+		}
+		else
+		{
+		//ip10 
+			d1=0x67;
+			if (d0<0x1a)
+			{
+				d1=d0<<2;
+				d0=obuff[1];
+				if (d0!=0x20) d1+=((d0-0x61)>>3)&3;
+			}
+		//ip13 
+			if (d1>=d2)
+			{
+				checknumber();
+				return TRUE;
+			}
+			a0+=d1<<2;
+			a6=startdata+L9WORD(a0);
+			d1=L9WORD(a0+2);
+		}
+	//ip13gotwordnumber 
+	
+		initunpack(a6);
+	//ip14 
+		d1--;
+		do
+		{
+			d1++;
+			if (unpackword())
+			{// ip21b 
+				if (abrevword==-1) break; // goto ip22 
+				else d0=abrevword; // goto ip18b 
+			}
+			else
+			{
+				L9BYTE* a1=(L9BYTE*) threechars;
+				int d6=-1;
+	
+				a0=(L9BYTE*) obuff;
+			//ip15 
+				do
+				{
+					d6++;
+					d0=tolower(*a1++ & 0x7f);
+					d2=*a0++;
+				} while (d0==d2);
+	
+				if (d2!=0x20)
+				{// ip17 
+					if (abrevword==-1) continue;
+					else d0=-1;
+				}
+				else if (d0==0) d0=d1;
+				else if (abrevword!=-1) break;
+				else if (d6>=4) d0=d1;
+				else
+				{
+					abrevword=d1;
+					continue;
+				}
+			}
+			//ip18b 
+			findmsgequiv(d1);
+	
+			abrevword=-1;
+			if (list9ptr!=list9startptr)
+			{
+				L9SETWORD(list9ptr,0);
+				return TRUE;
+			}
+		} while (TRUE);
+	// ip22 
+		checknumber();
+		return TRUE;
+	}
+	 */
+	boolean corruptinginput()
+	{
+		int a0,a2,a6;
+		int d0,d1,d2,keywordnumber,abrevword;
+		int iptr;
+
+		list9ptr=list9startptr;
+
+		if (ibuffptr<0)
+		{
+			if (Cheating) {} //TODO: NextCheat();
+			else
+			{
+				/* flush */
+				os_flush();
+				lastchar='.';
+				/* get input */
+				if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
+				ibuffstr=ibuffstr.concat(" \0");
+				ibuff=ibuffstr.toCharArray();
+				//TODO:if (CheckHash()) return false;
+
+				// check for invalid chars
+				for (int i=0;i<ibuff.length-1;i++) {
+					if (!((ibuff[i]>='a' && ibuff[i]<='z') || (ibuff[i]>='A' && ibuff[i]<='Z') || (ibuff[i]>='0' && ibuff[i]<='9')))
+						ibuff[i]=' ';
+				}
+
+				/* force CR but prevent others */
+				os_printchar(lastactualchar='\r');
+			}
+			ibuffptr=0;	//ibuffptr=(L9BYTE*) ibuff;
+		}
+
+		a2=0;	//(L9BYTE*) obuff;
+		a6=ibuffptr;
+
+	/*ip05 */
+		while (true)
+		{
+			d0=ibuff[a6++];
+			if (d0==0)
+			{
+				ibuffptr=-1;
+				L9SETWORD(list9ptr,0);
+				return true;
+			}
+			if (partword((char)d0)==0) break;
+			if (d0!=0x20)
+			{
+				ibuffptr=a6;
+				L9SETWORD(list9ptr,d0);
+				L9SETWORD(list9ptr+2,0);
+				obuff[a2]=0x20;
+				keywordnumber=-1;
+				return true;
+			}
+		}
+
+		a6--;
+	/*ip06loop */
+		do
+		{
+			d0=ibuff[a6++];
+			if (partword((char)d0)==1) break;
+			d0=tolower((char)d0);
+			obuff[a2++]=(char)d0;
+		} while (a2<0x1f);
+	/*ip06a */
+		obuff[a2]=0x20;
 		a6--;
 		ibuffptr=a6;
 		abrevword=-1;
@@ -3780,7 +3940,7 @@ int code;		// instruction codes - code
 	/* setindex */
 		a0=dictdata;
 		d2=dictdatalen;
-		d0=*obuff-0x61;
+		d0=obuff[0]-0x61;
 		if (d0<0)
 		{
 			a6=defdict;
@@ -3800,7 +3960,7 @@ int code;		// instruction codes - code
 			if (d1>=d2)
 			{
 				checknumber();
-				return TRUE;
+				return true;
 			}
 			a0+=d1<<2;
 			a6=startdata+L9WORD(a0);
@@ -3821,16 +3981,16 @@ int code;		// instruction codes - code
 			}
 			else
 			{
-				L9BYTE* a1=(L9BYTE*) threechars;
+				int a1=0; //(L9BYTE*) threechars;
 				int d6=-1;
 
-				a0=(L9BYTE*) obuff;
+				a0=0; //(L9BYTE*) obuff;
 			//ip15 
 				do
 				{
 					d6++;
-					d0=tolower(*a1++ & 0x7f);
-					d2=*a0++;
+					d0=tolower((char)(threechars[a1++] & 0x7f));
+					d2=obuff[a0++];
 				} while (d0==d2);
 
 				if (d2!=0x20)
@@ -3854,14 +4014,264 @@ int code;		// instruction codes - code
 			if (list9ptr!=list9startptr)
 			{
 				L9SETWORD(list9ptr,0);
-				return TRUE;
+				return true;
 			}
-		} while (TRUE);
+		} while (true);
 	// ip22 
 		checknumber();
-		return TRUE;
+		return true;
+	}
+
+	/*--was--	int partword(char c)
+	{
+		c=tolower(c);
+
+		if (c==0x27 || c==0x2d) return 0;
+		if (c<0x30) return 1;
+		if (c<0x3a) return 0;
+		if (c<0x61) return 1;
+		if (c<0x7b) return 0;
+		return 1;
+	}*/
+	int partword(char c)
+	{
+		c=tolower(c);
+
+		if (c==0x27 || c==0x2d) return 0;
+		if (c<0x30) return 1;
+		if (c<0x3a) return 0;
+		if (c<0x61) return 1;
+		if (c<0x7b) return 0;
+		return 1;
+	}
+
+	/*--was--	void checknumber(void)
+	{
+		if (*obuff>=0x30 && *obuff<0x3a)
+		{
+			if (L9GameType==L9_V4)
+			{
+				*list9ptr=1;
+				L9SETWORD(list9ptr+1,readdecimal(obuff));
+				L9SETWORD(list9ptr+3,0);
+			}
+			else
+			{
+				L9SETDWORD(list9ptr,readdecimal(obuff));
+				L9SETWORD(list9ptr+4,0);
+			}
+		}
+		else
+		{
+			L9SETWORD(list9ptr,0x8000);
+			L9SETWORD(list9ptr+2,0);
+		}
+	}*/
+	void checknumber()
+	{
+		if (obuff[0]>=0x30 && obuff[0]<0x3a)
+		{
+			if (L9GameType==L9_V4)
+			{
+				l9memory[list9ptr]=1;
+				L9SETWORD(list9ptr+1,readdecimal());
+				L9SETWORD(list9ptr+3,0);
+			}
+			else
+			{
+				L9SETDWORD(list9ptr,readdecimal());
+				L9SETWORD(list9ptr+4,0);
+			}
+		}
+		else
+		{
+			L9SETWORD(list9ptr,0x8000);
+			L9SETWORD(list9ptr+2,0);
+		}
 	}
 	
+	/*--was--	L9UINT32 readdecimal(char *buff)
+	{
+		return atol(buff);
+	}*/
+	int readdecimal()
+	{
+		int i=0;
+		int r=0;
+		while (obuff[i]!=0) {
+			r=r*10+(obuff[i]-'0');
+		};
+		return r;
+	}
+	
+	/*--was--	L9BOOL initunpack(L9BYTE* ptr)
+	{
+		initdict(ptr);
+		unpackd3=0x1c;
+		return unpackword();
+	}*/
+	boolean initunpack(int ptr)
+	{
+		initdict(ptr);
+		unpackd3=0x1c;
+		return unpackword();
+	}
+	
+	/*--was--	L9BOOL unpackword(void)
+	{
+		L9BYTE *a3;
+
+		if (unpackd3==0x1b) return TRUE;
+
+		a3=(L9BYTE*) threechars + (unpackd3&3);
+
+	//uw01 
+		while (TRUE)
+		{
+			L9BYTE d0=getdictionarycode();
+			if (dictptr>=endwdp5) return TRUE;
+			if (d0>=0x1b)
+			{
+				*a3=0;
+				unpackd3=d0;
+				return FALSE;
+			}
+			*a3++=getdictionary(d0);
+		}
+	}*/
+	boolean unpackword()
+	{
+		int a3;
+
+		if (unpackd3==0x1b) return true;
+
+		a3=(unpackd3&3);
+
+	/*uw01 */
+		while (true)
+		{
+			int d0=getdictionarycode();
+			if (dictptr>=endwdp5) return true;
+			if (d0>=0x1b)
+			{
+				threechars[a3]=0;
+				unpackd3=d0;
+				return false;
+			}
+			threechars[a3++]=(byte)getdictionary(d0);
+		}
+	}
+	
+	/*--was--	void findmsgequiv(int d7)
+	{
+		int d4=-1,d0,atmp;
+		L9BYTE* a2=startmd;
+
+		do
+		{
+			d4++;
+			if (a2>endmd) return;
+			d0=*a2;
+			if (d0&0x80)
+			{
+				a2++;
+				d4+=d0&0x7f;
+			}
+			else if (d0&0x40)
+			{
+				int d6=getmdlength(&a2);
+				do
+				{
+					int d1;
+					if (d6==0) break;
+
+					d1=*a2++;
+					d6--;
+					if (d1 & 0x80)
+					{
+						if (d1<0x90)
+						{
+							a2++;
+							d6--;
+						}
+						else
+						{
+							d0=(d1<<8) + *a2++;
+							d6--;
+							if (d7==(d0 & 0xfff))
+							{
+								d0=((d0<<1)&0xe000) | d4;
+								list9ptr[1]=d0;
+								list9ptr[0]=d0>>8;
+								list9ptr+=2;
+								if (list9ptr>=list9startptr+0x20) return;
+							}
+						}
+					}
+				} while (TRUE);
+			}
+			else {
+				atmp=getmdlength(&a2);
+				a2+=atmp;
+			}
+		} while (TRUE);
+	}*/
+	void findmsgequiv(int d7)
+	{
+		int d4=-1,d0,atmp;
+		int a2[]={startmd};
+
+		do
+		{
+			d4++;
+			if (a2[0]>endmd) return;
+			d0=l9memory[a2[0]]&0xff;
+			if ((d0&0x80)!=0)
+			{
+				a2[0]++;
+				d4+=d0&0x7f;
+			}
+			else if ((d0&0x40)!=0)
+			{
+				int d6=getmdlength(a2);
+				do
+				{
+					int d1;
+					if (d6==0) break;
+
+					d1=l9memory[a2[0]++]&0xff;
+					d6--;
+					if ((d1 & 0x80)!=0)
+					{
+						if (d1<0x90)
+						{
+							a2[0]++;
+							d6--;
+						}
+						else
+						{
+							d0=(d1<<8) + (l9memory[a2[0]++]&0xff);
+							d6--;
+							if (d7==(d0 & 0xfff))
+							{
+								d0=((d0<<1)&0xe000) | d4;
+								//TODO: заменить на L9SETWORD
+								l9memory[list9ptr+1]=(byte)d0;
+								l9memory[list9ptr+0]=(byte)(d0>>8);
+								list9ptr+=2;
+								if (list9ptr>=list9startptr+0x20) return;
+							}
+						}
+					}
+				} while (true);
+			}
+			else {
+				atmp=getmdlength(a2);
+				a2[0]+=atmp;
+			}
+		} while (true);
+	}
+
 
 	/*--was--	void cleartg(void)
 	{
@@ -3926,7 +4336,7 @@ int code;		// instruction codes - code
 //		fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
 //	#endif
 
-		L9DEBUG("Function %d\r",d0);
+		//L9DEBUG("Function %d\r",d0);
 		switch (d0)
 		{
 			case 2: L9Random(); break;
