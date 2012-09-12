@@ -2256,18 +2256,9 @@ int V2M_ERIK=2;
 
 		if (code>=0xe0)			// listvv 
 		{
-
-//	#ifndef CODEFOLLOW
 			a4+=(offset=workspace.vartable[getvar()]);
 			val=workspace.vartable[var=getvar()];
 			CODEFOLLOW(" list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var,val);
-//	#else
-//			offset=*getvar();
-//			a4+=offset;
-//			var=getvar();
-//			val=*var;
-//			fprintf(f," list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var-workspace.vartable,val);
-//	#endif
 
 			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte)(val&0xff);
 			else {
@@ -2276,17 +2267,10 @@ int V2M_ERIK=2;
 		}
 		else if (code>=0xc0) 	// listv1c 
 		{
-
-//	#ifndef CODEFOLLOW
-			a4+=l9memory[codeptr++]&0xff;
+			a4+=(offset=l9memory[codeptr++]&0xff);
 			var=getvar();
-//	#else
-//			offset=*codeptr++;
-//			a4+=offset;
-//			var=getvar();
-//			fprintf(f," Var[%d]= list %d [%d])",var-workspace.vartable,code&0x1f,offset);
-//			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
-//	#endif
+			CODEFOLLOW(" Var[%d]= list %d [%d])",var,code&0x1f,offset);
+			if (a4>=MinAccess && a4<MaxAccess) CODEFOLLOW(" (=%d)",l9memory[a4]&0xff);
 
 			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=(short)(l9memory[a4]&0xff);
 			else
@@ -2298,17 +2282,10 @@ int V2M_ERIK=2;
 		}
 		else if (code>=0xa0)	// listv1v 
 		{
-//	#ifndef CODEFOLLOW
-			a4+=workspace.vartable[getvar()];
+			a4+=(offset=workspace.vartable[getvar()]);
 			var=getvar();
-//	#else
-//			offset=*getvar();
-//			a4+=offset;
-//			var=getvar();
-//
-//			fprintf(f," Var[%d] =list %d [%d]",var-workspace.vartable,code&0x1f,offset);
-//			if (a4>=MinAccess && a4<MaxAccess) fprintf(f," (=%d)",*a4);
-//	#endif
+			CODEFOLLOW(" Var[%d] =list %d [%d]",var,code&0x1f,offset);
+			if (a4>=MinAccess && a4<MaxAccess) CODEFOLLOW(" (=%d)",l9memory[a4]&0xff);
 
 			if (a4>=MinAccess && a4<MaxAccess) workspace.vartable[var]=(short)(l9memory[a4]&0xff);
 			else
@@ -2319,16 +2296,9 @@ int V2M_ERIK=2;
 		}
 		else
 		{
-//	#ifndef CODEFOLLOW
-			a4+=l9memory[codeptr++]&0xff;
-			val=workspace.vartable[getvar()];
-//	#else
-//			offset=*codeptr++;
-//			a4+=offset;
-//			var=getvar();
-//			val=*var;
-//			fprintf(f," list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var-workspace.vartable,val);
-//	#endif
+			a4+=(offset=l9memory[codeptr++]&0xff);
+			val=workspace.vartable[var=getvar()];
+			CODEFOLLOW(" list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var,val);
 
 			if (a4>=MinAccess && a4<MaxAccess) l9memory[a4]=(byte) (val&0xff);
 			else {
@@ -2359,12 +2329,8 @@ int V2M_ERIK=2;
 	#endif
 	}*/
 	int getvar() {
-//	#ifndef CODEFOLLOW
-		return l9memory[codeptr++]&0xff;
-//	#else
-//		cfvar2=cfvar;
-//		return cfvar=workspace.vartable + *codeptr++;
-//	#endif
+		cfvar2=cfvar;
+		return cfvar=l9memory[codeptr++]&0xff;
 	}
 	
 	/*--was--	L9BYTE* getaddr(void)
@@ -3083,7 +3049,7 @@ int V2M_ERIK=2;
 	{
 		int d6=getcon();
 		workspace.vartable[getvar()]=(short)d6;
-		CODEFOLLOW("Var[%d]=%d)",cfvar,workspace.vartable[cfvar]);
+		CODEFOLLOW(" Var[%d]=%d)",cfvar,workspace.vartable[cfvar]);
 	}
 
 	void varvar()
@@ -3222,8 +3188,6 @@ int V2M_ERIK=2;
 		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0>d1 ? "Yes":"No"));
 	}
 
-	
-	
 	void ifeqct()
 	{
 		int d0=workspace.vartable[getvar()];
@@ -3231,7 +3195,6 @@ int V2M_ERIK=2;
 		int a0=getaddr();
 		if (d0==d1) codeptr=a0;
 		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0==d1 ? "Yes":"No"));
-//	#endif
 	}
 
 	void ifnect()
