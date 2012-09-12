@@ -39,8 +39,8 @@ public class MainActivity extends Activity implements OnClickListener {
         gamedata=new byte[49179];
         
         try {
-            InputStream is=getResources().openRawResource(R.raw.timev2);
-        	//InputStream is=getResources().openRawResource(R.raw.wormv3);
+            //InputStream is=getResources().openRawResource(R.raw.timev2);
+        	InputStream is=getResources().openRawResource(R.raw.wormv3);
             is.read(gamedata);            
           } catch (IOException e) {
             e.printStackTrace();
@@ -90,6 +90,7 @@ class L9implement extends L9 {
 	
     String cmdStr;
     DebugStorage ds;
+    String vStr;
 	
 	EditText et;
 	byte gamedata[];
@@ -101,8 +102,8 @@ class L9implement extends L9 {
 	};
 	
 	void os_printchar(char c) {
-		if (c==0x0d) printtolog(ds.getstr());
-		else if (ds.putchar(c)) printtolog(ds.getstr());
+		if (c==0x0d) log_debug(ds.getstr());
+		else if (ds.putchar(c)) log_debug(ds.getstr());
 		if (c==0x0d) et.append("\n");
 		et.append(String.valueOf(c));
 	};
@@ -112,14 +113,24 @@ class L9implement extends L9 {
 	};
 	
 	void os_debug(String str) {
-		printtolog(ds.getstr());
-		printtolog(str);
+		log_debug(ds.getstr());
+		log_debug(str);
 	};
 	
-	void printtolog(String str) {
+	void os_verbose(String str) {
+		log_verbose(str);
+	};
+	
+	void log_debug(String str) {
 		final String LOG_TAG = "l9droid";
 		if (str.length()>0) 
 			Log.d(LOG_TAG, str);
+	};
+	
+	void log_verbose(String str) {
+		final String LOG_TAG = "l9droid";
+		if (str.length()>0) 
+			Log.v(LOG_TAG, str);
 	};
 	
 	void os_flush() {

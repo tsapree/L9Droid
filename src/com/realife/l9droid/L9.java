@@ -179,6 +179,96 @@ int V2M_ERIK=2;
 	int displaywordref_mdtmode=0;
 
 	
+//	#ifdef CODEFOLLOW
+//	#define CODEFOLLOWFILE "c:\\temp\\level9.txt"
+//	FILE *f;
+	int cfvar,cfvar2; //for CODEFOLLOW
+	String CODEFOLLOW_codes[]=
+	{
+	"Goto",
+	"intgosub",
+	"intreturn",
+	"printnumber",
+	"messagev",
+	"messagec",
+	"function",
+	"input",
+	"varcon",
+	"varvar",
+	"_add",
+	"_sub",
+	"ilins",
+	"ilins",
+	"jump",
+	"Exit",
+	"ifeqvt",
+	"ifnevt",
+	"ifltvt",
+	"ifgtvt",
+	"screen",
+	"cleartg",
+	"picture",
+	"getnextobject",
+	"ifeqct",
+	"ifnect",
+	"ifltct",
+	"ifgtct",
+	"printinput",
+	"ilins",
+	"ilins",
+	"ilins",
+	};
+	String CODEFOLLOW_functions[]=
+	{
+		"calldriver",
+		"L9Random",
+		"save",
+		"restore",
+		"clearworkspace",
+		"clearstack"
+	};
+	String CODEFOLLOW_drivercalls[]=
+	{
+	"init",
+	"drivercalcchecksum",
+	"driveroswrch",
+	"driverosrdch",
+	"driverinputline",
+	"driversavefile",
+	"driverloadfile",
+	"settext",
+	"resettask",
+	"returntogem",
+	"10 *",
+	"loadgamedatafile",
+	"randomnumber",
+	"13 *",
+	"driver14",
+	"15 *",
+	"driverclg",
+	"line",
+	"fill",
+	"driverchgcol",
+	"20 *",
+	"21 *",
+	"ramsave",
+	"ramload",
+	"24 *",
+	"lensdisplay",
+	"26 *",
+	"27 *",
+	"28 *",
+	"29 *",
+	"allocspace",
+	"31 *",
+	"showbitmap",
+	"33 *",
+	"checkfordisc"
+	};
+//	#endif
+	
+	
+	
 	L9() {
 		workspace=new GameState();
 		unpackbuf=new int[8];
@@ -222,13 +312,13 @@ int V2M_ERIK=2;
 		return Running;
 	}*/
 	public int RunGame() {
-		//if (L9State!=L9StateRunning && L9State!=L9StateCommandReady) return L9State;
+		//TODO: возможно нужна строка:
+		//TODO: if (L9State!=L9StateRunning && L9State!=L9StateCommandReady) return L9State;
 		code=l9memory[codeptr++]&0xff;
 		if(code==233) {
 			int t=code;
 			if (t>0) {};
 		}
-		os_debug(String.format("codeptr=%d, code=%d", codeptr-1, code));
 		executeinstruction();
 		return L9State;
 	}
@@ -283,6 +373,7 @@ int V2M_ERIK=2;
 	//TODO: added by tsap
 	byte[] os_load(String filename) { return null; };
 	void os_debug(String str) {};
+	void os_verbose(String str) {};
 	
 ////////////////////////////////////////////////////////////////////////
 	
@@ -1984,12 +2075,9 @@ int V2M_ERIK=2;
 */
 	void executeinstruction()
 	{
-//	#ifdef CODEFOLLOW
-//		f=fopen(CODEFOLLOWFILE,"a");
-//		fprintf(f,"%ld (s:%d) %x",(L9UINT32) (codeptr-acodeptr)-1,workspace.stackptr,code);
-//		if (!(code&0x80))
-//			fprintf(f," = %s",codes[code&0x1f]);
-//	#endif
+		CODEFOLLOW("%d (s:%d) %x",(codeptr-acodeptr)-1,workspace.stackptr,code);
+		if (!((code&0x80)!=0)) CODEFOLLOW(" = ",CODEFOLLOW_codes[code&0x1f]);
+		
 
 		if ((code & 0x80)!=0) listhandler();
 		else switch (code & 0x1f)
@@ -2027,6 +2115,7 @@ int V2M_ERIK=2;
 			case 30:	ilins(code & 0x1f);break;
 			case 31:	ilins(code & 0x1f);break;
 		}
+		CODEFOLLOW(); //out string
 	}
 
 	/*--was--	void listhandler(void)
@@ -2147,13 +2236,10 @@ int V2M_ERIK=2;
 		int a4, MinAccess, MaxAccess;
 		short val;
 		int var;
-//	#ifdef CODEFOLLOW
-//		int offset; 
-//	#endif
+		int offset; //for CODEFOLLOW
 
 		if ((code&0x1f)>0xa) {
 			error("\rillegal list access %d\r",code&0x1f);
-			//Running=false;
 			L9State=L9StateStopped;
 			return;
 		}
@@ -2172,8 +2258,9 @@ int V2M_ERIK=2;
 		{
 
 //	#ifndef CODEFOLLOW
-			a4+=workspace.vartable[getvar()];
-			val=workspace.vartable[getvar()];
+			a4+=(offset=workspace.vartable[getvar()]);
+			val=workspace.vartable[var=getvar()];
+			CODEFOLLOW(" list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var,val);
 //	#else
 //			offset=*getvar();
 //			a4+=offset;
@@ -2996,40 +3083,28 @@ int V2M_ERIK=2;
 	{
 		int d6=getcon();
 		workspace.vartable[getvar()]=(short)d6;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," Var[%d]=%d)",cfvar-workspace.vartable,*cfvar);
-//	#endif
+		CODEFOLLOW("Var[%d]=%d)",cfvar,workspace.vartable[cfvar]);
 	}
 
 	void varvar()
 	{
 		int d6=workspace.vartable[getvar()];
 		workspace.vartable[getvar()]=(short)d6;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," Var[%d]=Var[%d] (=%d)",cfvar-workspace.vartable,cfvar2-workspace.vartable,d6);
-//	#endif
+		CODEFOLLOW(" Var[%d]=Var[%d] (=%d)",cfvar,cfvar2,d6);
 	}
 
 	void _add()
 	{
 		int d0=workspace.vartable[getvar()];
 		workspace.vartable[getvar()]+=d0;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," Var[%d]+=Var[%d] (+=%d)",cfvar-workspace.vartable,cfvar2-workspace.vartable,d0);
-//	#endif
+		CODEFOLLOW(" Var[%d]+=Var[%d] (+=%d)",cfvar,cfvar2,d0);
 	}
 
 	void _sub()
 	{
 		int d0=workspace.vartable[getvar()];
 		workspace.vartable[getvar()]-=d0;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," Var[%d]-=Var[%d] (-=%d)",cfvar-workspace.vartable,cfvar2-workspace.vartable,d0);
-//	#endif
+		CODEFOLLOW(" Var[%d]-=Var[%d] (-=%d)",cfvar,cfvar2,d0);
 	}
 
 	void jump()
@@ -3102,17 +3177,12 @@ int V2M_ERIK=2;
 		byte d5[]={0};
 		byte d7=(byte) (workspace.vartable[getvar()]&0xff);
 		byte d6=(byte) (workspace.vartable[getvar()]&0xff);
-//	#ifdef CODEFOLLOW
-//		fprintf(f," d7=%d d6=%d",d7,d6);
-//	#endif
+		CODEFOLLOW(" d7=%d d6=%d",d7&0xff,d6&0xff);
 		exit1(d4,d5,d6,d7);
 
 		workspace.vartable[getvar()]=(short)((d4[0]&0x70)>>4);
 		workspace.vartable[getvar()]=d5[0];
-//	#ifdef CODEFOLLOW
-//		fprintf(f," Var[%d]=%d(d4=%d) Var[%d]=%d",
-//			cfvar2-workspace.vartable,(d4&0x70)>>4,d4,cfvar-workspace.vartable,d5);
-//	#endif
+		CODEFOLLOW(" Var[%d]=%d(d4=%d) Var[%d]=%d",cfvar2,(d4[0]&0x70)>>4,d4[0],cfvar,d5[0]);
 	}
 
 	void ifeqvt()
@@ -3121,10 +3191,8 @@ int V2M_ERIK=2;
 		int d1=workspace.vartable[getvar()];
 		int a0=getaddr();
 		if (d0==d1) codeptr=a0;
+		CODEFOLLOW(String.format(" if Var[%d]=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0==d1 ? "Yes":"No"));
 
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]=Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0==d1 ? "Yes":"No");
-//	#endif
 	}
 
 	void ifnevt()
@@ -3133,10 +3201,7 @@ int V2M_ERIK=2;
 		int d1=workspace.vartable[getvar()];
 		int a0=getaddr();
 		if (d0!=d1) codeptr=a0;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]!=Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0!=d1 ? "Yes":"No");
-//	#endif
+		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0!=d1 ? "Yes":"No"));
 	}
 
 	void ifltvt()
@@ -3145,10 +3210,7 @@ int V2M_ERIK=2;
 		int d1=workspace.vartable[getvar()];
 		int a0=getaddr();
 		if (d0<d1) codeptr=a0;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]<Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0<d1 ? "Yes":"No");
-//	#endif
+		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0<d1 ? "Yes":"No"));
 	}
 
 	void ifgtvt()
@@ -3157,10 +3219,7 @@ int V2M_ERIK=2;
 		int d1=workspace.vartable[getvar()];
 		int a0=getaddr();
 		if (d0>d1) codeptr=a0;
-
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]>Var[%d] goto %d (%s)",cfvar2-workspace.vartable,cfvar-workspace.vartable,(L9UINT32) (a0-acodeptr),d0>d1 ? "Yes":"No");
-//	#endif
+		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0>d1 ? "Yes":"No"));
 	}
 
 	
@@ -3171,8 +3230,7 @@ int V2M_ERIK=2;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0==d1) codeptr=a0;
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]=%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0==d1 ? "Yes":"No");
+		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0==d1 ? "Yes":"No"));
 //	#endif
 	}
 
@@ -3182,9 +3240,7 @@ int V2M_ERIK=2;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0!=d1) codeptr=a0;
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]!=%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0!=d1 ? "Yes":"No");
-//	#endif
+		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0!=d1 ? "Yes":"No"));
 	}
 
 	void ifltct()
@@ -3193,9 +3249,7 @@ int V2M_ERIK=2;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0<d1) codeptr=a0;
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]<%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0<d1 ? "Yes":"No");
-//	#endif
+		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0<d1 ? "Yes":"No"));
 	}
 
 	void ifgtct()
@@ -3204,9 +3258,7 @@ int V2M_ERIK=2;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0>d1) codeptr=a0;
-//	#ifdef CODEFOLLOW
-//		fprintf(f," if Var[%d]>%d goto %d (%s)",cfvar-workspace.vartable,d1,(L9UINT32) (a0-acodeptr),d0>d1 ? "Yes":"No");
-//	#endif
+		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0>d1 ? "Yes":"No"));
 	}
 	
 	void printinput()
@@ -4338,11 +4390,8 @@ int V2M_ERIK=2;
 	void function()
 	{
 		int d0=l9memory[codeptr++]&0xff;
-//	#ifdef CODEFOLLOW
-//		fprintf(f," %s",d0==250 ? "printstr" : functions[d0-1]);
-//	#endif
+		CODEFOLLOW(" ",d0==250 ? "printstr" : CODEFOLLOW_functions[d0-1]);
 
-		//L9DEBUG("Function %d\r",d0);
 		switch (d0)
 		{
 			case 2: L9Random(); break;
@@ -4373,15 +4422,11 @@ int V2M_ERIK=2;
 	#endif
 	}*/
 	void L9Random() {
-//	#ifdef CODEFOLLOW
-//		fprintf(f," %d",randomseed);
-//	#endif
+		CODEFOLLOW (" %d",randomseed&0xffff);
 		//TODO: проверить генерацию randomseed
 		randomseed=(short)((((randomseed<<8) + 0x0a - randomseed) <<2) + randomseed + 1);
 		workspace.vartable[getvar()]=(short)(randomseed & 0xff);
-//	#ifdef CODEFOLLOW
-//		fprintf(f," %d",randomseed);
-//	#endif
+		CODEFOLLOW (" %d",randomseed&0xffff);
 	}
 	
 	/*--was-- void show_picture(int pic)
@@ -4461,6 +4506,7 @@ int V2M_ERIK=2;
 		return c;
 	}
 	
+	//L9DEBUG
 	void L9DEBUG(String txt) {
 		os_debug(txt);
 	}
@@ -4475,6 +4521,44 @@ int V2M_ERIK=2;
 	
 	void L9DEBUG(String txt, int val1, int val2) {
 		L9DEBUG(String.format(txt, val1, val2));
+	}
+
+	//CODEFOLLOW
+	String CODEFOLLOWSTRING;
+	
+	void CODEFOLLOW() {
+		if (CODEFOLLOWSTRING!=null)
+			os_verbose(CODEFOLLOWSTRING);
+		CODEFOLLOWSTRING=null;
+	}
+	
+	void CODEFOLLOW(String txt) {
+		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
+		CODEFOLLOWSTRING+=txt;
+	}
+	
+	void CODEFOLLOW(String txt1, String txt2) {
+		CODEFOLLOW(txt1+txt2);
+	}
+	
+	void CODEFOLLOW(String txt, int val) {
+		CODEFOLLOW(String.format(txt, val));
+	}
+	
+	void CODEFOLLOW(String txt, int val1, int val2) {
+		CODEFOLLOW(String.format(txt, val1, val2));
+	}
+	
+	void CODEFOLLOW(String txt, int val1, int val2, int val3) {
+		CODEFOLLOW(String.format(txt, val1, val2, val3));
+	}
+	
+	void CODEFOLLOW(String txt, int val1, int val2, int val3, int val4) {
+		CODEFOLLOW(String.format(txt, val1, val2, val3, val4));
+	}
+	
+	void CODEFOLLOW(String txt, int val1, int val2, int val3, int val4, int val5) {
+		CODEFOLLOW(String.format(txt, val1, val2, val3, val4, val5));
 	}
 
 }
