@@ -39,8 +39,8 @@ public class MainActivity extends Activity implements OnClickListener {
         gamedata=new byte[49179];
         
         try {
-            //InputStream is=getResources().openRawResource(R.raw.timev2);
-        	InputStream is=getResources().openRawResource(R.raw.wormv3);
+            InputStream is=getResources().openRawResource(R.raw.timev2);
+        	//InputStream is=getResources().openRawResource(R.raw.wormv3);
             is.read(gamedata);            
           } catch (IOException e) {
             e.printStackTrace();
@@ -89,6 +89,7 @@ class L9implement extends L9 {
     //TODO: заменить на enum?
 	
     String cmdStr;
+    DebugStorage ds;
 	
 	EditText et;
 	byte gamedata[];
@@ -96,9 +97,12 @@ class L9implement extends L9 {
 		et=et1;
 		gamedata=dat;
 		cmdStr=null;
+		ds=new DebugStorage();
 	};
 	
 	void os_printchar(char c) {
+		if (c==0x0d) printtolog(ds.getstr());
+		else if (ds.putchar(c)) printtolog(ds.getstr());
 		if (c==0x0d) et.append("\n");
 		et.append(String.valueOf(c));
 	};
@@ -108,13 +112,41 @@ class L9implement extends L9 {
 	};
 	
 	void os_debug(String str) {
-		final String LOG_TAG = "l9droid";
-		Log.d(LOG_TAG, str);
+		printtolog(ds.getstr());
+		printtolog(str);
 	};
+	
+	void printtolog(String str) {
+		final String LOG_TAG = "l9droid";
+		if (str.length()>0) 
+			Log.d(LOG_TAG, str);
+	};
+	
+	void os_flush() {
+		os_debug(ds.getstr());
+	}
 	
 	void step() {
 		while (L9State==L9StateRunning || L9State==L9StateCommandReady) RunGame();
 	};
 
+}
 
+class DebugStorage {
+    private char[] debug;
+    private int debugptr;
+    private static final int debugsize=500;
+    DebugStorage() {
+		debug=new char[debugsize];
+		debugptr=0;
+    }
+    boolean putchar(char c) {
+    	debug[debugptr++]=c;
+    	return (debugptr>=debugsize);
+    }
+    String getstr() {
+    	String str=String.valueOf(debug, 0, debugptr);
+    	debugptr=0;
+    	return str;
+    }
 }

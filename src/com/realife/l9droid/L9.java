@@ -3552,6 +3552,7 @@ int V2M_ERIK=2;
 			// get input 
 			//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
 			if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
+			L9DEBUG(">"+ibuffstr);
 			// add space and zero onto end
 			ibuffstr=ibuffstr.concat(" \0");
 			ibuff=ibuffstr.toCharArray();
@@ -3677,6 +3678,8 @@ int V2M_ERIK=2;
 		// next time around instructionloop, this is used when save() and restore()
 		// are called out of line 
 
+		os_flush();
+		
 		codeptr--;
 		switch (L9State) {
 		case L9StateRunning:
@@ -3880,6 +3883,9 @@ int V2M_ERIK=2;
 				lastchar='.';
 				/* get input */
 				if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
+				
+				L9DEBUG(">"+ibuffstr);
+				
 				ibuffstr=ibuffstr.concat(" \0");
 				ibuff=ibuffstr.toCharArray();
 				//TODO:if (CheckHash()) return false;
@@ -4456,19 +4462,19 @@ int V2M_ERIK=2;
 	}
 	
 	void L9DEBUG(String txt) {
-		error(txt);
+		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
-		error(txt1,txt2);
+		L9DEBUG(txt1+txt2);
 	}
 	
 	void L9DEBUG(String txt, int val) {
-		error(txt,val);
+		L9DEBUG(String.format(txt, val));
 	}
 	
 	void L9DEBUG(String txt, int val1, int val2) {
-		error(txt,val1,val2);
+		L9DEBUG(String.format(txt, val1, val2));
 	}
 
 }
