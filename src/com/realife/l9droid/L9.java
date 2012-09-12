@@ -48,15 +48,11 @@ public class L9 {
 //
 
 //#define RAMSAVESLOTS 10
+	static final int RAMSAVESLOTS = 10;
 //#define GFXSTACKSIZE 100
 //
 //
 //// Typedefs
-//typedef struct
-//{
-//	L9UINT16 vartable[256];
-//	L9BYTE listarea[LISTAREASIZE];
-//} SaveStruct;
 //
 //typedef struct
 //{
@@ -120,7 +116,7 @@ int V2M_ERIK=2;
 	int L9GameType;
 	int V2MsgType;
 //
-//SaveStruct ramsavearea[RAMSAVESLOTS];
+SaveStruct ramsavearea[];
 //
 //char ibuff[IBUFFSIZE];
 //L9BYTE* ibuffptr;
@@ -278,6 +274,10 @@ int V2M_ERIK=2;
 		gnoscratch=new short[32];
 		gnostack=new int [128];
 		InputString=null;
+		ramsavearea=new SaveStruct[RAMSAVESLOTS];
+		for (int i=0;i<RAMSAVESLOTS;i++) {
+			ramsavearea[i]=new SaveStruct();
+		};
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -356,7 +356,7 @@ int V2M_ERIK=2;
 	void os_printchar(char c) {};
 	//TODO:KILL os_input()
 	String os_input(int size) {return InputString;}; 
-	//char os_readchar(L9UINT32 millis)
+	char os_readchar(int millis) {return '\r';}; 
 	//L9BOOL os_stoplist(void)
 	void os_flush() {};
 	//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
@@ -1338,17 +1338,8 @@ int V2M_ERIK=2;
 		return Valid; // && Strange==0; 
 	}
 	*/
-	
 	boolean ValidateSequence(byte[] Image,int iPos,int acode,ScanData sdat,boolean Rts, boolean checkDriverV4)
 	{
-
-//		if (count_of_validatesequence++>10) {
-//			int i;
-//			i=0;
-//		};
-
-		
-		//byte Base[]=l9memory;
 		boolean Finished=false,Valid;
 		int Strange=0;
 		int Code;
@@ -1710,9 +1701,7 @@ int V2M_ERIK=2;
 */
 	int ScanV2()
 	{
-		//L9BYTE *Chk=malloc(FileSize+1);
 		byte Chk[] = new byte[filesize+1];
-		//L9BYTE *Image=calloc(FileSize,1);
 		byte Image[] = new byte[filesize];
 		
 		int i,MaxSize=0,num;
@@ -1733,7 +1722,6 @@ int V2M_ERIK=2;
 	
 		Chk[0]=0;
 		for (i=1;i<=filesize;i++)
-			//Chk[i]=Chk[i-1]+StartFile[i-1];
 			Chk[i]=(byte)(((Chk[i-1]&0xff)+(l9memory[i-1]&0xff))&0xff);
 	
 		//BUGFIXbyTSAP, possible out of array on L9WORD - Filesize-28+28=Filesize
@@ -1991,7 +1979,6 @@ int V2M_ERIK=2;
 		if ((d0 & 128)!=0) printchar((char) d0);
 		else
 		{
-			//TODO: check wordcase!=0
 			if (wordcase!=0) printchar(toupper((char)d0));
 			else if (d5<6) printchar((char) d0);
 			else
@@ -2449,7 +2436,6 @@ int V2M_ERIK=2;
 	{
 		if ((code & 64)!=0)
 		{
-			// getconsmall 
 			return l9memory[codeptr++]&0xff;
 		}
 		else return movewa5d0();
@@ -2569,9 +2555,6 @@ int V2M_ERIK=2;
 	}*/
 	void displaywordref(int Off)
 	{
-		//static int mdtmode=0;
-		//	int displaywordref_mdtmode=0;
-		
 		wordcase=0;
 		
 		//if (wordcase==0) return;
@@ -2765,7 +2748,6 @@ int V2M_ERIK=2;
 		int tot=0,len;
 		do
 		{
-			//len=(*(*Ptr)++ -1) & 0x3f;
 			len=((l9memory[Ptr[0]++]&0xff) -1) & 0x3f;
 			tot+=len;
 		} while (len==0x3f);
@@ -3025,14 +3007,12 @@ int V2M_ERIK=2;
 
 		//TODO: screencalled = 1;
 
-		L9DEBUG ("screen %s\r",l9textmode!=0 ? "graphics" : "text");
+		L9DEBUG ("screen ",l9textmode!=0 ? "graphics" : "text");
 
 
 		if (l9textmode!=0)
 		{
 			codeptr++;
-	// clearg 
-	// gintclearg 
 			os_cleargraphics();
 
 			/* title pic */
@@ -3042,7 +3022,6 @@ int V2M_ERIK=2;
 				os_show_bitmap(0,0,0);
 			}
 		}
-	// screent 
 	}
 	
 	void varcon()
@@ -3439,8 +3418,6 @@ int V2M_ERIK=2;
 		workspace.vartable[getvar()]=numobjectfound;
 		workspace.vartable[getvar()]=searchdepth;
 	}
-
-	
 	
 	/*--was--	L9BOOL inputV2(int *wordcount)
 	{
@@ -3583,11 +3560,8 @@ int V2M_ERIK=2;
 			os_printchar(lastactualchar='\r');
 		}
 		wordcount=0;
-		ibuffptr=0; //(L9BYTE*) ibuff;
-		obuffptr=0; //(L9BYTE*) obuff;
-		// ibuffptr=76,77
-		// obuffptr=84,85
-		// list0ptr=7c,7d
+		ibuffptr=0;
+		obuffptr=0;
 		list0ptr=L9Pointers[1];
 
 		while (ibuff[ibuffptr]==32) ++ibuffptr;
@@ -3606,7 +3580,7 @@ int V2M_ERIK=2;
 
 		while (true)
 		{
-			ptr=ibuffptr; // 7a,7b
+			ptr=ibuffptr;
 			while (ibuff[ibuffptr]==32) ++ibuffptr;
 
 			while (true)
@@ -3914,10 +3888,10 @@ int V2M_ERIK=2;
 				/* force CR but prevent others */
 				os_printchar(lastactualchar='\r');
 			}
-			ibuffptr=0;	//ibuffptr=(L9BYTE*) ibuff;
+			ibuffptr=0;
 		}
 
-		a2=0;	//(L9BYTE*) obuff;
+		a2=0;
 		a6=ibuffptr;
 
 	/*ip05 */
@@ -4002,10 +3976,10 @@ int V2M_ERIK=2;
 			}
 			else
 			{
-				int a1=0; //(L9BYTE*) threechars;
+				int a1=0;
 				int d6=-1;
 
-				a0=0; //(L9BYTE*) obuff;
+				a0=0;
 			//ip15 
 				do
 				{
@@ -4358,10 +4332,10 @@ int V2M_ERIK=2;
 		switch (d0)
 		{
 			case 2: L9Random(); break;
-			//TODO: case 1: calldriver(); break;
+			case 1: calldriver(); break;
 			//TODO: case 3: save(); break;
 			//TODO: case 4: NormalRestore(); break;
-			case 1: case 3: case 4: break;
+			case 3: case 4: break;
 			case 5: clearworkspace(); break;
 			case 6: workspace.stackptr=0; break;
 			case 250:
@@ -4372,6 +4346,231 @@ int V2M_ERIK=2;
 			default: ilins(d0);
 		}
 	}
+	
+	/*--was--	void driver(int d0,L9BYTE* a6)
+	{
+		switch (d0)
+		{
+			case 0: init(a6); break;
+			case 0x0c: randomnumber(a6); break;
+			case 0x10: driverclg(a6); break;
+			case 0x11: _line(a6); break;
+			case 0x12: fill(a6); break;
+			case 0x13: driverchgcol(a6); break;
+			case 0x01: drivercalcchecksum(a6); break;
+			case 0x02: driveroswrch(a6); break;
+			case 0x03: driverosrdch(a6); break;
+			case 0x05: driversavefile(a6); break;
+			case 0x06: driverloadfile(a6); break;
+			case 0x07: settext(a6); break;
+			case 0x08: resettask(a6); break;
+			case 0x04: driverinputline(a6); break;
+			case 0x09: returntogem(a6); break;
+	//		case 0x16: ramsave(a6); break;
+	//		case 0x17: ramload(a6); break;
+	
+			case 0x19: lensdisplay(a6); break;
+			case 0x1e: allocspace(a6); break;
+	// v4 
+			case 0x0e: driver14(a6); break;
+			case 0x20: showbitmap(a6); break;
+			case 0x22: checkfordisc(a6); break;
+		}
+	}*/
+	void driver(int d0,int a6)
+	{
+		switch (d0)
+		{
+			case 0: init(a6); break;
+			case 0x0c: randomnumber(a6); break;
+			case 0x10: driverclg(a6); break;
+			case 0x11: _line(a6); break;
+			case 0x12: fill(a6); break;
+			case 0x13: driverchgcol(a6); break;
+			case 0x01: drivercalcchecksum(a6); break;
+			case 0x02: driveroswrch(a6); break;
+			case 0x03: driverosrdch(a6); break;
+			case 0x05: driversavefile(a6); break;
+			case 0x06: driverloadfile(a6); break;
+			case 0x07: settext(a6); break;
+			case 0x08: resettask(a6); break;
+			case 0x04: driverinputline(a6); break;
+			case 0x09: returntogem(a6); break;
+	/*
+			case 0x16: ramsave(a6); break;
+			case 0x17: ramload(a6); break;
+	*/
+			case 0x19: lensdisplay(a6); break;
+			case 0x1e: allocspace(a6); break;
+	/* v4 */
+			case 0x0e: driver14(a6); break;
+			case 0x20: showbitmap(a6); break;
+			case 0x22: checkfordisc(a6); break;
+		}
+	}
+
+	void init(int a6) 				{L9DEBUG("driver - init"); }
+	void driverclg(int a6)			{L9DEBUG("driver - driverclg"); }
+	void _line(int a6)				{L9DEBUG("driver - line"); }
+	void fill(int a6)				{L9DEBUG("driver - fill"); }
+	void driverchgcol(int a6)		{L9DEBUG("driver - driverchgcol");}
+	void drivercalcchecksum(int a6) {L9DEBUG("driver - calcchecksum");}
+	void driveroswrch(int a6)		{L9DEBUG("driver - driveroswrch");}
+	void driversavefile(int a6)		{L9DEBUG("driver - driversavefile");}
+	void driverloadfile(int a6)		{L9DEBUG("driver - driverloadfile");}
+	void settext(int a6)			{L9DEBUG("driver - settext");}
+	void resettask(int a6)			{L9DEBUG("driver - resettask");}
+	void driverinputline(int a6)	{L9DEBUG("driver - driverinputline");}
+	void returntogem(int a6)		{L9DEBUG("driver - returntogem");}
+	void allocspace(int a6)			{L9DEBUG("driver - allocspace");}
+	
+	void randomnumber(int a6)
+	{
+		L9DEBUG("driver - randomnumber");
+		//TODO: L9SETWORD(a6,rand());
+	}
+	
+	void lensdisplay(int a6) {
+		L9DEBUG("driver - lensdisplay");
+		printstring("\rLenslok code is ");
+		printchar((char)(l9memory[a6]));
+		printchar((char)(l9memory[a6+1]));
+		printchar('\r');
+	}
+
+	void driverosrdch(int a6)	{
+		L9DEBUG("driver - driverosrdch");
+		os_flush();
+		if (Cheating) {
+			l9memory[a6] = '\r';
+		} else {
+			/* max delay of 1/50 sec */
+			l9memory[a6]=(byte)os_readchar(20);
+		}
+	}
+	
+	void driver14(int a6) { 
+		L9DEBUG ("driver - call 14");
+		l9memory[a6] = 0;
+	}
+
+	void showbitmap(int a6) {
+		L9DEBUG("driver - showbitmap");
+		os_show_bitmap(l9memory[a6+1],l9memory[a6+3],l9memory[a6+5]);
+	}
+
+	void checkfordisc(int a6) {
+		L9DEBUG("driver - checkfordisc");
+		l9memory[a6] = 0;
+		l9memory[list9startptr+2] = 0;
+	}
+	
+	void ramsave(int i)
+	{
+		L9DEBUG("driver - ramsave %d",i);
+		//memmove(ramsavearea+i,workspace.vartable,sizeof(SaveStruct));
+		int j;
+		int s=ramsavearea[i].listarea.length;
+		for (j=0;j<s;j++) 
+			ramsavearea[i].listarea[j]=l9memory[listarea+j];
+		s=ramsavearea[i].vartable.length;
+		for (j=0;j<s;j++)
+			ramsavearea[i].vartable[j]=workspace.vartable[j];		
+	}
+
+	void ramload(int i)
+	{
+		L9DEBUG("driver - ramload %d",i);
+		//memmove(workspace.vartable,ramsavearea+i,sizeof(SaveStruct));
+		int j;
+		for (j=0;j<ramsavearea[i].listarea.length;j++) 
+			l9memory[listarea+j]=ramsavearea[i].listarea[j];
+		for (j=0;j<ramsavearea[i].vartable.length;j++)
+			workspace.vartable[j]=ramsavearea[i].vartable[j];		
+	}
+
+	/*--was--	void calldriver(void)
+	{
+		L9BYTE* a6=list9startptr;
+		int d0=*a6++;
+	#ifdef CODEFOLLOW
+		fprintf(f," %s",drivercalls[d0]);
+	#endif
+
+		if (d0==0x16 || d0==0x17)
+		{
+			int d1=*a6;
+			if (d1>0xfa) *a6=1;
+			else if (d1+1>=RAMSAVESLOTS) *a6=0xff;
+			else
+			{
+				*a6=0;
+				if (d0==0x16) ramsave(d1+1); else ramload(d1+1);
+			}
+			*list9startptr=*a6;
+		}
+		else if (d0==0x0b)
+		{
+			char NewName[MAX_PATH];
+			strcpy(NewName,LastGame);
+			if (*a6==0)
+			{
+				printstring("\rSearching for next sub-game file.\r");
+				if (!os_get_game_file(NewName,MAX_PATH))
+				{
+					printstring("\rFailed to load game.\r");
+					return;
+				}
+			}
+			else
+			{
+				os_set_filenumber(NewName,MAX_PATH,*a6);
+			}
+			LoadGame2(NewName,NULL);
+		}
+		else driver(d0,a6);
+	}*/
+	void calldriver()
+	{
+		int a6=list9startptr;
+		int d0=l9memory[a6++]&0xff;
+		//TODO: CODEFOLLOW(" %s",drivercalls[d0]);
+
+		if (d0==0x16 || d0==0x17)
+		{
+			int d1=l9memory[a6]&0xff;
+			if (d1>0xfa) l9memory[a6]=1;
+			else if (d1+1>=RAMSAVESLOTS) l9memory[a6]=(byte)0xff;
+			else
+			{
+				l9memory[a6]=0;
+				if (d0==0x16) ramsave(d1+1); else ramload(d1+1);
+			}
+			l9memory[list9startptr]=l9memory[a6];
+		}
+		else if (d0==0x0b)
+		{
+/*TODO:		char NewName[MAX_PATH];
+			strcpy(NewName,LastGame);
+			if (*a6==0)
+			{
+				printstring("\rSearching for next sub-game file.\r");
+				if (!os_get_game_file(NewName,MAX_PATH))
+				{
+					printstring("\rFailed to load game.\r");
+					return;
+				}
+			}
+			else
+			{
+				os_set_filenumber(NewName,MAX_PATH,*a6);
+			}
+			LoadGame2(NewName,null);
+*/
+		}
+		else driver(d0,a6);
+	}
+
 
 	/*--was--	void L9Random(void)
 	{
@@ -4557,6 +4756,21 @@ class GameState {
 		stack=new short[STACKSIZE];
 	}
 	
+}
+
+//typedef struct
+//{
+//	L9UINT16 vartable[256];
+//	L9BYTE listarea[LISTAREASIZE];
+//} SaveStruct;
+class SaveStruct {
+	private static final int LISTAREASIZE = 0x800;
+	short vartable[];
+	byte listarea[];
+	SaveStruct() {
+		vartable=new short[256];
+		listarea=new byte[LISTAREASIZE];
+	}
 }
 
 class ScanData {
