@@ -2107,7 +2107,8 @@ SaveStruct ramsavearea[];
 			case 31:	ilins(code & 0x1f);break;
 		}
 		CODEFOLLOW(); //out string
-		L9MemoryDiff();
+		//L9MemoryDiff();
+		//VarDiff();
 	}
 
 	/*--was--	void listhandler(void)
@@ -3358,7 +3359,7 @@ SaveStruct ramsavearea[];
 		// gnonext 
 			do
 			{
-				if (d4==l9memory[list2ptr+(++object)])
+				if (d4==(l9memory[list2ptr+(++object)]&0xff))
 				{
 					// gnomaybefound 
 					int d6=l9memory[list3ptr+object]&0x1f;
@@ -3545,6 +3546,16 @@ SaveStruct ramsavearea[];
 		else
 		{
 			os_flush();
+			
+			switch (L9State) {
+			case L9StateRunning:
+				L9State=L9StateWaitForCommand;
+				return false;
+			case L9StateCommandReady:
+				L9State=L9StateRunning;
+				break;
+			}
+			
 			lastchar='.';
 			// get input 
 			//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
@@ -3672,18 +3683,9 @@ SaveStruct ramsavearea[];
 		// next time around instructionloop, this is used when save() and restore()
 		// are called out of line 
 
-		os_flush();
+		//os_flush();
 		
 		codeptr--;
-		switch (L9State) {
-		case L9StateRunning:
-			L9State=L9StateWaitForCommand;
-			return;
-		case L9StateCommandReady:
-			L9State=L9StateRunning;
-			break;
-		}
-		
 		if (L9GameType==L9_V2)
 		{
 			if (inputV2())
@@ -3872,6 +3874,16 @@ SaveStruct ramsavearea[];
 			if (Cheating) {} //TODO: NextCheat();
 			else
 			{
+				
+				switch (L9State) {
+				case L9StateRunning:
+					L9State=L9StateWaitForCommand;
+					return false;
+				case L9StateCommandReady:
+					L9State=L9StateRunning;
+					break;
+				}
+				
 				/* flush */
 				os_flush();
 				lastchar='.';
@@ -4675,7 +4687,7 @@ SaveStruct ramsavearea[];
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-		os_debug(txt);
+		//os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
@@ -4700,8 +4712,9 @@ SaveStruct ramsavearea[];
 	}
 	
 	void CODEFOLLOW(String txt) {
-		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
-		CODEFOLLOWSTRING+=txt;
+//uncomment for CODEFOLLOW feature
+//		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
+//		CODEFOLLOWSTRING+=txt;
 	}
 	
 	void CODEFOLLOW(String txt1, String txt2) {
@@ -4728,15 +4741,29 @@ SaveStruct ramsavearea[];
 		CODEFOLLOW(String.format(txt, val1, val2, val3, val4, val5));
 	}
 	
+	//TODO: Убрать потом обе diff-функции
 	byte l9clonememory[];
 	void L9MemoryDiff() {
 		if (l9clonememory!=null) {
 			for (int i=0;i<l9memory.length;i++)
 				if (l9memory[i]!=l9clonememory[i])
-					L9DEBUG(String.format("diff: %d: %d<%d\r",i,l9memory[i]&0xff,l9clonememory[i]&0xff));
+					L9DEBUG(String.format("memdiff: %d: %d<-%d\r",i,l9memory[i]&0xff,l9clonememory[i]&0xff));
 		}
 		l9clonememory=l9memory.clone();
 	}
+	
+	short vartableclone[];
+	void VarDiff() {
+		if (vartableclone!=null) {
+			for (int i=0;i<workspace.vartable.length;i++)
+				if (workspace.vartable[i]!=vartableclone[i])
+					L9DEBUG(String.format("vardiff: var[%d]: %d<-%d\r",i,workspace.vartable[i]&0xff,vartableclone[i]&0xff));
+		};
+		vartableclone=workspace.vartable.clone();
+	}
+	
+	
+	
 
 }
 
