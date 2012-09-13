@@ -2064,7 +2064,11 @@ SaveStruct ramsavearea[];
 	{
 		CODEFOLLOW("%d (s:%d) %x",(codeptr-acodeptr)-1,workspace.stackptr,code);
 		if (!((code&0x80)!=0)) CODEFOLLOW(" = ",CODEFOLLOW_codes[code&0x1f]);
-		
+	//TODO: kill	
+	//	if ((codeptr-acodeptr==8484) && (workspace.vartable[30]==51))
+	//	{
+	//		L9DEBUG("NOW");
+	//	}
 
 		if ((code & 0x80)!=0) listhandler();
 		else switch (code & 0x1f)
@@ -2103,6 +2107,7 @@ SaveStruct ramsavearea[];
 			case 31:	ilins(code & 0x1f);break;
 		}
 		CODEFOLLOW(); //out string
+		L9MemoryDiff();
 	}
 
 	/*--was--	void listhandler(void)
@@ -3155,7 +3160,7 @@ SaveStruct ramsavearea[];
 		int d1=workspace.vartable[getvar()];
 		int a0=getaddr();
 		if (d0<d1) codeptr=a0;
-		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0<d1 ? "Yes":"No"));
+		CODEFOLLOW(String.format(" if Var[%d]<Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0<d1 ? "Yes":"No"));
 	}
 
 	void ifgtvt()
@@ -3164,7 +3169,7 @@ SaveStruct ramsavearea[];
 		int d1=workspace.vartable[getvar()];
 		int a0=getaddr();
 		if (d0>d1) codeptr=a0;
-		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0>d1 ? "Yes":"No"));
+		CODEFOLLOW(String.format(" if Var[%d]>Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0>d1 ? "Yes":"No"));
 	}
 
 	void ifeqct()
@@ -3182,7 +3187,7 @@ SaveStruct ramsavearea[];
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0!=d1) codeptr=a0;
-		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0!=d1 ? "Yes":"No"));
+		CODEFOLLOW(String.format(" if Var[%d]!=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0!=d1 ? "Yes":"No"));
 	}
 
 	void ifltct()
@@ -3191,7 +3196,7 @@ SaveStruct ramsavearea[];
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0<d1) codeptr=a0;
-		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0<d1 ? "Yes":"No"));
+		CODEFOLLOW(String.format(" if Var[%d]<%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0<d1 ? "Yes":"No"));
 	}
 
 	void ifgtct()
@@ -3200,7 +3205,7 @@ SaveStruct ramsavearea[];
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0>d1) codeptr=a0;
-		CODEFOLLOW(String.format(" if Var[%d]=%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0>d1 ? "Yes":"No"));
+		CODEFOLLOW(String.format(" if Var[%d]>%d goto %d (%s)",cfvar,d1,a0-acodeptr,d0>d1 ? "Yes":"No"));
 	}
 	
 	void printinput()
@@ -4721,6 +4726,16 @@ SaveStruct ramsavearea[];
 	
 	void CODEFOLLOW(String txt, int val1, int val2, int val3, int val4, int val5) {
 		CODEFOLLOW(String.format(txt, val1, val2, val3, val4, val5));
+	}
+	
+	byte l9clonememory[];
+	void L9MemoryDiff() {
+		if (l9clonememory!=null) {
+			for (int i=0;i<l9memory.length;i++)
+				if (l9memory[i]!=l9clonememory[i])
+					L9DEBUG(String.format("diff: %d: %d<%d\r",i,l9memory[i]&0xff,l9clonememory[i]&0xff));
+		}
+		l9clonememory=l9memory.clone();
 	}
 
 }
