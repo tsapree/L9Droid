@@ -4687,7 +4687,7 @@ SaveStruct ramsavearea[];
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-		//os_debug(txt);
+		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {

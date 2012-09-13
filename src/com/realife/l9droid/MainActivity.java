@@ -6,13 +6,16 @@ import java.io.InputStream;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener {
 	
 	Button bCmd;
 	EditText etLog;
@@ -32,8 +35,9 @@ public class MainActivity extends Activity implements OnClickListener {
         
         etLog = (EditText) findViewById(R.id.etLog);
         etCmd = (EditText) findViewById(R.id.etCmd);
+        etCmd.setOnEditorActionListener(this);
 
-        etCmd.setText("GO WEST");
+        etCmd.setText("");
         etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
         
         gamedata=new byte[49179];
@@ -67,17 +71,26 @@ public class MainActivity extends Activity implements OnClickListener {
 			//int i=400;
 			//while (l9.RunGame() && (i-->0) && l9.codeptr!=20631);
 			if (etCmd.length()>0) {
-				etLog.append(">"+etCmd.getText()+"\n");
+				etLog.append(etCmd.getText()+"\n");
 				l9.InputCommand(etCmd.getText().toString());
 				etCmd.setText("");
-				//l9.InputCommand("EXAM PICT");
 				l9.step();
-
-
 			};
 			break;
 		}
 		
+	}
+
+	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
+		// TODO Auto-generated method stub
+		if (etCmd.length()>0) {
+			etLog.append(etCmd.getText()+"\n");
+			l9.InputCommand(etCmd.getText().toString());
+			etCmd.setText("");
+			l9.step();
+		};
+
+		return true;
 	}
 }
 
