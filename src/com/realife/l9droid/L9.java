@@ -417,7 +417,8 @@ SaveStruct ramsavearea[];
 		ibuffptr=-1; //указатель на текст в строке команды для V3,4
 		if (!intinitialise(filename,picname)) return L9StateStopped;
 		codeptr=acodeptr;
-		randomseed = (short)(Math.random()*32767);
+		//TODO: вернуть!! randomseed = (short)(Math.random()*32767);
+		randomseed = 0;
 		LastGame=filename;
 		L9State=L9StateRunning;
 		return L9State;
@@ -3132,8 +3133,8 @@ SaveStruct ramsavearea[];
 		exit1(d4,d5,d6,d7);
 
 		workspace.vartable[getvar()]=(short)((d4[0]&0x70)>>4);
-		workspace.vartable[getvar()]=d5[0];
-		CODEFOLLOW(" Var[%d]=%d(d4=%d) Var[%d]=%d",cfvar2,(d4[0]&0x70)>>4,d4[0],cfvar,d5[0]);
+		workspace.vartable[getvar()]=(short)(d5[0]&0xff);
+		CODEFOLLOW(" Var[%d]=%d(d4=%d) Var[%d]=%d",cfvar2,(d4[0]&0x70)>>4,d4[0]&0xff,cfvar,d5[0]&0xff);
 	}
 
 	void ifeqvt()
@@ -4687,7 +4688,7 @@ SaveStruct ramsavearea[];
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-		os_debug(txt);
+//		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
