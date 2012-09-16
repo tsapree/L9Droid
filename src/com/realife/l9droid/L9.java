@@ -2065,11 +2065,6 @@ SaveStruct ramsavearea[];
 	{
 		CODEFOLLOW("%d (s:%d) %x",(codeptr-acodeptr)-1,workspace.stackptr,code);
 		if (!((code&0x80)!=0)) CODEFOLLOW(" = ",CODEFOLLOW_codes[code&0x1f]);
-	//TODO: kill	
-	//	if ((codeptr-acodeptr==8484) && (workspace.vartable[30]==51))
-	//	{
-	//		L9DEBUG("NOW");
-	//	}
 
 		if ((code & 0x80)!=0) listhandler();
 		else switch (code & 0x1f)
@@ -2250,7 +2245,7 @@ SaveStruct ramsavearea[];
 
 		if (code>=0xe0)			// listvv 
 		{
-			a4+=(offset=workspace.vartable[getvar()]);
+			a4+=(offset=(workspace.vartable[getvar()]&0xffff));
 			val=workspace.vartable[var=getvar()];
 			CODEFOLLOW(" list %d [%d]=Var[%d] (=%d)",code&0x1f,offset,var,val);
 
@@ -2276,7 +2271,7 @@ SaveStruct ramsavearea[];
 		}
 		else if (code>=0xa0)	// listv1v 
 		{
-			a4+=(offset=workspace.vartable[getvar()]);
+			a4+=(offset=workspace.vartable[getvar()]&0xffff);
 			var=getvar();
 			CODEFOLLOW(" Var[%d] =list %d [%d]",var,code&0x1f,offset);
 			if (a4>=MinAccess && a4<MaxAccess) CODEFOLLOW(" (=%d)",l9memory[a4]&0xff);
@@ -2473,9 +2468,9 @@ SaveStruct ramsavearea[];
 	void messagev()
 	{
 		if (L9GameType==L9_V2)
-			printmessageV2(workspace.vartable[getvar()]);
+			printmessageV2(workspace.vartable[getvar()]&0xffff);
 		else
-			printmessage(workspace.vartable[getvar()]);
+			printmessage(workspace.vartable[getvar()]&0xffff);
 	}
 	
 	
@@ -2959,7 +2954,7 @@ SaveStruct ramsavearea[];
 	void picture()
 	{
 		L9DEBUG("picture\r");
-		show_picture(workspace.vartable[getvar()]);
+		show_picture(workspace.vartable[getvar()]&0xffff);
 	}
 	
 	/*--was--	void _screen(void)
@@ -3040,21 +3035,21 @@ SaveStruct ramsavearea[];
 
 	void varvar()
 	{
-		int d6=workspace.vartable[getvar()];
+		int d6=workspace.vartable[getvar()]&0xffff;
 		workspace.vartable[getvar()]=(short)d6;
 		CODEFOLLOW(" Var[%d]=Var[%d] (=%d)",cfvar,cfvar2,d6);
 	}
 
 	void _add()
 	{
-		int d0=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
 		workspace.vartable[getvar()]+=d0;
 		CODEFOLLOW(" Var[%d]+=Var[%d] (+=%d)",cfvar,cfvar2,d0);
 	}
 
 	void _sub()
 	{
-		int d0=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
 		workspace.vartable[getvar()]-=d0;
 		CODEFOLLOW(" Var[%d]-=Var[%d] (-=%d)",cfvar,cfvar2,d0);
 	}
@@ -3065,7 +3060,7 @@ SaveStruct ramsavearea[];
 		int a0;
 		codeptr+=2;
 
-		a0=acodeptr+((d0+((workspace.vartable[getvar()])<<1))&0xffff);
+		a0=acodeptr+((d0+((workspace.vartable[getvar()]&0xffff)<<1))&0xffff);
 		codeptr=acodeptr+L9WORD(a0);
 	}
 
@@ -3139,8 +3134,8 @@ SaveStruct ramsavearea[];
 
 	void ifeqvt()
 	{
-		int d0=workspace.vartable[getvar()];
-		int d1=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
+		int d1=workspace.vartable[getvar()]&0xffff;
 		int a0=getaddr();
 		if (d0==d1) codeptr=a0;
 		CODEFOLLOW(String.format(" if Var[%d]=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0==d1 ? "Yes":"No"));
@@ -3149,8 +3144,8 @@ SaveStruct ramsavearea[];
 
 	void ifnevt()
 	{
-		int d0=workspace.vartable[getvar()];
-		int d1=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
+		int d1=workspace.vartable[getvar()]&0xffff;
 		int a0=getaddr();
 		if (d0!=d1) codeptr=a0;
 		CODEFOLLOW(String.format(" if Var[%d]!=Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0!=d1 ? "Yes":"No"));
@@ -3158,8 +3153,8 @@ SaveStruct ramsavearea[];
 
 	void ifltvt()
 	{
-		int d0=workspace.vartable[getvar()];
-		int d1=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
+		int d1=workspace.vartable[getvar()]&0xffff;
 		int a0=getaddr();
 		if (d0<d1) codeptr=a0;
 		CODEFOLLOW(String.format(" if Var[%d]<Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0<d1 ? "Yes":"No"));
@@ -3167,8 +3162,8 @@ SaveStruct ramsavearea[];
 
 	void ifgtvt()
 	{
-		int d0=workspace.vartable[getvar()];
-		int d1=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
+		int d1=workspace.vartable[getvar()]&0xffff;
 		int a0=getaddr();
 		if (d0>d1) codeptr=a0;
 		CODEFOLLOW(String.format(" if Var[%d]>Var[%d] goto %d (%s)",cfvar2,cfvar,a0-acodeptr,d0>d1 ? "Yes":"No"));
@@ -3176,7 +3171,7 @@ SaveStruct ramsavearea[];
 
 	void ifeqct()
 	{
-		int d0=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0==d1) codeptr=a0;
@@ -3185,7 +3180,7 @@ SaveStruct ramsavearea[];
 
 	void ifnect()
 	{
-		int d0=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0!=d1) codeptr=a0;
@@ -3194,7 +3189,7 @@ SaveStruct ramsavearea[];
 
 	void ifltct()
 	{
-		int d0=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0<d1) codeptr=a0;
@@ -3203,7 +3198,7 @@ SaveStruct ramsavearea[];
 
 	void ifgtct()
 	{
-		int d0=workspace.vartable[getvar()];
+		int d0=workspace.vartable[getvar()]&0xffff;
 		int d1=getcon();
 		int a0=getaddr();
 		if (d0>d1) codeptr=a0;
