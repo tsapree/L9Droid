@@ -11,7 +11,7 @@ package com.realife.l9droid;
 //0=false
 //1=true 
 //if (var) -> if(var!=0)
-//*getvar()->workspace.vartable[getvar()]
+//*getvar()->workspace.vartable[getvar()]&0xffff
 
 public class L9 {
 	
@@ -131,8 +131,8 @@ SaveStruct ramsavearea[];
 	
 //
 	boolean Cheating=false;
-//int CheatWord;
-//GameState CheatWorkspace;
+	int CheatWord;
+	GameState CheatWorkspace;
 //
 //int reflectflag,scale,gintcolour,option;
 	int l9textmode=0;
@@ -174,10 +174,6 @@ SaveStruct ramsavearea[];
 	int amessageV25_depth=0;
 	int displaywordref_mdtmode=0;
 
-	
-//	#ifdef CODEFOLLOW
-//	#define CODEFOLLOWFILE "c:\\temp\\level9.txt"
-//	FILE *f;
 	int cfvar,cfvar2; //for CODEFOLLOW
 	String CODEFOLLOW_codes[]=
 	{
@@ -264,7 +260,6 @@ SaveStruct ramsavearea[];
 //	#endif
 	
 	
-	
 	L9() {
 		workspace=new GameState();
 		unpackbuf=new int[8];
@@ -291,8 +286,7 @@ SaveStruct ramsavearea[];
 		return ret;
 	}
 	*/
-	public boolean LoadGame(String fileName, String picName) {
-		
+	public boolean LoadGame(String fileName, String picName) {	
 		int ret=LoadGame2(fileName, picName);
 		showtitle=1;
 		clearworkspace();
@@ -357,7 +351,7 @@ SaveStruct ramsavearea[];
 	//TODO:KILL os_input()
 	String os_input(int size) {return InputString;}; 
 	char os_readchar(int millis) {return '\r';}; 
-	//L9BOOL os_stoplist(void)
+	boolean os_stoplist() {return false;}; 
 	void os_flush() {};
 	//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
 	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
@@ -1092,9 +1086,7 @@ SaveStruct ramsavearea[];
 	int Scan()
 	{
 		
-		//L9BYTE *Chk=malloc(FileSize+1);
 		byte Chk[] = new byte[filesize+1];
-		//L9BYTE *Image=calloc(FileSize,1);
 		byte Image[] = new byte[filesize];
 		int i,num,MaxSize=0;
 		int j;
@@ -3538,7 +3530,7 @@ SaveStruct ramsavearea[];
 		int ibuffptr,obuffptr,ptr;
 		int list0ptr;
 
-		if (Cheating) {} //TODO: NextCheat();
+		if (Cheating) NextCheat();
 		else
 		{
 			os_flush();
@@ -3560,7 +3552,7 @@ SaveStruct ramsavearea[];
 			// add space and zero onto end
 			ibuffstr=ibuffstr.concat(" \0");
 			ibuff=ibuffstr.toCharArray();
-			//TODO:if (CheckHash()) return false;
+			if (CheckHash()) return false;
 
 			// check for invalid chars
 			for (int i=0;i<ibuff.length-1;i++) {
@@ -3649,6 +3641,116 @@ SaveStruct ramsavearea[];
 			list0ptr=L9Pointers[1];
 		}
 	}
+	
+	/*--was--	L9BOOL CheckHash(void)
+	{
+		if (stricmp(ibuff,"#cheat")==0) StartCheat();
+		else if (stricmp(ibuff,"#save")==0)
+		{
+			save();
+			return TRUE;
+		}
+		else if (stricmp(ibuff,"#restore")==0)
+		{
+			restore();
+			return TRUE;
+		}
+		else if (stricmp(ibuff,"#quit")==0)
+		{
+			StopGame();
+			printstring("\rGame Terminated\r");
+			return TRUE;
+		}
+		else if (stricmp(ibuff,"#dictionary")==0)
+		{
+			CheatWord=0;
+			printstring("\r");
+			while ((L9GameType==L9_V2) ? GetWordV2(ibuff,CheatWord++) : GetWordV3(ibuff,CheatWord++))
+			{
+				error("%s ",ibuff);
+				if (os_stoplist() || !Running) break;
+			}
+			printstring("\r");
+			return TRUE;
+		}
+		else if (strnicmp(ibuff,"#picture ",9)==0)
+		{
+			int pic = 0;
+			if (sscanf(ibuff+9,"%d",&pic) == 1)
+			{
+				if (L9GameType==L9_V4)
+					os_show_bitmap(pic,0,0);
+				else
+					show_picture(pic);
+			}
+
+			lastactualchar = 0;
+			printchar('\r');
+			return TRUE;
+		}
+		return FALSE;
+	}*/
+	boolean CheckHash()
+	{
+		if (stricmp(ibuff,"#cheat")) 
+		{
+			StartCheat();
+		}
+		else if (stricmp(ibuff,"#save"))
+		{
+			//TODO:save();
+			return true;
+		}
+		else if (stricmp(ibuff,"#restore"))
+		{
+			//TODO:restore();
+			return true;
+		}
+		else if (stricmp(ibuff,"#quit"))
+		{
+			StopGame();
+			printstring("\rGame Terminated\r");
+			return true;
+		}
+		else if (stricmp(ibuff,"#dictionary"))
+		{
+			CheatWord=0;
+			printstring("\r");
+			while ((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))
+			{
+				error("%s ",ibuffstr);
+				if (os_stoplist() || L9StateRunning==L9StateStopped) break;
+			}
+			printstring("\r");
+			return true;
+		}
+		else if (stricmp(ibuff,"#picture ",9))
+		{
+			int pic = -1;
+			int n;
+			for (int i=9;i<ibuff.length;i++) {
+				n=ibuff[i]-'0';
+				if (n>=0 && n<=9) pic=(pic<0?0:(pic*10))+n;
+				else {
+					if (pic>=0) break; 
+				};
+			};
+			if (pic>=0)
+			{
+				error("pic=%d",pic);
+				if (L9GameType==L9_V4)
+					os_show_bitmap(pic,0,0);
+				else
+					show_picture(pic);
+			}
+
+			lastactualchar = 0;
+			printchar('\r');
+			return true;
+		}
+		return false;
+	}
+
 
 	/*--was-- void input(void)
 	{
@@ -3867,7 +3969,7 @@ SaveStruct ramsavearea[];
 
 		if (ibuffptr<0)
 		{
-			if (Cheating) {} //TODO: NextCheat();
+			if (Cheating) NextCheat();
 			else
 			{
 				
@@ -3890,7 +3992,7 @@ SaveStruct ramsavearea[];
 				
 				ibuffstr=ibuffstr.concat(" \0");
 				ibuff=ibuffstr.toCharArray();
-				//TODO:if (CheckHash()) return false;
+				if (CheckHash()) return false;
 
 				// check for invalid chars
 				for (int i=0;i<ibuff.length-1;i++) {
@@ -4598,10 +4700,155 @@ SaveStruct ramsavearea[];
 	}*/
 	void L9Random() {
 		CODEFOLLOW (" %d",randomseed&0xffff);
-		//TODO: проверить генерацию randomseed
 		randomseed=(short)((((randomseed<<8) + 0x0a - randomseed) <<2) + randomseed + 1);
 		workspace.vartable[getvar()]=(short)(randomseed & 0xff);
 		CODEFOLLOW (" %d",randomseed&0xffff);
+	}
+	
+
+	/*--was--	void NextCheat(void)
+	{
+		// restore game status 
+		memmove(&workspace,&CheatWorkspace,sizeof(GameState));
+		codeptr=acodeptr+workspace.codeptr;
+
+		if (!((L9GameType==L9_V2) ? GetWordV2(ibuff,CheatWord++) : GetWordV3(ibuff,CheatWord++)))
+		{
+			Cheating=FALSE;
+			printstring("\rCheat failed.\r");
+			*ibuff=0;
+		}
+	}*/
+	void NextCheat()
+	{
+		// restore game status 
+		//memmove(&workspace,&CheatWorkspace,sizeof(GameState));
+		workspace=CheatWorkspace.clone();
+		codeptr=acodeptr+workspace.codeptr;
+
+		if (!((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++)))
+		{
+			Cheating=false;
+			printstring("\rCheat failed.\r");
+			ibuffstr="";
+		}
+	}
+
+	/*--was--	void StartCheat(void)
+	{
+		Cheating=TRUE;
+		CheatWord=0;
+
+		// save current game status 
+		memmove(&CheatWorkspace,&workspace,sizeof(GameState));
+		CheatWorkspace.codeptr=codeptr-acodeptr;
+
+		NextCheat();
+	}*/
+	void StartCheat()
+	{
+		Cheating=true;
+		CheatWord=0;
+
+		// save current game status
+		//memmove(&CheatWorkspace,&workspace,sizeof(GameState));
+		CheatWorkspace=workspace.clone();
+		CheatWorkspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
+
+		NextCheat();
+	}
+
+	/* v3,4 input routine */
+	/*--was--	L9BOOL GetWordV3(char *buff,int Word)
+	{
+		int i;
+		int subdict=0;
+		// 26*4-1=103 
+
+		initunpack(startdata+L9WORD(dictdata));
+		unpackword();
+
+		while (Word--)
+		{
+			if (unpackword())
+			{
+				if (++subdict==dictdatalen) return FALSE;
+				initunpack(startdata+L9WORD(dictdata+(subdict<<2)));
+				Word++; // force unpack again 
+			}
+		}
+		strcpy(buff,threechars);
+		for (i=0;i<(int)strlen(buff);i++) buff[i]&=0x7f;
+		return TRUE;
+	}*/
+	boolean GetWordV3(int Word)
+	{
+		int i;
+		int subdict=0;
+		// 26*4-1=103 
+
+		initunpack(startdata+L9WORD(dictdata));
+		unpackword();
+
+		while (Word--!=0)
+		{
+			if (unpackword())
+			{
+				if (++subdict==dictdatalen) return false;
+				initunpack(startdata+L9WORD(dictdata+(subdict<<2)));
+				Word++; // force unpack again 
+			}
+		}
+		//TODO:проверить
+		//strcpy(buff,threechars);
+		byte buff[]=threechars.clone();
+		for (i=0;i<buff.length;i++) buff[i]&=0x7f;
+		ibuffstr=buff.toString();
+		return true;
+	};
+
+	/* version 2 stuff hacked from bbc v2 files */
+	/*--was--	L9BOOL GetWordV2(char *buff,int Word)
+	{
+		L9BYTE *ptr=L9Pointers[1],x;
+
+		while (Word--)
+		{
+			do
+			{
+				x=*ptr++;
+			} while (x>0 && x<0x7f);
+			if (x==0) return FALSE; // no more words 
+			ptr++;
+		}
+		do
+		{
+			x=*ptr++;
+			*buff++=x&0x7f;
+		} while (x>0 && x<0x7f);
+		*buff=0;
+		return TRUE;
+	}*/
+	boolean GetWordV2(int Word)
+	{
+		int ptr=L9Pointers[1];
+		int x;
+		while (Word--!=0)
+		{
+			do
+			{
+				x=l9memory[ptr++]&0xff;
+			} while (x>0 && x<0x7f);
+			if (x==0) return false; // no more words 
+			ptr++;
+		}
+		ibuffstr="";
+		do
+		{
+			x=l9memory[ptr++]&0xff;
+			ibuffstr+=x&0x7f;
+		} while (x>0 && x<0x7f);
+		return true;
 	}
 	
 	/*--was-- void show_picture(int pic)
@@ -4679,6 +4926,19 @@ SaveStruct ramsavearea[];
 	char tolower(char c) {
 		if (c>='A' && c<='Z') c=(char)(c+32);
 		return c;
+	}
+	
+	//compare buff to lowercase string, true if least #len# of chars equals.  
+	boolean stricmp(char[] buff,String str, int len) {
+		if (len>buff.length) return false;
+		for (int i=0;i<len;i++) {
+			if (tolower(buff[i])!=str.charAt(i)) return false;
+		}
+		return true;
+	};
+	boolean stricmp(char[] buff,String str) {
+		int len=str.length();
+		return stricmp(buff,str,len);
 	}
 	
 	//L9DEBUG
@@ -4793,8 +5053,23 @@ class GameState {
 		//listarea=new byte[LISTAREASIZE];
 		stack=new short[STACKSIZE];
 	}
-	
+
+	public GameState clone() {
+		GameState gs=new GameState();
+		gs.codeptr=this.codeptr;
+		gs.stackptr=this.stackptr;
+		gs.listsize=this.listsize;
+		gs.stacksize=this.stacksize;
+		gs.filenamesize=this.filenamesize;
+		gs.checksum=this.checksum;
+		gs.vartable=this.vartable.clone();
+		gs.stack=this.stack.clone();
+		gs.filename=this.filename+"";
+		return gs;
+	}
 }
+
+
 
 //typedef struct
 //{
