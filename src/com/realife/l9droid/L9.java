@@ -4802,7 +4802,7 @@ SaveStruct ramsavearea[];
 		}
 		//TODO:проверить
 		//strcpy(buff,threechars);
-		buff[]=threechars.clone();
+		buff=threechars.clone();
 		for (i=0;i<buff.length;i++) buff[i]&=0x7f;
 		ibuffstr=buff.toString();
 		return true;
