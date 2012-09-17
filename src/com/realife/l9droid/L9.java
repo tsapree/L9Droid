@@ -3718,7 +3718,7 @@ SaveStruct ramsavearea[];
 			printstring("\r");
 			while ((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))
 			{
-				error("%s ",ibuffstr);
+				error(" ",ibuffstr);
 				if (os_stoplist() || L9StateRunning==L9StateStopped) break;
 			}
 			printstring("\r");
@@ -4785,6 +4785,7 @@ SaveStruct ramsavearea[];
 	{
 		int i;
 		int subdict=0;
+		byte buff[];
 		// 26*4-1=103 
 
 		initunpack(startdata+L9WORD(dictdata));
@@ -4801,7 +4802,7 @@ SaveStruct ramsavearea[];
 		}
 		//TODO:проверить
 		//strcpy(buff,threechars);
-		byte buff[]=threechars.clone();
+		buff[]=threechars.clone();
 		for (i=0;i<buff.length;i++) buff[i]&=0x7f;
 		ibuffstr=buff.toString();
 		return true;
