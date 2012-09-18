@@ -326,8 +326,65 @@ SaveStruct ramsavearea[];
 		L9State=L9StateStopped;
 	}
 	
+	/*--was--	void RestoreGame(char* filename)
+	{
+		int Bytes;
+		GameState temp;
+		FILE* f = NULL;
+
+		if ((f = fopen(filename, "rb")) != NULL)
+		{
+			Bytes = fread(&temp, 1, sizeof(GameState), f);
+			if (Bytes==V1FILESIZE)
+			{
+				printstring("\rGame restored.\r");
+				// only copy in workspace 
+				memset(workspace.listarea,0,LISTAREASIZE);
+				memmove(workspace.vartable,&temp,V1FILESIZE);
+			}
+			else if (CheckFile(&temp))
+			{
+				printstring("\rGame restored.\r");
+				// full restore
+				memmove(&workspace,&temp,sizeof(GameState));
+				codeptr=acodeptr+workspace.codeptr;
+			}
+			else
+				printstring("\rSorry, unrecognised format. Unable to restore\r");
+		}
+		else
+			printstring("\rUnable to restore game.\r");
+	}*/
 	public void RestoreGame(String inFile) {
-		
+		int Bytes;
+		GameState temp;
+		//TODO: ◊≈Ã Œ“À»◊¿≈“—ﬂ Œ“ NORMALRESTORE?
+		/*TODO:
+		FILE* f = NULL;
+
+		if ((f = fopen(filename, "rb")) != NULL)
+		{
+			Bytes = fread(&temp, 1, sizeof(GameState), f);
+			if (Bytes==V1FILESIZE)
+			{
+				printstring("\rGame restored.\r");
+				// only copy in workspace 
+				memset(workspace.listarea,0,LISTAREASIZE);
+				memmove(workspace.vartable,&temp,V1FILESIZE);
+			}
+			else if (CheckFile(&temp))
+			{
+				printstring("\rGame restored.\r");
+				// full restore
+				memmove(&workspace,&temp,sizeof(GameState));
+				codeptr=acodeptr+workspace.codeptr;
+			}
+			else
+				printstring("\rSorry, unrecognised format. Unable to restore\r");
+		}
+		else
+			printstring("\rUnable to restore game.\r");
+		*/
 	}
 	
 	public void FreeMemory() {
@@ -4892,11 +4949,13 @@ SaveStruct ramsavearea[];
 		workspace=CheatWorkspace.clone();
 		codeptr=acodeptr+workspace.codeptr;
 
-		if (!((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++)))
-		{
+		if (!((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))) {
 			Cheating=false;
 			printstring("\rCheat failed.\r");
 			ibuffstr="";
+		} else {
+			ibuffstr=ibuffstr.concat(" \0");
+			ibuff=ibuffstr.toCharArray();
 		}
 	}
 
