@@ -181,31 +181,6 @@ L9BOOL checksumgamedata(void)
 	return calcchecksum(startdata,L9WORD(startdata)+1)==0;
 }
 
-void save(void)
-{
-	L9UINT16 checksum;
-	int i;
-#ifdef L9DEBUG
-	printf("function - save");
-#endif
-/* does a full save, workpace, stack, codeptr, stackptr, game name, checksum */
-
-	workspace.Id=L9_ID;
-	workspace.codeptr=codeptr-acodeptr;
-	workspace.listsize=LISTAREASIZE;
-	workspace.stacksize=STACKSIZE;
-	workspace.filenamesize=MAX_PATH;
-	workspace.checksum=0;
-	strcpy(workspace.filename,LastGame);
-
-	checksum=0;
-	for (i=0;i<sizeof(GameState);i++) checksum+=((L9BYTE*) &workspace)[i];
-	workspace.checksum=checksum;
-
-	if (os_save_file((L9BYTE*) &workspace,sizeof(workspace))) printstring("\rGame saved.\r");
-	else printstring("\rUnable to save game.\r");
-}
-
 L9BOOL CheckFile(GameState *gs)
 {
 	L9UINT16 checksum;
@@ -231,72 +206,6 @@ L9BOOL CheckFile(GameState *gs)
 		return TRUE;
 	return FALSE;
 }
-
-void NormalRestore(void)
-{
-	GameState temp;
-	int Bytes;
-#ifdef L9DEBUG
-	printf("function - restore");
-#endif
-	if (Cheating)
-	{
-		/* not really an error */
-		Cheating=FALSE;
-		error("\rWord is: %s\r",ibuff);
-	}
-
-	if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
-	{
-		if (Bytes==V1FILESIZE)
-		{
-			printstring("\rGame restored.\r");
-			memset(workspace.listarea,0,LISTAREASIZE);
-			memmove(workspace.vartable,&temp,V1FILESIZE);
-		}
-		else if (CheckFile(&temp))
-		{
-			printstring("\rGame restored.\r");
-			/* only copy in workspace */
-			memmove(workspace.vartable,temp.vartable,sizeof(SaveStruct));
-		}
-		else
-		{
-			printstring("\rSorry, unrecognised format. Unable to restore\r");
-		}
-	}
-	else printstring("\rUnable to restore game.\r");
-}
-
-void restore(void)
-{
-	int Bytes;
-	GameState temp;
-	if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
-	{
-		if (Bytes==V1FILESIZE)
-		{
-			printstring("\rGame restored.\r");
-			/* only copy in workspace */
-			memset(workspace.listarea,0,LISTAREASIZE);
-			memmove(workspace.vartable,&temp,V1FILESIZE);
-		}
-		else if (CheckFile(&temp))
-		{
-			printstring("\rGame restored.\r");
-			/* full restore */
-			memmove(&workspace,&temp,sizeof(GameState));
-			codeptr=acodeptr+workspace.codeptr;
-		}
-		else
-		{
-			printstring("\rSorry, unrecognised format. Unable to restore\r");
-		}
-	}
-	else printstring("\rUnable to restore game.\r");
-}
-
-
 
 int scalex(int x)
 {
