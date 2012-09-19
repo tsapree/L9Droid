@@ -411,9 +411,9 @@ SaveStruct ramsavearea[];
 	boolean os_stoplist() {return false;}; 
 	void os_flush() {};
 	//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
-	boolean os_save_file(short[] buff) {return false;}
+	boolean os_save_file(byte[] buff) {return false;}
 	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
-	short[] os_load_file() {return null;}
+	byte[] os_load_file() {return null;}
 	//L9BOOL os_get_game_file(char* NewName, int Size)
 	//void os_set_filenumber(char* NewName, int Size, int n)
 	void os_graphics(int mode) {};
@@ -4679,8 +4679,6 @@ SaveStruct ramsavearea[];
 		else printstring("\rUnable to save game.\r");
 	}*/
 	void save() {
-		int checksum;
-		int i;
 		L9DEBUG("function - save");
 	// does a full save, workpace, stack, codeptr, stackptr, game name, checksum 
 
@@ -4689,7 +4687,7 @@ SaveStruct ramsavearea[];
 		workspace.stacksize=STACKSIZE;
 		//TODO: обрезать полное имя с путем до имени файла.
 		workspace.filename=LastGame;
-		short buff[]=workspace.getCloneInWords(l9memory, listarea);
+		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
 		if (os_save_file(buff)) printstring("\rGame saved.\r");
 		else printstring("\rUnable to save game.\r");
 	};
@@ -4793,33 +4791,42 @@ SaveStruct ramsavearea[];
 		else printstring("\rUnable to restore game.\r");
 	}*/
 	void restore() {
-		/*TODO:
-		int Bytes;
-		GameState temp;
-		if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
-		{
-			if (Bytes==V1FILESIZE)
-			{
+		byte buff[]=os_load_file();
+		GameState tempGS=new GameState();
+		if (buff!=null) {
+			if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
 				printstring("\rGame restored.\r");
-				// only copy in workspace 
-				memset(workspace.listarea,0,LISTAREASIZE);
-				memmove(workspace.vartable,&temp,V1FILESIZE);
-			}
-			else if (CheckFile(&temp))
-			{
-				printstring("\rGame restored.\r");
-				// full restore 
-				memmove(&workspace,&temp,sizeof(GameState));
+				workspace=tempGS.clone();
 				codeptr=acodeptr+workspace.codeptr;
-			}
-			else
-			{
-				printstring("\rSorry, unrecognised format. Unable to restore\r");
-			}
-		}
-		else printstring("\rUnable to restore game.\r");
-		*/
+			} else printstring("\rSorry, unrecognised format. Unable to restore\r");
+		} else printstring("\rUnable to restore game.\r");
 	}
+
+	/*--was--	L9BOOL CheckFile(GameState *gs)
+	{
+		L9UINT16 checksum;
+		int i;
+		char c = 'Y';
+
+		if (gs->Id!=L9_ID) return FALSE;
+		checksum=gs->checksum;
+		gs->checksum=0;
+		for (i=0;i<sizeof(GameState);i++) checksum-=*((L9BYTE*) gs+i);
+		if (checksum) return FALSE;
+		if (stricmp(gs->filename,LastGame))
+		{
+			printstring("\rWarning: game path name does not match, you may be about to load this position file into the wrong story file.\r");
+			printstring("Are you sure you want to restore? (Y/N)");
+			os_flush();
+
+			c = '\0';
+			while ((c != 'y') && (c != 'Y') && (c != 'n') && (c != 'N')) 
+				c = os_readchar(20);
+		}
+		if ((c == 'y') || (c == 'Y'))
+			return TRUE;
+		return FALSE;
+	}*/
 
 	/*--was--	void calldriver(void)
 	{
@@ -5292,7 +5299,7 @@ class GameState {
 	}
 	
 	//for save()
-	public short[] getCloneInWords(byte[] mem, int startmem) {
+	public byte[] getCloneInBytes(byte[] mem, int startmem) {
 		short buff[]=new short[2+1+filename.length()+3+VARSIZE+1+STACKSIZE+1+listsize/2+1];
 		int i=0,j;
 		buff[i++]=L9_ID>>16;
@@ -5311,17 +5318,27 @@ class GameState {
 		checksum=0;
 		for (j=0;j<i;j++) checksum+=buff[j]; 
 		buff[i]=checksum;
-		return buff;
+		byte bytebuff[]=new byte[buff.length*2];
+		for (j=0;j<i;j++) {
+			bytebuff[j*2]=(byte)(buff[j]&0xff); bytebuff[j*2+1]=(byte)(buff[j]>>8);
+		};
+		return bytebuff;
 	}
 	
 	//for restore()
-	public boolean setFromCloneInWords(short[] buff, byte[] mem, int startmem) {
-		int i=0,j,s,b;
+	public boolean setFromCloneInBytes(byte[] bytebuff, byte[] mem, int startmem, String name) {
+		int i=0,j=0,s,b;
+		s=bytebuff.length;
+		short buff[]=new short[s/2];
+		while (j<s) buff[i++]=(short)(bytebuff[j++]&(bytebuff[j++]<<8));
+		
+		i=0;
 		if (buff[i++]!=(L9_ID>>16)) return false;
 		if (buff[i++]!=(L9_ID&0xffff)) return false;
 		s=buff[i++];
 		filename="";
 		for (j=0;j<s;j++) filename+=(char)buff[i++];
+		if (!name.equalsIgnoreCase(filename)) return false; 
 		codeptr=buff[i++];
 		stackptr=buff[i++];
 		if (buff[i++]!=VARSIZE) return false;

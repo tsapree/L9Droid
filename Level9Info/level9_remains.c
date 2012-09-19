@@ -88,6 +88,7 @@ void FreeMemory(void)
 	gfxa5=NULL;
 }
 
+/*
 L9BYTE calcchecksum(L9BYTE* ptr,L9UINT32 num)
 {
 	L9BYTE d1=0;
@@ -95,7 +96,11 @@ L9BYTE calcchecksum(L9BYTE* ptr,L9UINT32 num)
 	return d1;
 }
 
-/*
+L9BOOL checksumgamedata(void)
+{
+	return calcchecksum(startdata,L9WORD(startdata)+1)==0;
+}
+
 L9BOOL Check(L9BYTE* StartFile,L9UINT32 FileSize,L9UINT32 Offset)
 {
 	L9UINT16 d0,num;
@@ -175,37 +180,6 @@ void FullScan(L9BYTE* StartFile,L9UINT32 FileSize)
 	free(Image);
 }
 #endif
-
-L9BOOL checksumgamedata(void)
-{
-	return calcchecksum(startdata,L9WORD(startdata)+1)==0;
-}
-
-L9BOOL CheckFile(GameState *gs)
-{
-	L9UINT16 checksum;
-	int i;
-	char c = 'Y';
-
-	if (gs->Id!=L9_ID) return FALSE;
-	checksum=gs->checksum;
-	gs->checksum=0;
-	for (i=0;i<sizeof(GameState);i++) checksum-=*((L9BYTE*) gs+i);
-	if (checksum) return FALSE;
-	if (stricmp(gs->filename,LastGame))
-	{
-		printstring("\rWarning: game path name does not match, you may be about to load this position file into the wrong story file.\r");
-		printstring("Are you sure you want to restore? (Y/N)");
-		os_flush();
-
-		c = '\0';
-		while ((c != 'y') && (c != 'Y') && (c != 'n') && (c != 'N')) 
-			c = os_readchar(20);
-	}
-	if ((c == 'y') || (c == 'Y'))
-		return TRUE;
-	return FALSE;
-}
 
 int scalex(int x)
 {

@@ -2,10 +2,14 @@ package com.realife.l9droid;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import android.app.Activity;
@@ -19,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener {
 	
@@ -98,44 +103,44 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		return true;
 	}
 	
-	public boolean fileSave(short buff[]) {
-		boolean rez=false;
+	public boolean fileSave(byte buff[]) {
 		try {
-		      // отрываем поток для записи
-		      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-		          openFileOutput("1.sav", MODE_PRIVATE)));
-		      // пишем данные
-		      for (int i=0;i<buff.length;i++)
-		    	  bw.write(buff[i]);
-		      // закрываем поток
-		      bw.close();
-		      rez=true;
-		    } catch (FileNotFoundException e) {
-		      e.printStackTrace();
-		    } catch (IOException e) {
-		      e.printStackTrace();
-		    }
-		return rez;
+			File f=new File("1.sav");
+			OutputStream out = new FileOutputStream(f);
+			out.write(buff);
+			out.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			// e.printStackTrace();
+		} catch (IOException e) {
+			// e.printStackTrace();
+		}
+		return false;
 	}
 	
-	//todo: дописать :)
-	public short[] fileLoad() {
+	public byte[] fileLoad() {
 		try {
-			// открываем поток для чтения
-		    BufferedReader br = new BufferedReader(new InputStreamReader(
-		        openFileInput("1.sav")));
-		    //String str = "";
-		    // читаем содержимое
-		    //while ((str = br.readLine()) != null) {
-		      //Log.d(LOG_TAG, str);
-		    //}
+			File f=new File("1.sav");
+			if (!f.exists()) {
+				Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show();
+				return null;
+			};
+			int size=(int)f.length(); //если 0-файла не существует. Можно не делать f.exists
+			Toast.makeText(this, f.getAbsolutePath(), Toast.LENGTH_LONG).show();
+			byte buff[]=new byte[size];
+			InputStream in = new FileInputStream(f);
+			int len=in.read(buff);
+			//todo: len==size???
+			in.close();
+			return buff;
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return null;
 	}
+
 }
 
 class L9implement extends L9 {
@@ -200,11 +205,11 @@ class L9implement extends L9 {
 		while (L9State==L9StateRunning || L9State==L9StateCommandReady) RunGame();
 	};
 	
-	boolean os_save_file(short[] buff) {
+	boolean os_save_file(byte[] buff) {
 		return mAct.fileSave(buff);
 	};
 	
-	short[] os_load_file() {
+	byte[] os_load_file() {
 		return mAct.fileLoad();
 	};
 
