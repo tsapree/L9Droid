@@ -411,7 +411,9 @@ SaveStruct ramsavearea[];
 	boolean os_stoplist() {return false;}; 
 	void os_flush() {};
 	//L9BOOL os_save_file(L9BYTE* Ptr, int Bytes)
+	boolean os_save_file(short[] buff) {return false;}
 	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
+	short[] os_load_file() {return null;}
 	//L9BOOL os_get_game_file(char* NewName, int Size)
 	//void os_set_filenumber(char* NewName, int Size, int n)
 	void os_graphics(int mode) {};
@@ -4682,21 +4684,14 @@ SaveStruct ramsavearea[];
 		L9DEBUG("function - save");
 	// does a full save, workpace, stack, codeptr, stackptr, game name, checksum 
 
-		workspace.Id=L9_ID;
 		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
 		workspace.listsize=LISTAREASIZE;
 		workspace.stacksize=STACKSIZE;
-		workspace.filenamesize=MAX_PATH;
-		workspace.checksum=0;
-		strcpy(workspace.filename,LastGame);
-
-		checksum=0;
-		for (i=0;i<sizeof(GameState);i++) checksum+=((L9BYTE*) &workspace)[i];
-		workspace.checksum=checksum;
-
-		if (os_save_file((L9BYTE*) &workspace,sizeof(workspace))) printstring("\rGame saved.\r");
+		//TODO: обрезать полное имя с путем до имени файла.
+		workspace.filename=LastGame;
+		short buff[]=workspace.getCloneInWords(l9memory, listarea);
+		if (os_save_file(buff)) printstring("\rGame saved.\r");
 		else printstring("\rUnable to save game.\r");
-		*/
 	};
 
 	/*--was--	void NormalRestore(void)

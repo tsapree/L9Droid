@@ -1,7 +1,12 @@
 package com.realife.l9droid;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -50,7 +55,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
             e.printStackTrace();
           }
         
-        l9=new L9implement(etLog,gamedata);
+        l9=new L9implement(etLog,gamedata,this);
         
         l9.LoadGame("test", "");
         l9.step();
@@ -92,6 +97,45 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 
 		return true;
 	}
+	
+	public boolean fileSave(short buff[]) {
+		boolean rez=false;
+		try {
+		      // отрываем поток для записи
+		      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+		          openFileOutput("1.sav", MODE_PRIVATE)));
+		      // пишем данные
+		      for (int i=0;i<buff.length;i++)
+		    	  bw.write(buff[i]);
+		      // закрываем поток
+		      bw.close();
+		      rez=true;
+		    } catch (FileNotFoundException e) {
+		      e.printStackTrace();
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		return rez;
+	}
+	
+	//todo: дописать :)
+	public short[] fileLoad() {
+		try {
+			// открываем поток для чтения
+		    BufferedReader br = new BufferedReader(new InputStreamReader(
+		        openFileInput("1.sav")));
+		    //String str = "";
+		    // читаем содержимое
+		    //while ((str = br.readLine()) != null) {
+		      //Log.d(LOG_TAG, str);
+		    //}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
 
 class L9implement extends L9 {
@@ -104,14 +148,16 @@ class L9implement extends L9 {
     String cmdStr;
     DebugStorage ds;
     String vStr;
+    MainActivity mAct;
 	
 	EditText et;
 	byte gamedata[];
-	L9implement(EditText et1, byte dat[]) {
+	L9implement(EditText et1, byte dat[], MainActivity m) {
 		et=et1;
 		gamedata=dat;
 		cmdStr=null;
 		ds=new DebugStorage();
+		mAct=m;
 	};
 	
 	void os_printchar(char c) {
@@ -153,6 +199,15 @@ class L9implement extends L9 {
 	void step() {
 		while (L9State==L9StateRunning || L9State==L9StateCommandReady) RunGame();
 	};
+	
+	boolean os_save_file(short[] buff) {
+		return mAct.fileSave(buff);
+	};
+	
+	short[] os_load_file() {
+		return mAct.fileLoad();
+	};
+
 
 }
 
