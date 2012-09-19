@@ -4677,14 +4677,13 @@ SaveStruct ramsavearea[];
 		else printstring("\rUnable to save game.\r");
 	}*/
 	void save() {
-		/*TODO:
-		L9UINT16 checksum;
+		int checksum;
 		int i;
 		L9DEBUG("function - save");
 	// does a full save, workpace, stack, codeptr, stackptr, game name, checksum 
 
 		workspace.Id=L9_ID;
-		workspace.codeptr=codeptr-acodeptr;
+		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
 		workspace.listsize=LISTAREASIZE;
 		workspace.stacksize=STACKSIZE;
 		workspace.filenamesize=MAX_PATH;
@@ -5267,6 +5266,8 @@ class GameState {
 	//TODO: перенести LISTAREASIZE и STACKSIZE в глобальные константы 
 	//private static final int LISTAREASIZE = 0x800;
 	private static final int STACKSIZE = 1024;
+	private static final int VARSIZE = 256;
+	private static final int L9_ID=0x4c393031;
 	
 	int Id;
 	short codeptr,stackptr,listsize,stacksize,filenamesize,checksum;
@@ -5276,7 +5277,7 @@ class GameState {
 	String filename;
 	
 	GameState() {
-		vartable=new short[256];
+		vartable=new short[VARSIZE];
 		//listarea=new byte[LISTAREASIZE];
 		stack=new short[STACKSIZE];
 	}
@@ -5294,6 +5295,57 @@ class GameState {
 		gs.filename=this.filename+"";
 		return gs;
 	}
+	
+	//for save()
+	public short[] getCloneInWords(byte[] mem, int startmem) {
+		short buff[]=new short[2+1+filename.length()+3+VARSIZE+1+STACKSIZE+1+listsize/2+1];
+		int i=0,j;
+		buff[i++]=L9_ID>>16;
+		buff[i++]=L9_ID&0xffff;
+		buff[i++]=(short)filename.length();
+		for (j=0; j<filename.length();j++) 
+			buff[i++]=(short)filename.charAt(j);
+		buff[i++]=codeptr;
+		buff[i++]=stackptr;
+		buff[i++]=VARSIZE;
+		for (j=0;j<VARSIZE;j++) buff[i++]=vartable[j];
+		buff[i++]=stacksize;
+		for (j=0;j<STACKSIZE;j++) buff[i++]=stack[j];
+		buff[i++]=listsize; //count in bytes. listsize
+		for (j=0;j<listsize/2;j++) buff[i++]=(short)((mem[startmem+j*2]&0xff)&((mem[startmem+j*2+1]&0xff)<<8));
+		checksum=0;
+		for (j=0;j<i;j++) checksum+=buff[j]; 
+		buff[i]=checksum;
+		return buff;
+	}
+	
+	//for restore()
+	public boolean setFromCloneInWords(short[] buff, byte[] mem, int startmem) {
+		int i=0,j,s,b;
+		if (buff[i++]!=(L9_ID>>16)) return false;
+		if (buff[i++]!=(L9_ID&0xffff)) return false;
+		s=buff[i++];
+		filename="";
+		for (j=0;j<s;j++) filename+=(char)buff[i++];
+		codeptr=buff[i++];
+		stackptr=buff[i++];
+		if (buff[i++]!=VARSIZE) return false;
+		for (j=0;j<VARSIZE;j++) vartable[j]=buff[i++];
+		stacksize=buff[i++];
+		for (j=0;j<STACKSIZE;j++) stack[j]=buff[i++];
+		listsize=buff[i++]; //count in bytes. listsize
+		checksum=0;
+		for (j=0;j<i+listsize/2;j++) checksum+=buff[j]; 
+		if (buff[i+listsize/2]!=checksum) return false;
+		for (j=0;j<listsize/2;j++) {
+			b=buff[i++]&0xffff;
+			mem[startmem+j*2]=(byte)(b&0xff);
+			mem[startmem+j*2+1]=(byte)((b>>8)&0xff);
+		};
+		return true;
+	}
+	
+	
 }
 
 
