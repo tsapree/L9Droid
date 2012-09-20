@@ -5314,10 +5314,10 @@ class GameState {
 		buff[i++]=stacksize;
 		for (j=0;j<STACKSIZE;j++) buff[i++]=stack[j];
 		buff[i++]=listsize; //count in bytes. listsize
-		for (j=0;j<listsize/2;j++) buff[i++]=(short)((mem[startmem+j*2]&0xff)&((mem[startmem+j*2+1]&0xff)<<8));
+		for (j=0;j<listsize/2;j++) buff[i++]=(short)((mem[startmem+j*2]&0xff)|((mem[startmem+j*2+1]&0xff)<<8));
 		checksum=0;
 		for (j=0;j<i;j++) checksum+=buff[j]; 
-		buff[i]=checksum;
+		buff[i++]=checksum;
 		byte bytebuff[]=new byte[buff.length*2];
 		for (j=0;j<i;j++) {
 			bytebuff[j*2]=(byte)(buff[j]&0xff); bytebuff[j*2+1]=(byte)(buff[j]>>8);
@@ -5330,7 +5330,10 @@ class GameState {
 		int i=0,j=0,s,b;
 		s=bytebuff.length;
 		short buff[]=new short[s/2];
-		while (j<s) buff[i++]=(short)(bytebuff[j++]&(bytebuff[j++]<<8));
+		while (j<s) {
+			buff[i++]=(short)(bytebuff[j]&0xff|((bytebuff[j+1]&0xff)<<8));
+			j+=2;
+		}
 		
 		i=0;
 		if (buff[i++]!=(L9_ID>>16)) return false;

@@ -1,16 +1,9 @@
 package com.realife.l9droid;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -23,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener {
 	
@@ -105,38 +97,31 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	
 	public boolean fileSave(byte buff[]) {
 		try {
-			File f=new File("1.sav");
-			OutputStream out = new FileOutputStream(f);
+			OutputStream out = openFileOutput ("1.sav", MODE_PRIVATE);
 			out.write(buff);
 			out.close();
 			return true;
 		} catch (FileNotFoundException e) {
-			// e.printStackTrace();
+			//TODO: e.printStackTrace();
 		} catch (IOException e) {
-			// e.printStackTrace();
+			//TODO: e.printStackTrace();
 		}
 		return false;
 	}
 	
 	public byte[] fileLoad() {
 		try {
-			File f=new File("1.sav");
-			if (!f.exists()) {
-				Toast.makeText(this, "File not found", Toast.LENGTH_LONG).show();
-				return null;
-			};
-			int size=(int)f.length(); //если 0-файла не существует. Можно не делать f.exists
-			Toast.makeText(this, f.getAbsolutePath(), Toast.LENGTH_LONG).show();
-			byte buff[]=new byte[size];
-			InputStream in = new FileInputStream(f);
-			int len=in.read(buff);
-			//todo: len==size???
+			InputStream in=openFileInput("1.sav");
+			byte tempbuff[]=new byte[0x2000];
+			int len=in.read(tempbuff);
+			byte buff[]=new byte[len];
+			for (int i=0;i<len;i++) buff[i]=tempbuff[i];
 			in.close();
 			return buff;
 		} catch (FileNotFoundException e) {
-			//e.printStackTrace();
+			//TODO: e.printStackTrace();
 		} catch (IOException e) {
-			//e.printStackTrace();
+			//TODO: e.printStackTrace();
 		}
 		return null;
 	}
@@ -144,12 +129,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 }
 
 class L9implement extends L9 {
-	
-    //0 - default
-    //1 - waiting for command from user
-    //2 - command entered, need to put it into parser
-    //TODO: заменить на enum?
-	
     String cmdStr;
     DebugStorage ds;
     String vStr;
