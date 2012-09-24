@@ -4,9 +4,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -19,11 +22,15 @@ import android.widget.TextView.OnEditorActionListener;
 
 public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener {
 	
+	public final static int MACT_L9WORKING = 0;
+	public final static int MACT_L9WAITFORCOMMAND = 1;
+	public final static int MACT_PRINTCHAR = 2;
+	
 	Button bCmd;
 	EditText etLog;
     EditText etCmd;
+    Handler h;
     
-    L9implement l9;
     byte gamedata[];
 
     @Override
@@ -44,19 +51,58 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         
         gamedata=new byte[49179];
         
-        try {
-            //InputStream is=getResources().openRawResource(R.raw.timev2);
-        	InputStream is=getResources().openRawResource(R.raw.wormv3);
-            is.read(gamedata);            
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
+		h = new Handler() {
+		    public void handleMessage(android.os.Message msg) {
+		    	switch (msg.what) {
+		    	case MACT_L9WORKING:
+		    		bCmd.setText("...");
+		    		bCmd.setEnabled(false);
+		    		break;
+		    	case MACT_L9WAITFORCOMMAND:
+		    		bCmd.setText("Do");
+		    		bCmd.setEnabled(true);
+		    		break;
+	    		case MACT_PRINTCHAR:
+	    			char c=(char)msg.arg1;
+	    			if (c==0x0d) etLog.append("\n");
+	    			else etLog.append(String.valueOf(c));
+	    			break;
+		    	}
+		    };
+		};
+		h.sendEmptyMessage(MACT_L9WORKING);
         
-        l9=new L9implement(etLog,gamedata,this);
+		try {
+			//InputStream is=getResources().openRawResource(R.raw.timev2);
+			InputStream is=getResources().openRawResource(R.raw.wormv3);
+			is.read(gamedata);            
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         
-        l9.LoadGame("test", "");
-        l9.step();
-        
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+			    L9implement l9;
+		        l9=new L9implement(/*TODO: ? etLog,*/gamedata,h);
+		        if (l9.LoadGame("test", "")==true) {
+			        while (l9.L9State!=l9.L9StateStopped) {
+			        	l9.step();
+			        	if (l9.L9State==l9.L9StateWaitForCommand)
+			        		//TODO: sendmsg каждые 1/2 секунды если ввод команды, пофиксить
+			        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
+						try {
+							// устанавливаем подключение
+							//h.sendEmptyMessage(STATUS_CONNECTING);
+							TimeUnit.MILLISECONDS.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+			        };
+		        }
+			}
+		});
+		t.start();
+       
     }
 
     @Override
@@ -70,28 +116,23 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
-			//int i=400;
-			//while (l9.RunGame() && (i-->0) && l9.codeptr!=20631);
 			if (etCmd.length()>0) {
 				etLog.append(etCmd.getText()+"\n");
-				l9.InputCommand(etCmd.getText().toString());
+				//TODO: l9.InputCommand(etCmd.getText().toString());
 				etCmd.setText("");
-				l9.step();
+				//TODO: l9.step();
 			};
 			break;
 		}
-		
 	}
 
 	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
-		// TODO Auto-generated method stub
 		if (etCmd.length()>0) {
 			etLog.append(etCmd.getText()+"\n");
-			l9.InputCommand(etCmd.getText().toString());
+			//TODO: l9.InputCommand(etCmd.getText().toString());
 			etCmd.setText("");
-			l9.step();
+			//TODO: l9.step();
 		};
-
 		return true;
 	}
 	
@@ -132,23 +173,24 @@ class L9implement extends L9 {
     String cmdStr;
     DebugStorage ds;
     String vStr;
-    MainActivity mAct;
+    Handler mHandler;
+    Message msg;
 	
 	EditText et;
 	byte gamedata[];
-	L9implement(EditText et1, byte dat[], MainActivity m) {
-		et=et1;
+	L9implement(/*EditText et1,*/ byte dat[], Handler h) {
+		//et=et1;
 		gamedata=dat;
 		cmdStr=null;
 		ds=new DebugStorage();
-		mAct=m;
+		mHandler=h;
 	};
 	
 	void os_printchar(char c) {
 		if (c==0x0d) log_debug(ds.getstr());
 		else if (ds.putchar(c)) log_debug(ds.getstr());
-		if (c==0x0d) et.append("\n");
-		et.append(String.valueOf(c));
+		msg = mHandler.obtainMessage(MainActivity.MACT_PRINTCHAR, c, 0);
+		mHandler.sendMessage(msg);
 	};
 	
 	byte[] os_load(String filename) {
@@ -185,11 +227,11 @@ class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		return mAct.fileSave(buff);
+		return false; //TODO:mAct.fileSave(buff);
 	};
 	
 	byte[] os_load_file() {
-		return mAct.fileLoad();
+		return null; //TODO:mAct.fileLoad();
 	};
 
 

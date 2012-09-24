@@ -32,11 +32,11 @@ public class L9 {
 	//L9BOOL Running;
 	//boolean Running;
 	int L9State;
-	static final int L9StateStopped=0;
-	static final int L9StateRunning=1;
-	static final int L9StateWaitForCommand=2;
-	static final int L9StateCommandReady = 3;	//TODO: Переназвать, глупо как-то звучит
-	static final int L9StateWaitForKey=4;
+	public static final int L9StateStopped=0;
+	public static final int L9StateRunning=1;
+	public static final int L9StateWaitForCommand=2;
+	public static final int L9StateCommandReady = 3;	//TODO: Переназвать, глупо как-то звучит
+	public static final int L9StateWaitForKey=4;
 	
 	
 	//char LastGame[MAX_PATH];
