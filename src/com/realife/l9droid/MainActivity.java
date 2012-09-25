@@ -145,7 +145,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	}
 
 	void postCommand() {
-		if (etCmd.length()>0) {
+		//TODO: как вариант - глотать команды, добавляя в command - но только в 3и4 версиях
+		if (etCmd.length()>0 && l9.L9State==l9.L9StateWaitForCommand) {
 			etLog.append(etCmd.getText()+"\n");
 			command=etCmd.getText().toString();
 			etCmd.setText("");
