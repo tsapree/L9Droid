@@ -30,6 +30,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	EditText etLog;
     EditText etCmd;
     Handler h;
+    Thread t;
+    String command;
     
     byte gamedata[];
 
@@ -48,6 +50,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 
         etCmd.setText("");
         etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
+        
+        command=null;
         
         gamedata=new byte[49179];
         
@@ -80,29 +84,31 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			e.printStackTrace();
 		}
         
-		Thread t = new Thread(new Runnable() {
+		t = new Thread(new Runnable() {
 			public void run() {
 			    L9implement l9;
 		        l9=new L9implement(/*TODO: ? etLog,*/gamedata,h);
 		        if (l9.LoadGame("test", "")==true) {
 			        while (l9.L9State!=l9.L9StateStopped) {
-			        	l9.step();
-			        	if (l9.L9State==l9.L9StateWaitForCommand)
-			        		//TODO: sendmsg каждые 1/2 секунды если ввод команды, пофиксить
+			        	if (l9.L9State==l9.L9StateWaitForCommand) {
 			        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
-						try {
-							// устанавливаем подключение
-							//h.sendEmptyMessage(STATUS_CONNECTING);
-							TimeUnit.MILLISECONDS.sleep(500);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+			        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
+							try {
+								while (command==null) 
+									TimeUnit.MILLISECONDS.sleep(200);
+								h.sendEmptyMessage(MACT_L9WORKING);
+								//TODO: t.wait - возможно, более правильное решение.
+								l9.InputCommand(command);
+								command=null;
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							};
+			        	} else l9.step();
 			        };
 		        }
 			}
 		});
 		t.start();
-       
     }
 
     @Override
@@ -116,26 +122,23 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
-			if (etCmd.length()>0) {
-				etLog.append(etCmd.getText()+"\n");
-				//TODO: l9.InputCommand(etCmd.getText().toString());
-				etCmd.setText("");
-				//TODO: l9.step();
-			};
+			postCommand();
 			break;
 		}
 	}
 
 	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
-		if (etCmd.length()>0) {
-			etLog.append(etCmd.getText()+"\n");
-			//TODO: l9.InputCommand(etCmd.getText().toString());
-			etCmd.setText("");
-			//TODO: l9.step();
-		};
+		postCommand();
 		return true;
 	}
-	
+
+	void postCommand() {
+		if (etCmd.length()>0) {
+			etLog.append(etCmd.getText()+"\n");
+			command=etCmd.getText().toString();
+			etCmd.setText("");
+		};
+	};
 	public boolean fileSave(byte buff[]) {
 		try {
 			OutputStream out = openFileOutput ("1.sav", MODE_PRIVATE);
