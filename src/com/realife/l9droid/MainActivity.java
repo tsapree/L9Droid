@@ -25,6 +25,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public final static int MACT_L9WORKING = 0;
 	public final static int MACT_L9WAITFORCOMMAND = 1;
 	public final static int MACT_PRINTCHAR = 2;
+	public final static int MACT_SAVEGAMESTATE = 3;
+	public final static int MACT_LOADGAMESTATE=4;
 	
 	Button bCmd;
 	EditText etLog;
@@ -33,7 +35,10 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     Thread t;
     String command;
     
+    L9implement l9;
     byte gamedata[];
+    
+    boolean saveload_flag=false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,14 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    			if (c==0x0d) etLog.append("\n");
 	    			else etLog.append(String.valueOf(c));
 	    			break;
+	    		case MACT_SAVEGAMESTATE:
+    				l9.saveok=fileSave(l9.saveloadBuff);
+    				l9.saveloaddone=true;
+	    			break;
+	    		case MACT_LOADGAMESTATE:
+	    			l9.saveloadBuff=fileLoad();
+	    			l9.saveloaddone=true;
+	    			break;
 		    	}
 		    };
 		};
@@ -86,8 +99,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         
 		t = new Thread(new Runnable() {
 			public void run() {
-			    L9implement l9;
-		        l9=new L9implement(/*TODO: ? etLog,*/gamedata,h);
+		        l9=new L9implement(gamedata,h);
 		        if (l9.LoadGame("test", "")==true) {
 			        while (l9.L9State!=l9.L9StateStopped) {
 			        	if (l9.L9State==l9.L9StateWaitForCommand) {
@@ -139,6 +151,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			etCmd.setText("");
 		};
 	};
+	
 	public boolean fileSave(byte buff[]) {
 		try {
 			OutputStream out = openFileOutput ("1.sav", MODE_PRIVATE);
@@ -178,6 +191,9 @@ class L9implement extends L9 {
     String vStr;
     Handler mHandler;
     Message msg;
+    byte saveloadBuff[];
+    boolean saveloaddone;
+    boolean saveok;
 	
 	EditText et;
 	byte gamedata[];
@@ -230,11 +246,32 @@ class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		return false; //TODO:mAct.fileSave(buff);
+		saveloadBuff=buff;
+		saveloaddone=false;
+		saveok=false;
+		mHandler.sendEmptyMessage(MainActivity.MACT_SAVEGAMESTATE);
+		while (saveloaddone==false) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			};
+		};
+		return saveok;
 	};
 	
 	byte[] os_load_file() {
-		return null; //TODO:mAct.fileLoad();
+		saveloadBuff=null;
+		saveloaddone=false;
+		mHandler.sendEmptyMessage(MainActivity.MACT_LOADGAMESTATE);
+		while (saveloaddone==false) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			};
+		};
+		return saveloadBuff; //TODO:mAct.fileLoad();
 	};
 
 
