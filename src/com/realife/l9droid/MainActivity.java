@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +19,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -31,8 +35,13 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	Button bCmd;
 	EditText etLog;
     EditText etCmd;
+    
     Handler h;
     Thread t;
+
+    ImageView ivScreen;
+    Bitmap bm;
+    
     String command;
     
     L9implement l9;
@@ -45,7 +54,15 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-               
+        ivScreen=(ImageView) findViewById(R.id.imageView1);
+        bm=Bitmap.createBitmap(200, 100, Bitmap.Config.ARGB_8888);
+        bm.eraseColor(Color.argb(255, 60, 70, 80));
+        for (int i=0;i<200;i++) {
+        	bm.setPixel(i, i/2, Color.GREEN);
+        	bm.setPixel(200-i-1, i/2, Color.RED);
+        };
+        //ivScreen.setImageBitmap(bm);
+                       
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
         
@@ -55,7 +72,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 
         etCmd.setText("");
         etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
-        
+                
         command=null;
         
         gamedata=new byte[49179];
@@ -151,6 +168,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			command=etCmd.getText().toString();
 			etCmd.setText("");
 		};
+		
+		//bm.eraseColor(Color.argb(20, 60, 70, 80));
+		ivScreen.setImageBitmap(bm);
+        ivScreen.setScaleType(ScaleType.FIT_XY);
+        ivScreen.invalidate();
 	};
 	
 	public boolean fileSave(byte buff[]) {
