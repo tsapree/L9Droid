@@ -31,6 +31,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public final static int MACT_PRINTCHAR = 2;
 	public final static int MACT_SAVEGAMESTATE = 3;
 	public final static int MACT_LOADGAMESTATE=4;
+	public final static int MACT_GFXON=5;
+	public final static int MACT_GFXOFF=6;
 	
 	Button bCmd;
 	EditText etLog;
@@ -100,6 +102,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    		case MACT_LOADGAMESTATE:
 	    			l9.saveloadBuff=fileLoad();
 	    			l9.saveloaddone=true;
+	    			break;
+	    		case MACT_GFXOFF:
+	    			ivScreen.setImageBitmap(null);
+	    			break;
+	    		case MACT_GFXON:
+	    			ivScreen.setImageBitmap(bm);
 	    			break;
 		    	}
 		    };
@@ -266,6 +274,13 @@ class L9implement extends L9 {
 	
 	void step() {
 		while (L9State==L9StateRunning || L9State==L9StateCommandReady) RunGame();
+	};
+	
+	void os_graphics(int mode) {
+		if (mode==0) 
+			mHandler.sendEmptyMessage(MainActivity.MACT_GFXOFF);
+		else
+			mHandler.sendEmptyMessage(MainActivity.MACT_GFXON);
 	};
 	
 	boolean os_save_file(byte[] buff) {

@@ -195,65 +195,6 @@ int scaley(int y)
 	return (96<<3) - ((y>>5)+(y>>6));
 }
 
-L9BOOL validgfxptr(L9BYTE* a5)
-{
-	return ((a5 >= picturedata) && (a5 < picturedata+picturesize));
-}
-
-L9BOOL findsub(int d0,L9BYTE** a5)
-{
-	int d1,d2,d3,d4;
-
-	d1=d0 << 4;
-	d2=d1 >> 8;
-	*a5=picturedata;
-/* findsubloop */
-	while (TRUE)
-	{
-		d3=*(*a5)++;
-		if (!validgfxptr(*a5))
-			return FALSE;
-		if (d3&0x80) 
-			return FALSE;
-		if (d2==d3)
-		{
-			if ((d1&0xff)==(*(*a5) & 0xf0))
-			{
-				(*a5)+=2;
-				return TRUE;
-			}
-		}
-
-		d3=*(*a5)++ & 0x0f;
-		if (!validgfxptr(*a5))
-			return FALSE;
-
-		d4=**a5;
-		if ((d3|d4)==0)
-			return FALSE;
-
-		(*a5)+=(d3<<8) + d4 - 2;
-		if (!validgfxptr(*a5))
-			return FALSE;
-	}
-}
-
-L9BOOL checksubs(void)
-{
-	L9BYTE* a5;
-	int i,cnt=0;
-
-	if (picturedata[0]!=0 || picturedata[1]!=0)
-		return FALSE;
-
-	for (i = 1; i < 50; i++)
-	{
-		if (findsub(i,&a5))
-			cnt++;
-	}
-	return (cnt > 30);
-}
-
 void gosubd0(int d0, L9BYTE** a5)
 {
 	if (GfxStackPos < GFXSTACKSIZE)
@@ -543,58 +484,6 @@ L9BOOL rts(L9BYTE** a5)
 	}
 	return FALSE;
 }
-
-L9BOOL getinstruction(L9BYTE** a5)
-{
-	int d7 = *(*a5)++;
-	if ((d7&0xc0) != 0xc0)
-	{
-		switch ((d7>>6)&3)
-		{
-		case 0: sdraw(d7); break;
-		case 1: smove(d7); break;
-		case 2: sgosub(d7,a5); break;
-		}
-	}
-	else if ((d7&0x38) != 0x38)
-	{
-		switch ((d7>>3)&7)
-		{
-		case 0: draw(d7,a5); break;
-		case 1: _move(d7,a5); break;
-		case 2: icolour(d7); break;
-		case 3: size(d7); break;
-		case 4: gintfill(d7); break;
-		case 5: gosub(d7,a5); break;
-		case 6: reflect(d7); break;
-		}
-	}
-	else
-	{
-		switch (d7&7)
-		{
-		case 0: notimp(); break;
-		case 1: gintchgcol(a5); break;
-		case 2: notimp(); break;
-		case 3: amove(a5); break;
-		case 4: opt(a5); break;
-		case 5: restorescale(); break;
-		case 6: notimp(); break;
-		case 7: return rts(a5);
-		}
-	}
-	return TRUE;
-}
-
-void absrunsub(int d0)
-{
-	L9BYTE* a5;
-	if (!findsub(d0,&a5))
-		return;
-	while (getinstruction(&a5));
-}
-
-
 
 void GetPictureSize(int* width, int* height)
 {

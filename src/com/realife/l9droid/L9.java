@@ -15,8 +15,7 @@ package com.realife.l9droid;
 
 public class L9 {
 	
-	//TODO: перенести LISTAREASIZE и STACKSIZE в глобальные константы 
-	//TODO: может, перенести их в какой-либо класс, а не таскать по всем.
+	//TODO: перенести LISTAREASIZE и STACKSIZE в какой-либо класс, а не таскать по всем.
 	private static final int LISTAREASIZE = 0x800;
 	private static final int STACKSIZE = 1024;
 	
@@ -46,19 +45,7 @@ public class L9 {
 //// "L901"
 //#define L9_ID 0x4c393031
 //
-
-//#define RAMSAVESLOTS 10
 	static final int RAMSAVESLOTS = 10;
-//#define GFXSTACKSIZE 100
-//
-//
-//// Typedefs
-//
-//typedef struct
-//{
-//	L9BYTE *a5;
-//	int scale;
-//} GfxState;
 //
 //
 // Enumerations 
@@ -73,58 +60,46 @@ int V2M_ERIK=2;
 //
 
 // Global Variables
-//L9BYTE* startfile=NULL,*pictureaddress=NULL,*picturedata=NULL;
+//*pictureaddress=NULL
+	int picturedata=-1;
+	int picturesize;	
 	byte l9memory[];
 	int startfile;
 	int filesize;
 	int startdata;
 	int datasize;
 	int listarea;
-//L9UINT32 picturesize;
-//
+
 	int L9Pointers[];
 	int absdatablock;
-//L9BYTE *list2ptr
-//L9BYTE *list3ptr
 	int list2ptr;
 	int list3ptr;
 	int list9startptr;
 	int acodeptr;
-//L9BYTE *startmd
 	int startmd;
-//L9BYTE *endmd
 	int endmd;
-//L9BYTE *endwdp5
 	int endwdp5;
-//L9BYTE *wordtable
 	int wordtable;
-//L9BYTE *dictdata
 	int dictdata;
-//L9BYTE *defdict;
 	int defdict;
-//L9UINT16 dictdatalen;
 	int dictdatalen;
-//L9BYTE *startmdV2;
 	int startmdV2;
 //
 	int wordcase;
 	int unpackcount;
 	int unpackbuf[];
-//L9BYTE* dictptr;
 	int dictptr;
 	byte threechars[];
 	int L9GameType;
 	int V2MsgType;
 //
-SaveStruct ramsavearea[];
+	SaveStruct ramsavearea[];
 //
-//char ibuff[IBUFFSIZE];
-//L9BYTE* ibuffptr;
-	int ibuffptr;
 	char obuff[];
 	int wordcount;
 	char ibuff[];
 	String ibuffstr;
+	int ibuffptr;
 	
 	String InputString;
 	
@@ -134,17 +109,18 @@ SaveStruct ramsavearea[];
 	int CheatWord;
 	GameState CheatWorkspace;
 //
-//int reflectflag,scale,gintcolour,option;
+	int reflectflag,scale,gintcolour,option;
 	int l9textmode=0;
-//int drawx=0,drawy=0,screencalled=0;
-//L9BYTE *gfxa5=NULL;
-//L9BOOL scalegfx=TRUE;
+	int drawx=0,drawy=0;
+	int screencalled=0;
+	int gfxa5[]={-1};
+	boolean scalegfx=true;
 //Bitmap* bitmap=NULL;
 	
 	
-	//
-//GfxState GfxStack[GFXSTACKSIZE];
-//int GfxStackPos=0;
+	public static final int GFXSTACKSIZE=100;
+	GfxState GfxStack[];
+	int GfxStackPos=0;
 //
 	char lastchar='.';
 	char lastactualchar=0;
@@ -159,7 +135,7 @@ SaveStruct ramsavearea[];
 //
 	short exitreversaltable[]={0x00,0x04,0x06,0x07,0x01,0x08,0x02,0x03,0x05,0x0a,0x09,0x0c,0x0b,0xff,0xff,0x0f};
 //
-//L9UINT16 gnostack[128];
+	//L9UINT16 gnostack[128];
 	//L9BYTE gnoscratch[32];
 	int gnostack[];
 	short gnoscratch[];
@@ -273,6 +249,10 @@ SaveStruct ramsavearea[];
 		for (int i=0;i<RAMSAVESLOTS;i++) {
 			ramsavearea[i]=new SaveStruct();
 		};
+		GfxStack=new GfxState[GFXSTACKSIZE];
+		for (int i=0;i<GFXSTACKSIZE;i++) {
+			GfxStack[i]=new GfxState();
+		};
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -292,7 +272,7 @@ SaveStruct ramsavearea[];
 		clearworkspace();
 		workspace.stackptr=0;
 		/* need to clear listarea as well */
-		//TODO: возможно, поискать более красивое решение - метод memset (как и clearworkspace)
+		//TODO: поискать более красивое решение - метод memset (как и clearworkspace)
 		//TODO: вообще перенести очистку в класс GameState
 		for (int i=0;i<LISTAREASIZE;i++) l9memory[listarea+i]=0;
 		return ret==L9StateRunning; //true - L9StateRunning, false - otherway
@@ -397,7 +377,7 @@ SaveStruct ramsavearea[];
 		L9State=L9StateCommandReady;
 	}
 	
-	//TODO: void GetPictureSize(int* width, int* height)
+	void GetPictureSize(int width, int height) {}
 	//TODO: L9BOOL RunGraphics(void)
 	//TODO: BitmapType DetectBitmaps(char* dir)
 	//TODO: Bitmap* DecodeBitmap(char* dir, BitmapType type, int num, int x, int y)
@@ -651,9 +631,9 @@ SaveStruct ramsavearea[];
 		//TODO: 	free(pictureaddress);
 		//TODO: 	pictureaddress=NULL;
 		//TODO: }
-		//TODO: picturedata=NULL;
-		//TODO: picturesize=0;
-		//TODO: gfxa5=NULL;
+		picturedata=-1;
+		picturesize=0;
+		gfxa5[0]=-1;
 		
 		if (!load(filename))
 		{
@@ -681,10 +661,10 @@ SaveStruct ramsavearea[];
 				picturedata=pictureaddress;
 				fclose(f);
 			}
-		}
+		}*/
 		screencalled=0;
 		l9textmode=0;
-
+/*
 	#ifdef FULLSCAN
 		FullScan(startfile,FileSize);
 	#endif
@@ -773,26 +753,23 @@ SaveStruct ramsavearea[];
 				break;
 		};
 
-//TODO:	#ifndef NO_SCAN_GRAPHICS
-//TODO:		// If there was no graphics file, look in the game data 
-//TODO:		if (picturedata==NULL)
-//TODO:		{
-//TODO:			int sz=FileSize-(acodeptr-startdata);
-//TODO:			int i=0;
-//TODO:			while ((i<sz-0x1000)&&(picturedata==NULL))
-//TODO:			{
-//TODO:				picturedata=acodeptr+i;
-//TODO:				picturesize=sz-i;
-//TODO:				if (!checksubs())
-//TODO:				{
-//TODO:					picturedata=NULL;
-//TODO:					picturesize=0;
-//TODO:				}
-//TODO:				i++;
-//TODO:			}
-//TODO:		}
-//TODO:	#endif
-	
+		// If there was no graphics file, look in the game data 
+		if (picturedata<0) {
+			int sz=filesize-(acodeptr-startdata);
+			i=0;
+			while ((i<sz-0x1000)&&(picturedata<0))
+			{
+				picturedata=acodeptr+i;
+				picturesize=sz-i;
+				if (!checksubs())
+				{
+					picturedata=-1;
+					picturesize=0;
+				}
+				i++;
+			}
+		}
+		//TODO: kill: error("picturedata=%d",picturedata);
 		return true;
 	}
 	
@@ -3053,12 +3030,12 @@ SaveStruct ramsavearea[];
 		{
 			if (L9GameType==L9_V4)
 				mode = 2;
-			//TODO: else if (picturedata)
-			//TODO:	mode = 1;
+			else if (picturedata>=0)
+				mode = 1;
 		}
 		os_graphics(mode);
 
-		//TODO: screencalled = 1;
+		screencalled = 1;
 
 		L9DEBUG ("screen ",l9textmode!=0 ? "graphics" : "text");
 
@@ -5113,7 +5090,7 @@ SaveStruct ramsavearea[];
 	}*/
 	void show_picture(int pic)
 	{
-		/*TODO: if (picturedata)
+		if (picturedata>=0)
 		{
 			// Some games don't call the screen() opcode before drawing
 			// graphics, so here graphics are enabled if necessary.
@@ -5123,9 +5100,7 @@ SaveStruct ramsavearea[];
 				os_graphics(1);
 			}
 
-	#ifdef L9DEBUG
-			printf("picture %d",pic);
-	#endif
+			L9DEBUG("picture %d",pic);
 
 			os_cleargraphics();
 	// gintinit 
@@ -5139,10 +5114,225 @@ SaveStruct ramsavearea[];
 
 			GfxStackPos=0;
 			absrunsub(0);
-			if (!findsub(pic,&gfxa5))
-				gfxa5 = NULL;
-		}*/
+			if (!findsub(pic,gfxa5))
+				gfxa5[0] = -1;
+		}
 	}
+	
+	/*--was--	L9BOOL validgfxptr(L9BYTE* a5)
+	{
+		return ((a5 >= picturedata) && (a5 < picturedata+picturesize));
+	}*/
+	boolean validgfxptr(int a5)	{
+		return ((a5 >= picturedata) && (a5 < picturedata+picturesize));
+	}
+	
+	/*--was--	L9BOOL findsub(int d0,L9BYTE** a5)
+	{
+		int d1,d2,d3,d4;
+
+		d1=d0 << 4;
+		d2=d1 >> 8;
+		*a5=picturedata;
+	// findsubloop 
+		while (TRUE)
+		{
+			d3=*(*a5)++;
+			if (!validgfxptr(*a5))
+				return FALSE;
+			if (d3&0x80) 
+				return FALSE;
+			if (d2==d3)
+			{
+				if ((d1&0xff)==(*(*a5) & 0xf0))
+				{
+					(*a5)+=2;
+					return TRUE;
+				}
+			}
+
+			d3=*(*a5)++ & 0x0f;
+			if (!validgfxptr(*a5))
+				return FALSE;
+
+			d4=**a5;
+			if ((d3|d4)==0)
+				return FALSE;
+
+			(*a5)+=(d3<<8) + d4 - 2;
+			if (!validgfxptr(*a5))
+				return FALSE;
+		}
+	}*/
+	boolean findsub(int d0,int a5[])
+	{
+		int d1,d2,d3,d4;
+
+		d1=d0 << 4;
+		d2=d1 >> 8;
+		a5[0]=picturedata;
+	/* findsubloop */
+		while (true)
+		{
+			d3=l9memory[a5[0]++];
+			if (!validgfxptr(a5[0]))
+				return false;
+			if ((d3&0x80)!=0) 
+				return false;
+			if (d2==d3)
+			{
+				if ((d1&0xff)==(l9memory[a5[0]] & 0xf0))
+				{
+					a5[0]+=2;
+					return true;
+				}
+			}
+
+			d3=l9memory[a5[0]++] & 0x0f;
+			if (!validgfxptr(a5[0]))
+				return false;
+
+			d4=l9memory[a5[0]];
+			if ((d3|d4)==0)
+				return false;
+
+			a5[0]+=(d3<<8) + d4 - 2;
+			if (!validgfxptr(a5[0]))
+				return false;
+		}
+	}
+
+	/*--was--	L9BOOL checksubs(void)
+	{
+		L9BYTE* a5;
+		int i,cnt=0;
+
+		if (picturedata[0]!=0 || picturedata[1]!=0)
+			return FALSE;
+
+		for (i = 1; i < 50; i++)
+		{
+			if (findsub(i,&a5))
+				cnt++;
+		}
+		return (cnt > 30);
+	}*/
+	boolean checksubs()
+	{
+		int a5[]={0};
+		int i,cnt=0;
+
+		if (l9memory[picturedata]!=0 || l9memory[picturedata+1]!=0)
+			return false;
+
+		for (i = 1; i < 50; i++)
+		{
+			if (findsub(i,a5))
+				cnt++;
+		}
+		return (cnt > 30);
+	}
+
+	/*--was--	void absrunsub(int d0)
+	{
+		L9BYTE* a5;
+		if (!findsub(d0,&a5))
+			return;
+		while (getinstruction(&a5));
+	}*/
+	void absrunsub(int d0)
+	{
+		int a5[]={0};
+		if (!findsub(d0,a5))
+			return;
+		//TODO: while (getinstruction(a5));
+	}
+	
+	/*--was--	L9BOOL getinstruction(L9BYTE** a5)
+	{
+		int d7 = *(*a5)++;
+		if ((d7&0xc0) != 0xc0)
+		{
+			switch ((d7>>6)&3)
+			{
+			case 0: sdraw(d7); break;
+			case 1: smove(d7); break;
+			case 2: sgosub(d7,a5); break;
+			}
+		}
+		else if ((d7&0x38) != 0x38)
+		{
+			switch ((d7>>3)&7)
+			{
+			case 0: draw(d7,a5); break;
+			case 1: _move(d7,a5); break;
+			case 2: icolour(d7); break;
+			case 3: size(d7); break;
+			case 4: gintfill(d7); break;
+			case 5: gosub(d7,a5); break;
+			case 6: reflect(d7); break;
+			}
+		}
+		else
+		{
+			switch (d7&7)
+			{
+			case 0: notimp(); break;
+			case 1: gintchgcol(a5); break;
+			case 2: notimp(); break;
+			case 3: amove(a5); break;
+			case 4: opt(a5); break;
+			case 5: restorescale(); break;
+			case 6: notimp(); break;
+			case 7: return rts(a5);
+			}
+		}
+		return TRUE;
+	}*/
+	boolean getinstruction(int a5[])
+	{
+		/*todo:
+		int d7 = *(*a5)++;
+		if ((d7&0xc0) != 0xc0)
+		{
+			switch ((d7>>6)&3)
+			{
+			case 0: sdraw(d7); break;
+			case 1: smove(d7); break;
+			case 2: sgosub(d7,a5); break;
+			}
+		}
+		else if ((d7&0x38) != 0x38)
+		{
+			switch ((d7>>3)&7)
+			{
+			case 0: draw(d7,a5); break;
+			case 1: _move(d7,a5); break;
+			case 2: icolour(d7); break;
+			case 3: size(d7); break;
+			case 4: gintfill(d7); break;
+			case 5: gosub(d7,a5); break;
+			case 6: reflect(d7); break;
+			}
+		}
+		else
+		{
+			switch (d7&7)
+			{
+			case 0: notimp(); break;
+			case 1: gintchgcol(a5); break;
+			case 2: notimp(); break;
+			case 3: amove(a5); break;
+			case 4: opt(a5); break;
+			case 5: restorescale(); break;
+			case 6: notimp(); break;
+			case 7: return rts(a5);
+			}
+		}
+		*/
+		return true;
+	}
+	
 	
 	///////////////////// New (tsap) implementations ////////////////////
 	
@@ -5364,7 +5554,7 @@ class GameState {
 }
 
 
-
+////Typedefs
 //typedef struct
 //{
 //	L9UINT16 vartable[256];
@@ -5378,6 +5568,16 @@ class SaveStruct {
 		vartable=new short[256];
 		listarea=new byte[LISTAREASIZE];
 	}
+}
+//
+//typedef struct
+//{
+//L9BYTE *a5;
+//int scale;
+//} GfxState;
+class GfxState {
+	int a5;
+	int scale;
 }
 
 class ScanData {
