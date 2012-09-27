@@ -5172,7 +5172,7 @@ int V2M_ERIK=2;
 	/* findsubloop */
 		while (true)
 		{
-			d3=l9memory[a5[0]++];
+			d3=l9memory[a5[0]++]&0xff;
 			if (!validgfxptr(a5[0]))
 				return false;
 			if ((d3&0x80)!=0) 
@@ -5190,7 +5190,7 @@ int V2M_ERIK=2;
 			if (!validgfxptr(a5[0]))
 				return false;
 
-			d4=l9memory[a5[0]];
+			d4=l9memory[a5[0]]&0xff;
 			if ((d3|d4)==0)
 				return false;
 
@@ -5518,7 +5518,7 @@ int V2M_ERIK=2;
 	void sgosub(int d7, int a5[])
 	{
 		int d0 = d7&0x3f;
-		L9DEBUG("gfx - sgosub 0x%.2x",d0);
+		L9DEBUG("gfx - sgosub %d",d0);
 		gosubd0(d0,a5);
 	}
 
@@ -5565,7 +5565,7 @@ int V2M_ERIK=2;
 		int xy,x,y,x1,y1;
 	
 	/* getxy2 */
-		xy = (d7<<8)+(l9memory[a5[0]++]);
+		xy = (d7<<8)+(l9memory[a5[0]++]&0xff);
 		x = (xy&0x3e0)>>5;
 		if ((xy&0x400)!=0)
 			x = (x|0xe0) - 0x100;
@@ -5619,7 +5619,7 @@ int V2M_ERIK=2;
 		int xy,x,y;
 
 	/* getxy2 */
-		xy = (d7<<8)+(l9memory[a5[0]++]);
+		xy = (d7<<8)+(l9memory[a5[0]++]&0xff);
 		x = (xy&0x3e0)>>5;
 		if ((xy&0x400)!=0)
 			x = (x|0xe0) - 0x100;
@@ -5723,8 +5723,8 @@ int V2M_ERIK=2;
 	}*/
 	void gosub(int d7, int a5[])
 	{
-		int d0 = ((d7&7)<<8)+(l9memory[a5[0]++]);
-		L9DEBUG("gfx - gosub 0x%.2x",d0);
+		int d0 = ((d7&7)<<8)+(l9memory[a5[0]++]&0xff);
+		L9DEBUG("gfx - gosub %d",d0);
 		gosubd0(d0,a5);
 	}
 	
@@ -5744,7 +5744,7 @@ int V2M_ERIK=2;
 	}*/
 	void reflect(int d7)
 	{
-		L9DEBUG("gfx - reflect 0x%.2x",d7);
+		L9DEBUG("gfx - reflect 0x%d",d7);
 	
 		if ((d7&4)!=0)
 		{
@@ -5779,7 +5779,7 @@ int V2M_ERIK=2;
 	}*/
 	void gintchgcol(int a5[])
 	{
-		int d0 = l9memory[a5[0]++];
+		int d0 = l9memory[a5[0]++]&0xff;
 		L9DEBUG("gfx - gintchgcol %d %d",(d0>>3)&3,d0&7);
 		os_setcolour((d0>>3)&3,d0&7);
 	}
@@ -5794,8 +5794,8 @@ int V2M_ERIK=2;
 	}*/
 	void amove(int a5[])
 	{
-		drawx = 0x40*l9memory[a5[0]++];
-		drawy = 0x40*l9memory[a5[0]++];
+		drawx = 0x40*(l9memory[a5[0]++]&0xff);
+		drawy = 0x40*(l9memory[a5[0]++]&0xff);
 		L9DEBUG ("gfx - amove (%d,%d)",drawx,drawy);
 	}
 	
@@ -5813,8 +5813,8 @@ int V2M_ERIK=2;
 	}*/
 	void opt(int a5[])
 	{
-		int d0 = l9memory[a5[0]++];
-		L9DEBUG ("gfx - opt 0x%.2x",d0);
+		int d0 = l9memory[a5[0]++]&0xff;
+		L9DEBUG ("gfx - opt %d",d0);
 		if (d0!=0)
 			d0 = (d0&3)|0x80;
 	/* optend */
@@ -5969,7 +5969,7 @@ int V2M_ERIK=2;
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-//		os_debug(txt);
+		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
