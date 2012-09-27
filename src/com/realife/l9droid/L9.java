@@ -377,8 +377,6 @@ int V2M_ERIK=2;
 		L9State=L9StateCommandReady;
 	}
 	
-	void GetPictureSize(int width, int height) {}
-	//TODO: L9BOOL RunGraphics(void)
 	//TODO: BitmapType DetectBitmaps(char* dir)
 	//TODO: Bitmap* DecodeBitmap(char* dir, BitmapType type, int num, int x, int y)
 	
@@ -398,9 +396,9 @@ int V2M_ERIK=2;
 	//void os_set_filenumber(char* NewName, int Size, int n)
 	void os_graphics(int mode) {};
 	void os_cleargraphics() {};
-	//void os_setcolour(int colour, int index)
-	//void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2)
-	//void os_fill(int x, int y, int colour1, int colour2)
+	void os_setcolour(int colour, int index) {};
+	void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2) {};
+	void os_fill(int x, int y, int colour1, int colour2) {};
 	void os_show_bitmap(int pic, int x, int y) {};
 	
 	//TODO: added by tsap
@@ -5245,7 +5243,7 @@ int V2M_ERIK=2;
 		int a5[]={0};
 		if (!findsub(d0,a5))
 			return;
-		//TODO: while (getinstruction(a5));
+		while (getinstruction(a5));
 	}
 	
 	/*--was--	L9BOOL getinstruction(L9BYTE** a5)
@@ -5291,8 +5289,7 @@ int V2M_ERIK=2;
 	}*/
 	boolean getinstruction(int a5[])
 	{
-		/*todo:
-		int d7 = *(*a5)++;
+		int d7 = l9memory[a5[0]++]&0xff;
 		if ((d7&0xc0) != 0xc0)
 		{
 			switch ((d7>>6)&3)
@@ -5329,10 +5326,621 @@ int V2M_ERIK=2;
 			case 7: return rts(a5);
 			}
 		}
-		*/
 		return true;
 	}
 	
+	/*--was--	int scalex(int x)
+	{
+		if (scalegfx)
+			return (L9GameType == L9_V2) ? x>>6 : x>>5;
+		return x;
+	}*/
+	int scalex(int x)
+	{
+		if (scalegfx)
+			return (L9GameType == L9_V2) ? x>>6 : x>>5;
+		return x;
+	}
+
+	/*--was--	int scaley(int y)
+	{
+		if (scalegfx)
+			return 96 - (((y>>5)+(y>>6))>>3);
+		return (96<<3) - ((y>>5)+(y>>6));
+	}*/
+	int scaley(int y)
+	{
+		if (scalegfx)
+			return 96 - (((y>>5)+(y>>6))>>3);
+		return (96<<3) - ((y>>5)+(y>>6));
+	}
+	
+	/*--was--	void gosubd0(int d0, L9BYTE** a5)
+	{
+		if (GfxStackPos < GFXSTACKSIZE)
+		{
+			GfxStack[GfxStackPos].a5 = *a5;
+			GfxStack[GfxStackPos].scale = scale;
+			GfxStackPos++;
+	
+			if (findsub(d0,a5) == FALSE)
+			{
+				GfxStackPos--;
+				*a5 = GfxStack[GfxStackPos].a5;
+				scale = GfxStack[GfxStackPos].scale;
+			}
+		}
+	}*/
+	void gosubd0(int d0, int a5[])
+	{
+		if (GfxStackPos < GFXSTACKSIZE)
+		{
+			GfxStack[GfxStackPos].a5 = a5[0];
+			GfxStack[GfxStackPos].scale = scale;
+			GfxStackPos++;
+	
+			if (findsub(d0,a5) == false)
+			{
+				GfxStackPos--;
+				a5[0] = GfxStack[GfxStackPos].a5;
+				scale = GfxStack[GfxStackPos].scale;
+			}
+		}
+	}
+
+	/*--was--	void newxy(int x, int y)
+	{
+		drawx += (x*scale)&~7;
+		drawy += (y*scale)&~7;
+	}*/
+	void newxy(int x, int y)
+	{
+		drawx += (x*scale)&~7;
+		drawy += (y*scale)&~7;
+	}
+	
+	/* sdraw instruction plus arguments are stored in an 8 bit word.
+	       76543210
+	       iixxxyyy
+	   where i is instruction code
+	         x is x argument, high bit is sign
+	         y is y argument, high bit is sign
+	*/
+	/*--was--	void sdraw(int d7)
+	{
+		int x,y,x1,y1;
+	
+	// getxy1 
+		x = (d7&0x18)>>3;
+		if (d7&0x20)
+			x = (x|0xfc) - 0x100;
+		y = (d7&0x3)<<2;
+		if (d7&0x4)
+			y = (y|0xf0) - 0x100;
+	
+		if (reflectflag&2)
+			x = -x;
+		if (reflectflag&1)
+			y = -y;
+	
+	// gintline 
+		x1 = drawx;
+		y1 = drawy;
+		newxy(x,y);
+	
+	#ifdef L9DEBUG
+		printf("gfx - sdraw (%d,%d) (%d,%d) colours %d,%d",
+			x1,y1,drawx,drawy,gintcolour&3,option&3);
+	#endif
+	
+		os_drawline(scalex(x1),scaley(y1),scalex(drawx),scaley(drawy),
+			gintcolour&3,option&3);
+	}*/
+	void sdraw(int d7)
+	{
+		int x,y,x1,y1;
+
+	/* getxy1 */
+		x = (d7&0x18)>>3;
+		if ((d7&0x20)!=0)
+			x = (x|0xfc) - 0x100;
+		y = (d7&0x3)<<2;
+		if ((d7&0x4)!=0)
+			y = (y|0xf0) - 0x100;
+
+		if ((reflectflag&2)!=0)
+			x = -x;
+		if ((reflectflag&1)!=0)
+			y = -y;
+
+	/* gintline */
+		x1 = drawx;
+		y1 = drawy;
+		newxy(x,y);
+
+		L9DEBUG(String.format("gfx - sdraw (%d,%d) (%d,%d) colours %d,%d",x1,y1,drawx,drawy,gintcolour&3,option&3));
+
+		os_drawline(scalex(x1),scaley(y1),scalex(drawx),scaley(drawy),gintcolour&3,option&3);
+	}
+
+	
+	/* smove instruction plus arguments are stored in an 8 bit word.
+	       76543210
+	       iixxxyyy
+	   where i is instruction code
+	         x is x argument, high bit is sign
+	         y is y argument, high bit is sign
+	*/
+	/*--was--	void smove(int d7)
+	{
+		int x,y;
+	
+	// getxy1 
+		x = (d7&0x18)>>3;
+		if (d7&0x20)
+			x = (x|0xfc) - 0x100;
+		y = (d7&0x3)<<2;
+		if (d7&0x4)
+			y = (y|0xf0) - 0x100;
+	
+		if (reflectflag&2)
+			x = -x;
+		if (reflectflag&1)
+			y = -y;
+		newxy(x,y);
+	}*/
+	void smove(int d7)
+	{
+		int x,y;
+
+	/* getxy1 */
+		x = (d7&0x18)>>3;
+		if ((d7&0x20)!=0)
+			x = (x|0xfc) - 0x100;
+		y = (d7&0x3)<<2;
+		if ((d7&0x4)!=0)
+			y = (y|0xf0) - 0x100;
+
+		if ((reflectflag&2)!=0)
+			x = -x;
+		if ((reflectflag&1)!=0)
+			y = -y;
+		newxy(x,y);
+	}	
+	/*--was--	void sgosub(int d7, L9BYTE** a5)
+	{
+		int d0 = d7&0x3f;
+	#ifdef L9DEBUG
+		printf("gfx - sgosub 0x%.2x",d0);
+	#endif
+		gosubd0(d0,a5);
+	}*/
+	void sgosub(int d7, int a5[])
+	{
+		int d0 = d7&0x3f;
+		L9DEBUG("gfx - sgosub 0x%.2x",d0);
+		gosubd0(d0,a5);
+	}
+
+	/* draw instruction plus arguments are stored in a 16 bit word.
+	    FEDCBA9876543210
+	    iiiiixxxxxxyyyyy
+	where i is instruction code
+	      x is x argument, high bit is sign
+	      y is y argument, high bit is sign
+	*/
+	/*--was--	void draw(int d7, L9BYTE** a5)
+	{
+		int xy,x,y,x1,y1;
+	
+	// getxy2
+		xy = (d7<<8)+(*(*a5)++);
+		x = (xy&0x3e0)>>5;
+		if (xy&0x400)
+			x = (x|0xe0) - 0x100;
+		y = (xy&0xf)<<2;
+		if (xy&0x10)
+			y = (y|0xc0) - 0x100;
+	
+		if (reflectflag&2)
+			x = -x;
+		if (reflectflag&1)
+			y = -y;
+	
+	// gintline 
+		x1 = drawx;
+		y1 = drawy;
+		newxy(x,y);
+	
+	#ifdef L9DEBUG
+		printf("gfx - draw (%d,%d) (%d,%d) colours %d,%d",
+			x1,y1,drawx,drawy,gintcolour&3,option&3);
+	#endif
+	
+		os_drawline(scalex(x1),scaley(y1),scalex(drawx),scaley(drawy),
+			gintcolour&3,option&3);
+	}*/
+	void draw(int d7, int a5[])
+	{
+		int xy,x,y,x1,y1;
+	
+	/* getxy2 */
+		xy = (d7<<8)+(l9memory[a5[0]++]);
+		x = (xy&0x3e0)>>5;
+		if ((xy&0x400)!=0)
+			x = (x|0xe0) - 0x100;
+		y = (xy&0xf)<<2;
+		if ((xy&0x10)!=0)
+			y = (y|0xc0) - 0x100;
+	
+		if ((reflectflag&2)!=0)
+			x = -x;
+		if ((reflectflag&1)!=0)
+			y = -y;
+	
+	/* gintline */
+		x1 = drawx;
+		y1 = drawy;
+		newxy(x,y);
+	
+		L9DEBUG(String.format("gfx - draw (%d,%d) (%d,%d) colours %d,%d",x1,y1,drawx,drawy,gintcolour&3,option&3));
+
+		os_drawline(scalex(x1),scaley(y1),scalex(drawx),scaley(drawy),gintcolour&3,option&3);
+	}
+	
+	// move instruction plus arguments are stored in a 16 bit word.
+	//       FEDCBA9876543210
+	//       iiiiixxxxxxyyyyy
+	//   where i is instruction code
+	//         x is x argument, high bit is sign
+	//         y is y argument, high bit is sign
+	//
+	/*--was--	void _move(int d7, L9BYTE** a5)
+	{
+		int xy,x,y;
+	
+	// getxy2 
+		xy = (d7<<8)+(*(*a5)++);
+		x = (xy&0x3e0)>>5;
+		if (xy&0x400)
+			x = (x|0xe0) - 0x100;
+		y = (xy&0xf)<<2;
+		if (xy&0x10)
+			y = (y|0xc0) - 0x100;
+	
+		if (reflectflag&2)
+			x = -x;
+		if (reflectflag&1)
+			y = -y;
+		newxy(x,y);
+	}*/
+	void _move(int d7, int a5[])
+	{
+		int xy,x,y;
+
+	/* getxy2 */
+		xy = (d7<<8)+(l9memory[a5[0]++]);
+		x = (xy&0x3e0)>>5;
+		if ((xy&0x400)!=0)
+			x = (x|0xe0) - 0x100;
+		y = (xy&0xf)<<2;
+		if ((xy&0x10)!=0)
+			y = (y|0xc0) - 0x100;
+
+		if ((reflectflag&2)!=0)
+			x = -x;
+		if ((reflectflag&1)!=0)
+			y = -y;
+		newxy(x,y);
+	}
+
+	
+	/*--was--	void icolour(int d7)
+	{
+		gintcolour = d7&3;
+	#ifdef L9DEBUG
+		printf("gfx - icolour 0x%.2x",gintcolour);
+	#endif
+	}*/
+	void icolour(int d7)
+	{
+		gintcolour = d7&3;
+		L9DEBUG("gfx - icolour 0x%d",gintcolour);
+	}
+	
+	/*--was--	void size(int d7)
+	{
+		static int sizetable[7] = { 0x02,0x04,0x06,0x07,0x09,0x0c,0x10 };
+	
+		d7 &= 7;
+		if (d7)
+		{
+			int d0 = (scale*sizetable[d7-1])>>3;
+			scale = (d0 < 0x100) ? d0 : 0xff;
+		}
+		else
+	// sizereset
+			scale = 0x80;
+	
+	#ifdef L9DEBUG
+		printf("gfx - size 0x%.2x",scale);
+	#endif
+	}*/
+	void size(int d7)
+	{
+		//TODO: нужна ли эта табличка именно здесь?
+		final int sizetable[] = { 0x02,0x04,0x06,0x07,0x09,0x0c,0x10 };
+	
+		d7 &= 7;
+		if (d7!=0)
+		{
+			int d0 = (scale*sizetable[d7-1])>>3;
+			scale = (d0 < 0x100) ? d0 : 0xff;
+		}
+		else
+	/* sizereset */
+			scale = 0x80;
+	
+		L9DEBUG("gfx - size 0x%d",scale);
+	}
+
+	/*--was--	void gintfill(int d7)
+	{
+		if ((d7&7) == 0)
+	// filla 
+			d7 = gintcolour;
+		else
+			d7 &= 3;
+	// fillb 
+	
+	#ifdef L9DEBUG
+		printf("gfx - gintfill (%d,%d) colours %d,%d",drawx,drawy,d7&3,option&3);
+	#endif
+	
+		os_fill(scalex(drawx),scaley(drawy),d7&3,option&3);
+	}*/
+	void gintfill(int d7)
+	{
+		if ((d7&7) == 0)
+	/* filla */
+			d7 = gintcolour;
+		else
+			d7 &= 3;
+	/* fillb */
+
+		L9DEBUG(String.format("gfx - gintfill (%d,%d) colours %d,%d",drawx,drawy,d7&3,option&3));
+
+		os_fill(scalex(drawx),scaley(drawy),d7&3,option&3);
+	}
+	
+	/*--was--	void gosub(int d7, L9BYTE** a5)
+	{
+		int d0 = ((d7&7)<<8)+(*(*a5)++);
+	#ifdef L9DEBUG
+		printf("gfx - gosub 0x%.2x",d0);
+	#endif
+		gosubd0(d0,a5);
+	}*/
+	void gosub(int d7, int a5[])
+	{
+		int d0 = ((d7&7)<<8)+(l9memory[a5[0]++]);
+		L9DEBUG("gfx - gosub 0x%.2x",d0);
+		gosubd0(d0,a5);
+	}
+	
+	/*--was--	void reflect(int d7)
+	{
+	#ifdef L9DEBUG
+		printf("gfx - reflect 0x%.2x",d7);
+	#endif
+	
+		if (d7&4)
+		{
+			d7 &= 3;
+			d7 ^= reflectflag;
+		}
+	// reflect1 
+		reflectflag = d7;
+	}*/
+	void reflect(int d7)
+	{
+		L9DEBUG("gfx - reflect 0x%.2x",d7);
+	
+		if ((d7&4)!=0)
+		{
+			d7 &= 3;
+			d7 ^= reflectflag;
+		}
+	// reflect1 
+		reflectflag = d7;
+	}
+
+	
+	/*--was--	void notimp(void)
+	{
+	#ifdef L9DEBUG
+		printf("gfx - notimp");
+	#endif
+	}*/
+	void notimp()
+	{
+		L9DEBUG("gfx - notimp");
+	}
+	
+	/*--was--	void gintchgcol(L9BYTE** a5)
+	{
+		int d0 = *(*a5)++;
+	
+	#ifdef L9DEBUG
+		printf("gfx - gintchgcol %d %d",(d0>>3)&3,d0&7);
+	#endif
+	
+		os_setcolour((d0>>3)&3,d0&7);
+	}*/
+	void gintchgcol(int a5[])
+	{
+		int d0 = l9memory[a5[0]++];
+		L9DEBUG("gfx - gintchgcol %d %d",(d0>>3)&3,d0&7);
+		os_setcolour((d0>>3)&3,d0&7);
+	}
+	
+	/*--was--	void amove(L9BYTE** a5)
+	{
+		drawx = 0x40*(*(*a5)++);
+		drawy = 0x40*(*(*a5)++);
+	#ifdef L9DEBUG
+		printf("gfx - amove (%d,%d)",drawx,drawy);
+	#endif
+	}*/
+	void amove(int a5[])
+	{
+		drawx = 0x40*l9memory[a5[0]++];
+		drawy = 0x40*l9memory[a5[0]++];
+		L9DEBUG ("gfx - amove (%d,%d)",drawx,drawy);
+	}
+	
+	/*--was--	void opt(L9BYTE** a5)
+	{
+		int d0 = *(*a5)++;
+	#ifdef L9DEBUG
+		printf("gfx - opt 0x%.2x",d0);
+	#endif
+	
+		if (d0)
+			d0 = (d0&3)|0x80;
+	// optend 
+		option = d0;
+	}*/
+	void opt(int a5[])
+	{
+		int d0 = l9memory[a5[0]++];
+		L9DEBUG ("gfx - opt 0x%.2x",d0);
+		if (d0!=0)
+			d0 = (d0&3)|0x80;
+	/* optend */
+		option = d0;
+	}
+	
+	/*--was--	void restorescale(void)
+	{
+	#ifdef L9DEBUG
+		printf("gfx - restorescale");
+	#endif
+		if (GfxStackPos > 0)
+			scale = GfxStack[GfxStackPos-1].scale;
+	}*/
+	void restorescale()
+	{
+		L9DEBUG ("gfx - restorescale");
+		if (GfxStackPos > 0)
+			scale = GfxStack[GfxStackPos-1].scale;
+	}
+	
+	/*--was--	L9BOOL rts(L9BYTE** a5)
+	{
+		if (GfxStackPos > 0)
+		{
+			GfxStackPos--;
+			*a5 = GfxStack[GfxStackPos].a5;
+			scale = GfxStack[GfxStackPos].scale;
+			return TRUE;
+		}
+		return FALSE;
+	}*/
+	boolean rts(int a5[])
+	{
+		if (GfxStackPos > 0)
+		{
+			GfxStackPos--;
+			a5[0] = GfxStack[GfxStackPos].a5;
+			scale = GfxStack[GfxStackPos].scale;
+			return true;
+		}
+		return false;
+	}
+	
+	/*--was--	void GetPictureSize(int* width, int* height)
+	{
+		if (L9GameType == L9_V4)
+		{
+			if (width != NULL)
+				*width = 0;
+			if (height != NULL)
+				*height = 0;
+		}
+		else if (scalegfx)
+		{
+			if (width != NULL)
+				*width = (L9GameType == L9_V2) ? 160 : 320;
+			if (height != NULL)
+				*height = 96;
+		}
+		else
+		{
+			if (width != NULL)
+				*width = 320<<6;
+			if (height != NULL)
+				*height = 96<<3;
+		}
+	}*/
+
+	void GetPictureSize(int width[], int height[])
+	{
+		if (L9GameType == L9_V4)
+		{
+			//if (width != NULL)
+				width[0] = 0;
+			//if (height != NULL)
+				height[0] = 0;
+		}
+		else if (scalegfx)
+		{
+			//if (width != NULL)
+				width[0] = (L9GameType == L9_V2) ? 160 : 320;
+			//if (height != NULL)
+				height[0] = 96;
+		}
+		else
+		{
+			//if (width != NULL)
+				width[0] = 320<<6;
+			//if (height != NULL)
+				height[0] = 96<<3;
+		}
+	}
+
+	/*--was--	L9BOOL RunGraphics(void)
+	{
+		if (gfxa5)
+		{
+			if (!getinstruction(&gfxa5))
+				gfxa5 = NULL;
+			return TRUE;
+		}
+		return FALSE;
+	}*/
+	boolean RunGraphics()
+	{
+		if (gfxa5[0]>0)
+		{
+			if (!getinstruction(gfxa5))
+				gfxa5[0] = -1;
+			return true;
+		}
+		return false;
+	}
+
+	/*--was--	void SetScaleGraphics(L9BOOL scale)
+	{
+		scalegfx = scale;
+	}
+	*/
+	void SetScaleGraphics(boolean scale)
+	{
+		scalegfx = scale;
+	}
+
+
 	
 	///////////////////// New (tsap) implementations ////////////////////
 	
@@ -5549,10 +6157,7 @@ class GameState {
 		};
 		return true;
 	}
-	
-	
 }
-
 
 ////Typedefs
 //typedef struct
