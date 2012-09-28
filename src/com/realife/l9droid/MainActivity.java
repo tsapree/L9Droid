@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     Thread t,g;
 
     ImageView ivScreen;
-    Bitmap bm;
+    Bitmap bm=null;
     
     String command;
     
@@ -59,13 +59,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         setContentView(R.layout.main);
         
         ivScreen=(ImageView) findViewById(R.id.imageView1);
-        bm=Bitmap.createBitmap(200, 100, Bitmap.Config.ARGB_8888);
-        bm.eraseColor(Color.argb(255, 60, 70, 80));
-        for (int i=0;i<200;i++) {
-        	bm.setPixel(i, i/2, Color.GREEN);
-        	bm.setPixel(200-i-1, i/2, Color.RED);
-        };
-        //ivScreen.setImageBitmap(bm);
                        
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
@@ -173,7 +166,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 						if (gfx_ready) {
 							if (l9.L9DoPeriodGfxTask()) {
 								h.sendEmptyMessage(MACT_GFXUPDATE);
-								TimeUnit.MILLISECONDS.sleep(1000);
+								TimeUnit.MILLISECONDS.sleep(50);
 							}
 							else TimeUnit.MILLISECONDS.sleep(500);
 						} else TimeUnit.MILLISECONDS.sleep(500);
