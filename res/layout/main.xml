@@ -8,11 +8,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/bCmd"
-        android:layout_toRightOf="@+id/textView1"
         android:ems="10"
         android:imeOptions="normal"
-        android:inputType="textNoSuggestions" >
+        android:inputType="textNoSuggestions"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="monospace" >
 
         <requestFocus />
     </EditText>
@@ -25,16 +28,6 @@
         android:layout_alignParentRight="true"
         android:text="Do" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/etCmd"
-        android:text=">"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
     <EditText
         android:id="@+id/etLog"
         android:layout_width="wrap_content"
@@ -45,7 +38,10 @@
         android:layout_below="@+id/imageView1"
         android:ems="10"
         android:gravity="top|left"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="monospace" />
 
     <ImageView
         android:id="@+id/imageView1"
