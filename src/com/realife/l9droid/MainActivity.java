@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -39,19 +38,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	EditText etLog;
     EditText etCmd;
     
-    Handler h;
-    Thread t,g;
-
     ImageView ivScreen;
-    Bitmap bm=null;
     
     String command;
     
-    L9implement l9;
-    byte gamedata[];
-    
-    boolean saveload_flag=false;
-    static boolean gfx_ready=false;
+    static myThreads mt;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,113 +63,21 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
                 
         command=null;
         
-        gamedata=new byte[49179];
-        
-		h = new Handler() {
-		    public void handleMessage(android.os.Message msg) {
-		    	switch (msg.what) {
-		    	case MACT_L9WORKING:
-		    		bCmd.setText("...");
-		    		bCmd.setEnabled(false);
-		    		break;
-		    	case MACT_L9WAITFORCOMMAND:
-		    		bCmd.setText("Do");
-		    		bCmd.setEnabled(true);
-		    		break;
-	    		case MACT_PRINTCHAR:
-	    			char c=(char)msg.arg1;
-	    			if (c==0x0d) etLog.append("\n");
-	    			else etLog.append(String.valueOf(c));
-	    			break;
-	    		case MACT_SAVEGAMESTATE:
-    				l9.saveok=fileSave(l9.saveloadBuff);
-    				l9.saveloaddone=true;
-	    			break;
-	    		case MACT_LOADGAMESTATE:
-	    			l9.saveloadBuff=fileLoad();
-	    			l9.saveloaddone=true;
-	    			break;
-	    		case MACT_GFXOFF:
-	    			ivScreen.setImageBitmap(null);
-	    			break;
-	    		case MACT_GFXON:
-	    			ivScreen.setImageBitmap(bm);
-	    			break;
-	    		case MACT_GFXUPDATE:
-	    			if (bm==null || bm.getHeight()!=l9.PicHeight || bm.getWidth()!=l9.PicWidth) {
-	    				if (l9.PicHeight>0 && l9.PicWidth>0)
-	    					bm=Bitmap.createBitmap(l9.PicWidth, l9.PicHeight, Bitmap.Config.ARGB_8888);
-	    				else bm=null;
-	    				ivScreen.setImageBitmap(bm);
-	    			};
-	    			if (l9.PicBuff!=null) {
-	    				for (int y=0;y<l9.PicHeight;y++)
-	    					for (int x=0;x<l9.PicWidth;x++)
-	    						bm.setPixel(x, y, l9.SelectedPalette[l9.PicBuff[x+y*l9.PicWidth]]);
-	    			};
-	    			ivScreen.invalidate();
-	    				
-	    			break;
-		    	}
-		    };
-		};
-		h.sendEmptyMessage(MACT_L9WORKING);
-        
-		try {
-			//InputStream is=getResources().openRawResource(R.raw.timev2);
-			InputStream is=getResources().openRawResource(R.raw.wormv3);
-			is.read(gamedata);            
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        
-		t = new Thread(new Runnable() {
-			public void run() {
-		        l9=new L9implement(gamedata,h);
-		        if (l9.LoadGame("test", "")==true) {
-			        while (l9.L9State!=l9.L9StateStopped) {
-			        	if (l9.L9State==l9.L9StateWaitForCommand) {
-			        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
-			        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
-							try {
-								while (command==null) 
-									TimeUnit.MILLISECONDS.sleep(200);
-								h.sendEmptyMessage(MACT_L9WORKING);
-								//TODO: t.wait - возможно, более правильное решение.
-								l9.InputCommand(command);
-								command=null;
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							};
-			        	} else l9.step();
-			        };
-		        }
-			}
-		});
-		t.start();
-		
-		gfx_ready=false;
-		
-		g = new Thread(new Runnable() {
-			public void run() {
-				while(true) {
-					try {
-						if (gfx_ready) {
-							if (l9.L9DoPeriodGfxTask()) {
-								h.sendEmptyMessage(MACT_GFXUPDATE);
-								TimeUnit.MILLISECONDS.sleep(50);
-							}
-							else TimeUnit.MILLISECONDS.sleep(500);
-						} else TimeUnit.MILLISECONDS.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					};
-				}
-			}
-		});
-		g.start();
-
+        mt = (myThreads) getLastNonConfigurationInstance();
+	    if (mt == null) {
+	    	mt=new myThreads();
+	    	mt.link(this);
+	        mt.create();
+	    } else mt.link(this);
+	    ivScreen.setScaleType(ScaleType.FIT_XY);
+	    ivScreen.setImageBitmap(mt.bm); //в случае, если картинки отключены - будет баг.
+        //ivScreen.invalidate();
     }
+    
+    public Object onRetainNonConfigurationInstance() {
+	  	mt.unlink();
+	    return mt;
+	};
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -203,16 +102,14 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 
 	void postCommand() {
 		//TODO: как вариант - глотать команды, добавляя в command - но только в 3и4 версиях
-		if (etCmd.length()>0 && l9.L9State==l9.L9StateWaitForCommand) {
+		if (etCmd.length()>0 && mt.l9.L9State==mt.l9.L9StateWaitForCommand) {
 			etLog.append(etCmd.getText()+"\n");
 			command=etCmd.getText().toString();
 			etCmd.setText("");
 		};
 		
 		//bm.eraseColor(Color.argb(20, 60, 70, 80));
-		ivScreen.setImageBitmap(bm);
-        ivScreen.setScaleType(ScaleType.FIT_XY);
-        ivScreen.invalidate();
+		//ivScreen.setImageBitmap(mt.bm);
 	};
 	
 	public boolean fileSave(byte buff[]) {
@@ -244,6 +141,135 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			//TODO: e.printStackTrace();
 		}
 		return null;
+	}
+	
+	static class myThreads {
+		MainActivity activity;
+	    Handler h;
+	    Thread t,g;
+	    
+	    Bitmap bm=null;
+	    L9implement l9;
+	    byte gamedata[];
+	    
+	    boolean saveload_flag=false;
+	    static boolean gfx_ready=false;
+
+	    void link(MainActivity m) {
+	    	activity=m;
+	    }
+	    
+	    void unlink() {
+	    	activity=null;
+	    }
+	    
+		void create() {
+			h = new Handler() {
+			    public void handleMessage(android.os.Message msg) {
+			    	switch (msg.what) {
+			    	case MACT_L9WORKING:
+			    		activity.bCmd.setText("...");
+			    		activity.bCmd.setEnabled(false);
+			    		break;
+			    	case MACT_L9WAITFORCOMMAND:
+			    		activity.bCmd.setText("Do");
+			    		activity.bCmd.setEnabled(true);
+			    		break;
+		    		case MACT_PRINTCHAR:
+		    			char c=(char)msg.arg1;
+		    			if (c==0x0d) activity.etLog.append("\n");
+		    			else activity.etLog.append(String.valueOf(c));
+		    			break;
+		    		case MACT_SAVEGAMESTATE:
+	    				l9.saveok=activity.fileSave(l9.saveloadBuff);
+	    				l9.saveloaddone=true;
+		    			break;
+		    		case MACT_LOADGAMESTATE:
+		    			l9.saveloadBuff=activity.fileLoad();
+		    			l9.saveloaddone=true;
+		    			break;
+		    		case MACT_GFXOFF:
+		    			activity.ivScreen.setImageBitmap(null);
+		    			break;
+		    		case MACT_GFXON:
+		    			activity.ivScreen.setImageBitmap(bm);
+		    			break;
+		    		case MACT_GFXUPDATE:
+		    			if (bm==null || bm.getHeight()!=l9.PicHeight || bm.getWidth()!=l9.PicWidth) {
+		    				if (l9.PicHeight>0 && l9.PicWidth>0)
+		    					bm=Bitmap.createBitmap(l9.PicWidth, l9.PicHeight, Bitmap.Config.ARGB_8888);
+		    				else bm=null;
+		    				activity.ivScreen.setImageBitmap(bm);
+		    			};
+		    			if (l9.PicBuff!=null) {
+		    				for (int y=0;y<l9.PicHeight;y++)
+		    					for (int x=0;x<l9.PicWidth;x++)
+		    						bm.setPixel(x, y, l9.SelectedPalette[l9.PicBuff[x+y*l9.PicWidth]]);
+		    			};
+		    			activity.ivScreen.invalidate();
+		    				
+		    			break;
+			    	}
+			    };
+			};
+			h.sendEmptyMessage(MACT_L9WORKING);
+			
+	        gamedata=new byte[49179];	        
+			try {
+				//InputStream is=getResources().openRawResource(R.raw.timev2);
+				InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
+				is.read(gamedata);            
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+			t = new Thread(new Runnable() {
+				public void run() {
+			        l9=new L9implement(gamedata,h);
+			        if (l9.LoadGame("test", "")==true) {
+				        while (l9.L9State!=l9.L9StateStopped) {
+				        	if (l9.L9State==l9.L9StateWaitForCommand) {
+				        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
+				        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
+								try {
+									while (activity.command==null) 
+										TimeUnit.MILLISECONDS.sleep(200);
+									h.sendEmptyMessage(MACT_L9WORKING);
+									//TODO: t.wait - возможно, более правильное решение.
+									l9.InputCommand(activity.command);
+									activity.command=null;
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								};
+				        	} else l9.step();
+				        };
+			        }
+				}
+			});
+			t.start();
+			
+			gfx_ready=false;
+			g = new Thread(new Runnable() {
+				public void run() {
+					while(true) {
+						try {
+							if (gfx_ready) {
+								if (l9.L9DoPeriodGfxTask()) {
+									h.sendEmptyMessage(MACT_GFXUPDATE);
+									TimeUnit.MILLISECONDS.sleep(50);
+								}
+								else TimeUnit.MILLISECONDS.sleep(500);
+							} else TimeUnit.MILLISECONDS.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						};
+					}
+				}
+			});
+			g.start();
+			
+		};
+		
 	}
 
 }
@@ -404,7 +430,7 @@ class L9implement extends L9 {
 		PicHeight=ph[0];
 		if (PicWidth<=0 || PicHeight<=0 || mode==0) return;
 		PicBuff=new byte[PicWidth*PicHeight];
-		MainActivity.gfx_ready=true;
+		MainActivity.mt.gfx_ready=true;
 		
 	};
 	
