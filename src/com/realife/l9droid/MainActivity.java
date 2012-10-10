@@ -166,6 +166,13 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		void create() {
 			h = new Handler() {
 			    public void handleMessage(android.os.Message msg) {
+			    	try {
+			    		//сведение вероятности падения при повороте экрана к минимуму
+						while (activity==null) 
+							TimeUnit.MILLISECONDS.sleep(200);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					};
 			    	switch (msg.what) {
 			    	case MACT_L9WORKING:
 			    		activity.bCmd.setText("...");
@@ -232,10 +239,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 				        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
 				        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
 								try {
-									while (activity.command==null) 
+									while (activity==null || activity.command==null) 
 										TimeUnit.MILLISECONDS.sleep(200);
 									h.sendEmptyMessage(MACT_L9WORKING);
 									//TODO: t.wait - возможно, более правильное решение.
+									//TODO: возможна потеря activity при повороте экрана
 									l9.InputCommand(activity.command);
 									activity.command=null;
 								} catch (InterruptedException e) {
