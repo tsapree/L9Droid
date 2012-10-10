@@ -7,13 +7,18 @@ import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -34,6 +39,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
 	
+	SharedPreferences sp;
+	Typeface tf;
+	
 	Button bCmd;
 	EditText etLog;
     EditText etCmd;
@@ -49,6 +57,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        
         ivScreen=(ImageView) findViewById(R.id.imageView1);
                        
         bCmd = (Button) findViewById(R.id.bCmd);
@@ -59,7 +69,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         etCmd.setOnEditorActionListener(this);
 
         etCmd.setText("");
-        etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
+        //etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
                 
         command=null;
         
@@ -71,18 +81,28 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    } else mt.link(this);
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
 	    ivScreen.setImageBitmap(mt.bm); //в случае, если картинки отключены - будет баг.
-        //ivScreen.invalidate();
     }
     
     public Object onRetainNonConfigurationInstance() {
 	  	mt.unlink();
 	    return mt;
 	};
+	
+    protected void onResume() {
+    	//String listValue = sp.getString("list", "не выбрано");
+    	//tvInfo.setText("Значение списка - " + listValue);
+    	tf=Typeface.create(Typeface.DEFAULT, (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
+    	etLog.setTypeface(tf);
+    	super.onResume();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        //getMenuInflater().inflate(R.menu.main, menu);
+        //return true;
+        MenuItem mi = menu.add(0, 1, 0, "Settings");
+        mi.setIntent(new Intent(this, PrefActivity.class));
+        return super.onCreateOptionsMenu(menu);
     }
 
     // some text
