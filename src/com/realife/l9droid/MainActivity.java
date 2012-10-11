@@ -170,6 +170,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    Thread t,g;
 	    
 	    Bitmap bm=null;
+	    int colorbuff[]=null;
 	    L9implement l9;
 	    byte gamedata[];
 	    
@@ -224,15 +225,22 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		    			break;
 		    		case MACT_GFXUPDATE:
 		    			if (bm==null || bm.getHeight()!=l9.PicHeight || bm.getWidth()!=l9.PicWidth) {
-		    				if (l9.PicHeight>0 && l9.PicWidth>0)
+		    				if (l9.PicHeight>0 && l9.PicWidth>0) {
 		    					bm=Bitmap.createBitmap(l9.PicWidth, l9.PicHeight, Bitmap.Config.ARGB_8888);
-		    				else bm=null;
+		    					colorbuff=new int[l9.PicWidth*l9.PicHeight];
+		    				} else {
+		    					bm=null;
+		    					colorbuff=null;
+		    				}
 		    				activity.ivScreen.setImageBitmap(bm);
 		    			};
 		    			if (l9.PicBuff!=null) {
-		    				for (int y=0;y<l9.PicHeight;y++)
-		    					for (int x=0;x<l9.PicWidth;x++)
-		    						bm.setPixel(x, y, l9.SelectedPalette[l9.PicBuff[x+y*l9.PicWidth]]);
+		    				//for (int y=0;y<l9.PicHeight;y++)
+		    				//	for (int x=0;x<l9.PicWidth;x++)
+		    				//		bm.setPixel(x, y, l9.SelectedPalette[l9.PicBuff[x+y*l9.PicWidth]]);
+		    				for (int i=0;i<l9.PicWidth*l9.PicHeight;i++)
+		    					colorbuff[i]=l9.SelectedPalette[l9.PicBuff[i]];
+		    				bm.setPixels(colorbuff, 0, l9.PicWidth, 0, 0, l9.PicWidth, l9.PicHeight);
 		    			};
 		    			activity.ivScreen.invalidate();
 		    				
