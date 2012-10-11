@@ -93,6 +93,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	//tvInfo.setText("Значение списка - " + listValue);
     	tf=Typeface.create(Typeface.DEFAULT, (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
     	etLog.setTypeface(tf);
+    	etCmd.setTypeface(tf);
     	super.onResume();
     }
 
@@ -283,6 +284,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 						try {
 							if (gfx_ready) {
 								if (l9.L9DoPeriodGfxTask()) {
+									h.removeMessages(MACT_GFXUPDATE);
 									h.sendEmptyMessage(MACT_GFXUPDATE);
 									TimeUnit.MILLISECONDS.sleep(50);
 								}
