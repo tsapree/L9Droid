@@ -170,7 +170,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    Thread t,g;
 	    
 	    Bitmap bm=null;
-	    int colorbuff[]=null;
 	    L9implement l9;
 	    byte gamedata[];
 	    
@@ -224,24 +223,28 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		    			activity.ivScreen.setImageBitmap(bm);
 		    			break;
 		    		case MACT_GFXUPDATE:
-		    			if (bm==null || bm.getHeight()!=l9.PicHeight || bm.getWidth()!=l9.PicWidth) {
-		    				if (l9.PicHeight>0 && l9.PicWidth>0) {
-		    					bm=Bitmap.createBitmap(l9.PicWidth, l9.PicHeight, Bitmap.Config.ARGB_8888);
-		    					colorbuff=new int[l9.PicWidth*l9.PicHeight];
-		    				} else {
-		    					bm=null;
-		    					colorbuff=null;
-		    				}
+		    			if (bm!=l9.bm) {
+		    				bm=l9.bm;
 		    				activity.ivScreen.setImageBitmap(bm);
-		    			};
-		    			if (l9.PicBuff!=null) {
-		    				//for (int y=0;y<l9.PicHeight;y++)
-		    				//	for (int x=0;x<l9.PicWidth;x++)
-		    				//		bm.setPixel(x, y, l9.SelectedPalette[l9.PicBuff[x+y*l9.PicWidth]]);
-		    				for (int i=0;i<l9.PicWidth*l9.PicHeight;i++)
-		    					colorbuff[i]=l9.SelectedPalette[l9.PicBuff[i]];
-		    				bm.setPixels(colorbuff, 0, l9.PicWidth, 0, 0, l9.PicWidth, l9.PicHeight);
-		    			};
+		    			}
+		    		//	if (bm==null || bm.getHeight()!=l9.PicHeight || bm.getWidth()!=l9.PicWidth) {
+		    		//		if (l9.PicHeight>0 && l9.PicWidth>0) {
+		    		//			bm=Bitmap.createBitmap(l9.PicWidth, l9.PicHeight, Bitmap.Config.ARGB_8888);
+		    		//			colorbuff=new int[l9.PicWidth*l9.PicHeight];
+		    		//		} else {
+		    		//			bm=null;
+		    		//			colorbuff=null;
+		    		//		}
+		    		//		activity.ivScreen.setImageBitmap(bm);
+		    		//	};
+		    		//	if (l9.PicBuff!=null) {
+		    		//		//for (int y=0;y<l9.PicHeight;y++)
+		    		//		//	for (int x=0;x<l9.PicWidth;x++)
+		    		//		//		bm.setPixel(x, y, l9.SelectedPalette[l9.PicBuff[x+y*l9.PicWidth]]);
+		    		//		for (int i=0;i<l9.PicWidth*l9.PicHeight;i++)
+		    		//			colorbuff[i]=l9.SelectedPalette[l9.PicBuff[i]];
+		    		//		bm.setPixels(colorbuff, 0, l9.PicWidth, 0, 0, l9.PicWidth, l9.PicHeight);
+		    		//	};
 		    			activity.ivScreen.invalidate();
 		    				
 		    			break;
@@ -327,6 +330,9 @@ class L9implement extends L9 {
 	
 	//Gfx
 	byte PicBuff[]=null;
+    int PicColorBuff[]=null;
+    Bitmap bm=null;
+    
 	int PicWidth=0;
 	int PicHeight=0;
 	int PicMode;
@@ -468,8 +474,12 @@ class L9implement extends L9 {
 		PicHeight=ph[0];
 		if (PicWidth<=0 || PicHeight<=0 || mode==0) return;
 		PicBuff=new byte[PicWidth*PicHeight];
+		PicColorBuff=new int[PicWidth*PicHeight];
+		if (bm==null || bm.getHeight()!=PicHeight || bm.getWidth()!=PicWidth) {
+			bm=Bitmap.createBitmap(PicWidth, PicHeight, Bitmap.Config.ARGB_8888);
+			PicColorBuff=new int[PicWidth*PicHeight];
+		};
 		MainActivity.mt.gfx_ready=true;
-		
 	};
 	
 	void os_cleargraphics() {
@@ -633,16 +643,23 @@ class L9implement extends L9 {
 	
 	boolean L9DoPeriodGfxTask() {
 		if (PicMode==0 || PicMode==2 /*|| iApV->iPicturesEnabled==EFalse*/) return false;
-		
+
 		//Красивая прорисовка Fill. 
 		int j=0;
 		for (int i=0; i<iPicturesSpeed; i++)
 			if (L9Fill_Step()>0) j++;
 			else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
+
+		//draw to bitmap
+		if (PicBuff!=null && PicColorBuff!=null & bm!=null) {
+			int s=PicWidth*PicHeight;
+			for (int i=0;i<s;i++)
+				PicColorBuff[i]=SelectedPalette[PicBuff[i]];
+			bm.setPixels(PicColorBuff, 0, PicWidth, 0, 0, PicWidth, PicHeight);
+		};
+		
 		return j!=0;
 	};
-
-
 }
 
 class DebugStorage {
