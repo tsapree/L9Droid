@@ -91,9 +91,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     protected void onResume() {
     	//String listValue = sp.getString("list", "не выбрано");
     	//tvInfo.setText("Значение списка - " + listValue);
-    	tf=Typeface.create(Typeface.DEFAULT, (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
+    	//tf=Typeface.create(Typeface.DEFAULT, (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
+    	tf=Typeface.create(sp.getString("fontface", "DEFAULT"), (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
     	etLog.setTypeface(tf);
     	etCmd.setTypeface(tf);
+    	etLog.setTextSize(20); //TODO: как вернуть настройки шрифта к системным?
     	super.onResume();
     }
 

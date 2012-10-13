@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <ListPreference android:title="Font typeface" android:key="fontface"/>
+        <ListPreference android:title="Font typeface" android:key="fontface" android:entries="@array/pref_font_entries" android:entryValues="@array/pref_font_values"/>
         <CheckBoxPreference android:key="fontbold" android:title="Font Bold"/>
         
     </PreferenceScreen>
