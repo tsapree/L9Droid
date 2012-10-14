@@ -41,6 +41,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	
 	SharedPreferences sp;
 	Typeface tf;
+	Typeface tfDefault=null;
+	float fontSizeDefault=0;
 	
 	Button bCmd;
 	EditText etLog;
@@ -89,13 +91,24 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	};
 	
     protected void onResume() {
+    	float fontSize=14;
+    	if (tfDefault==null) tfDefault=etCmd.getTypeface();
+    	if (fontSizeDefault==0) fontSizeDefault=etCmd.getTextSize();
     	//String listValue = sp.getString("list", "не выбрано");
     	//tvInfo.setText("Значение списка - " + listValue);
     	//tf=Typeface.create(Typeface.DEFAULT, (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
-    	tf=Typeface.create(sp.getString("fontface", "DEFAULT"), (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
+    	
+    	if (sp.getBoolean("fontcustom", false)) {
+    		tf=Typeface.create(sp.getString("fontface", "DEFAULT"), (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
+    		//TODO: string->int or int in settings
+    		//fontSize=sp.getString("fontsize", 14);
+    	} else {
+    		tf=tfDefault;
+    		fontSize=fontSizeDefault;
+    	};
     	etLog.setTypeface(tf);
     	etCmd.setTypeface(tf);
-    	etLog.setTextSize(20); //TODO: как вернуть настройки шрифта к системным?
+    	etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
     	super.onResume();
     }
 

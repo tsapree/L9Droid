@@ -12,10 +12,7 @@
         android:layout_toLeftOf="@+id/bCmd"
         android:ems="10"
         android:imeOptions="normal"
-        android:inputType="textNoSuggestions"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:typeface="monospace" >
+        android:inputType="textNoSuggestions" >
 
         <requestFocus />
     </EditText>
