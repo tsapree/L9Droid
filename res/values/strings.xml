@@ -18,5 +18,12 @@
         <item>SANS_SERIF</item>
         <item>SERIF</item>
     </string-array>
-
+    <string-array name="pref_font_size_entries">
+        <item>Very small - 10</item>
+        <item>Small - 14</item>
+        <item>Medium - 16</item>
+        <item>Big - 18</item>
+		<item>Very big - 20</item>
+		<item>Huge - 22</item>
+	</string-array>	
 </resources>
