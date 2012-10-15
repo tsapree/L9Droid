@@ -9,7 +9,7 @@
     <string-array name="pref_font_entries">
         <item>Normal</item>
         <item>Monospace</item>
-        <item>Sans</item>
+        <item>Sans serif</item>
         <item>Serif</item>
     </string-array>
     <string-array name="pref_font_values">
@@ -19,11 +19,11 @@
         <item>SERIF</item>
     </string-array>
     <string-array name="pref_font_size_entries">
-        <item>Very small - 10</item>
-        <item>Small - 14</item>
-        <item>Medium - 16</item>
-        <item>Big - 18</item>
-		<item>Very big - 20</item>
-		<item>Huge - 22</item>
+        <item>12. Very small</item>
+        <item>14. Small</item>
+        <item>16. Medium</item>
+        <item>18. Big</item>
+		<item>20. Very big</item>
+		<item>22. Huge</item>
 	</string-array>	
 </resources>

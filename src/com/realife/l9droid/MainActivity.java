@@ -100,8 +100,16 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	
     	if (sp.getBoolean("fontcustom", false)) {
     		tf=Typeface.create(sp.getString("fontface", "DEFAULT"), (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
-    		//TODO: string->int or int in settings
-    		//fontSize=sp.getString("fontsize", 14);
+    		//TODO: ”ѕ–ќ—“»“№! до невозможности т€желое решение! 
+    		int s;
+    		String fsa[]=getResources().getStringArray(R.array.pref_font_size_entries);
+    		String fss=sp.getString("fontsize", fsa[3]);
+    		for (s=0;s<fsa.length;s++)
+    			if (fss.equals(fsa[s])) {
+    				fontSize=12+s*2;
+    				break;
+    			};
+    		
     	} else {
     		tf=tfDefault;
     		fontSize=fontSizeDefault;
@@ -109,6 +117,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	etLog.setTypeface(tf);
     	etCmd.setTypeface(tf);
     	etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
+    	etCmd.setTextSize(fontSize);
     	super.onResume();
     }
 

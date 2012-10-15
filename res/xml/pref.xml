@@ -3,6 +3,6 @@
         <CheckBoxPreference android:title="Custom Font Settings" android:key="fontcustom"/>
         <ListPreference android:title="Font typeface" android:key="fontface" android:entries="@array/pref_font_entries" android:entryValues="@array/pref_font_values" android:defaultValue="Monospace" android:dependency="fontcustom"/>
         <CheckBoxPreference android:key="fontbold" android:title="Font Bold" android:dependency="fontcustom"/>
-        <ListPreference android:dependency="fontcustom" android:key="fontsize" android:entryValues="@array/pref_font_size_entries" android:entries="@array/pref_font_size_entries"/>
+        <ListPreference android:dependency="fontcustom" android:key="fontsize" android:entryValues="@array/pref_font_size_entries" android:entries="@array/pref_font_size_entries" android:title="Font Size"/>
         
     </PreferenceScreen>
