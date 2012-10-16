@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <CheckBoxPreference android:title="Custom Font Settings" android:key="fontcustom"/>
-        <ListPreference android:title="Font typeface" android:key="fontface" android:entries="@array/pref_font_entries" android:entryValues="@array/pref_font_values" android:defaultValue="Monospace" android:dependency="fontcustom"/>
-        <CheckBoxPreference android:key="fontbold" android:title="Font Bold" android:dependency="fontcustom"/>
-        <ListPreference android:dependency="fontcustom" android:key="fontsize" android:entryValues="@array/pref_font_size_entries" android:entries="@array/pref_font_size_entries" android:title="Font Size"/>
-        
-    </PreferenceScreen>
+	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+		<PreferenceCategory android:title="Font">
+			<CheckBoxPreference android:title="Custom Settings" android:key="fontcustom"/>    
+			<ListPreference android:title="Typeface" android:key="fontface" android:entries="@array/pref_font_entries" android:entryValues="@array/pref_font_values" android:defaultValue="Monospace" android:dependency="fontcustom"/>
+			<CheckBoxPreference android:key="fontbold" android:title="Bold" android:dependency="fontcustom"/>
+			<ListPreference android:dependency="fontcustom" android:key="fontsize" android:entryValues="@array/pref_font_size_entries" android:entries="@array/pref_font_size_entries" android:title="Size"/>
+		</PreferenceCategory>
+	</PreferenceScreen>
