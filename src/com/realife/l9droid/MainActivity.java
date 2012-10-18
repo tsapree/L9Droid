@@ -119,6 +119,13 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	etCmd.setTextSize(fontSize);
     	super.onResume();
     }
+    
+    protected void onStop() {
+        super.onStop();
+        //Log.d("l9droid", "need to stop application");
+        mt.destroy();
+        mt=null;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -192,6 +199,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    Handler h;
 	    Thread t,g;
 	    
+	    boolean needToQuit=false;
+	    
 	    Bitmap bm=null;
 	    L9implement l9;
 	    byte gamedata[];
@@ -208,6 +217,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    }
 	    
 		void create() {
+			needToQuit=false;
 			h = new Handler() {
 			    public void handleMessage(android.os.Message msg) {
 			    	try {
@@ -246,12 +256,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		    			//activity.ivScreen.setImageBitmap(bm);
 		    			break;
 		    		case MACT_GFXUPDATE:
-		    			Log.d("l9droid", "gfxupdate");
 		    			if (bm!=l9.bm) {
 		    				bm=l9.bm;
 		    				activity.ivScreen.setImageBitmap(bm);
-		    				//TODO:KILL
-		    				Log.d("l9droid", "setbitmap");
 		    			}
 		    			activity.ivScreen.invalidate();
 		    				
@@ -269,37 +276,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		
-			t = new Thread(new Runnable() {
-				public void run() {
-			        l9=new L9implement(gamedata,h);
-			        if (l9.LoadGame("test", "")==true) {
-				        while (l9.L9State!=l9.L9StateStopped) {
-				        	if (l9.L9State==l9.L9StateWaitForCommand) {
-				        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
-				        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
-								try {
-									while (activity==null || activity.command==null) 
-										TimeUnit.MILLISECONDS.sleep(200);
-									h.sendEmptyMessage(MACT_L9WORKING);
-									//TODO: t.wait - возможно, более правильное решение.
-									//TODO: возможна потеря activity при повороте экрана
-									l9.InputCommand(activity.command);
-									activity.command=null;
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								};
-				        	} else l9.step();
-				        };
-			        }
-				}
-			});
-			t.start();
-			
+
 			gfx_ready=false;
 			g = new Thread(new Runnable() {
 				public void run() {
-					while(true) {
+					while(needToQuit!=true) {
+						//Log.d("l9droid", "thread g still working");
 						try {
 							if (gfx_ready) {
 								if (l9.L9DoPeriodGfxTask()) {
@@ -317,6 +299,44 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			});
 			g.start();
 			
+			t = new Thread(new Runnable() {
+				public void run() {
+			        l9=new L9implement(gamedata,h);
+			        if (l9.LoadGame("test", "")==true) {
+				        while (l9.L9State!=l9.L9StateStopped && needToQuit!=true) {
+				        	if (l9.L9State==l9.L9StateWaitForCommand) {
+				        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
+				        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
+								try {
+									while ((activity==null || activity.command==null) && needToQuit!=true) {
+							        	//Log.d("l9droid", "thread t still working");
+										TimeUnit.MILLISECONDS.sleep(200);
+									};
+									h.sendEmptyMessage(MACT_L9WORKING);
+									//TODO: t.wait - возможно, более правильное решение.
+									//TODO: возможна потеря activity при повороте экрана
+									l9.InputCommand(activity.command);
+									activity.command=null;
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								};
+				        	} else l9.step();
+				        };
+			        }
+				}
+			});
+			t.start();
+		
+		};
+		
+		void destroy() {
+			needToQuit=true;
+			l9.StopGame();
+			while (t.isAlive() || g.isAlive());
+			t=null;
+			g=null;
+			//h=null;
+			//l9=null;
 		};
 		
 	}
