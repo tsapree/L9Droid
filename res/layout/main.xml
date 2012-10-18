@@ -35,10 +35,7 @@
         android:layout_below="@+id/imageView1"
         android:ems="10"
         android:gravity="top|left"
-        android:scrollbars="vertical"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:typeface="monospace" />
+        android:scrollbars="vertical" />
 
     <ImageView
         android:id="@+id/imageView1"

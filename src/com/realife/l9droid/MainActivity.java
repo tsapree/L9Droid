@@ -120,11 +120,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	super.onResume();
     }
     
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         //Log.d("l9droid", "need to stop application");
         mt.destroy();
-        mt=null;
+        //mt=null;
     }
 
     @Override
