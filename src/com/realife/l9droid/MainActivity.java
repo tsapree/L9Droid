@@ -53,6 +53,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     String command;
     
     static myThreads mt;
+    
+    boolean killThreadsOnDestroyActivity=true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     }
     
     public Object onRetainNonConfigurationInstance() {
+    	killThreadsOnDestroyActivity=false;
 	  	mt.unlink();
 	    return mt;
 	};
@@ -123,7 +126,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     protected void onDestroy() {
         super.onDestroy();
         //Log.d("l9droid", "need to stop application");
-        mt.destroy();
+        if (killThreadsOnDestroyActivity) mt.destroy();
         //mt=null;
     }
 
@@ -158,9 +161,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			command=etCmd.getText().toString();
 			etCmd.setText("");
 		};
-		
-		//bm.eraseColor(Color.argb(20, 60, 70, 80));
-		//ivScreen.setImageBitmap(mt.bm);
+
 	};
 	
 	public boolean fileSave(byte buff[]) {
@@ -210,6 +211,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 
 	    void link(MainActivity m) {
 	    	activity=m;
+	    	activity.ivScreen.setImageBitmap(bm);
 	    }
 	    
 	    void unlink() {
@@ -250,10 +252,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		    			l9.saveloaddone=true;
 		    			break;
 		    		case MACT_GFXOFF:
-		    			activity.ivScreen.setImageBitmap(null);
+		    			bm=null;
+		    			activity.ivScreen.setImageBitmap(bm);
 		    			break;
 		    		case MACT_GFXON:
-		    			//activity.ivScreen.setImageBitmap(bm);
+		    			activity.ivScreen.setImageBitmap(bm);
 		    			break;
 		    		case MACT_GFXUPDATE:
 		    			if (bm!=l9.bm) {
@@ -308,7 +311,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 				        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
 				        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
 								try {
-									while ((activity==null || activity.command==null) && needToQuit!=true) {
+									while ((activity==null || activity.command==null) && needToQuit!=true ) {
 							        	//Log.d("l9droid", "thread t still working");
 										TimeUnit.MILLISECONDS.sleep(200);
 									};
