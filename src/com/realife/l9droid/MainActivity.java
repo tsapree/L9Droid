@@ -1,6 +1,9 @@
 package com.realife.l9droid;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +41,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public final static int MACT_GFXON=5;
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
+	
+	final String DIR_SD = "L9Droid/Worm In Paradise/Speccy";
+	final String FILE_SD="worm.sna";
 	
 	SharedPreferences sp;
 	Typeface tf;
@@ -84,6 +90,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	        mt.create();
 	    } else mt.link(this);
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
+	    
+	    prepareLibrary();
     }
     
     public Object onRetainNonConfigurationInstance() {
@@ -194,6 +202,59 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		}
 		return null;
 	}
+
+	boolean prepareLibrary() {
+		//getting sdcard path
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+			//
+			sdPath.mkdirs();
+			File sdFile = new File(sdPath, FILE_SD);
+		    try {
+		    	
+		        byte buff[]=new byte[49179];	        
+//				try {
+//					//InputStream is=getResources().openRawResource(R.raw.timev2);
+//					InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
+//					is.read(gamedata);            
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+				InputStream is=getResources().openRawResource(R.raw.wormv3);
+				is.read(buff);            
+		    	OutputStream out = new FileOutputStream(sdFile);
+                out.write(buff, 0, buff.length);
+                out.close();
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		} else return false;
+		return true;
+	}
+	
+	byte[] fileLoadGame() {
+		byte buff[]=null;
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+			File sdFile = new File(sdPath, FILE_SD);
+		    try {
+		    	InputStream in = new FileInputStream(sdFile);
+                byte[] tempbuff = new byte[80000];
+                int len=in.read(tempbuff);
+                in.close();
+                
+                buff=new byte[len];
+                for (int i=0;i<len;i++) buff[i]=tempbuff[i];
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		};
+		return buff;
+	};
 	
 	static class myThreads {
 		MainActivity activity;
@@ -271,14 +332,15 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			};
 			h.sendEmptyMessage(MACT_L9WORKING);
 			
-	        gamedata=new byte[49179];	        
-			try {
-				//InputStream is=getResources().openRawResource(R.raw.timev2);
-				InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
-				is.read(gamedata);            
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			gamedata=activity.fileLoadGame();
+//	        gamedata=new byte[49179];	        
+//			try {
+//				//InputStream is=getResources().openRawResource(R.raw.timev2);
+//				InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
+//				is.read(gamedata);            
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 
 			gfx_ready=false;
 			g = new Thread(new Runnable() {
