@@ -42,7 +42,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
 	
-	final String DIR_SD = "L9Droid/Worm In Paradise/Speccy";
+	final String Library_DIR = "/L9Droid/";
+	final String DIR_SD = "Worm In Paradise/Speccy";
 	final String FILE_SD="worm.sna";
 	
 	SharedPreferences sp;
@@ -208,7 +209,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+			sdPath = new File(sdPath.getAbsolutePath() + Library_DIR + DIR_SD);
 			//
 			sdPath.mkdirs();
 			File sdFile = new File(sdPath, FILE_SD);
@@ -239,7 +240,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+			sdPath = new File(sdPath.getAbsolutePath() + Library_DIR + DIR_SD);
 			File sdFile = new File(sdPath, FILE_SD);
 		    try {
 		    	InputStream in = new FileInputStream(sdFile);

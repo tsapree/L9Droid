@@ -268,6 +268,7 @@ int V2M_ERIK=2;
 	*/
 	public boolean LoadGame(String fileName, String picName) {	
 		int ret=LoadGame2(fileName, picName);
+		if (ret!=L9StateRunning) return false;
 		showtitle=1;
 		clearworkspace();
 		workspace.stackptr=0;
