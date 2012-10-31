@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public final static int MACT_GFXON=5;
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
-	
+
 	SharedPreferences sp;
 	Typeface tf;
 	Typeface tfDefault=null;
@@ -159,7 +159,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		};
 
 	};
-	
+
 	static class myThreads {
 		MainActivity activity;
 		Library lib;
