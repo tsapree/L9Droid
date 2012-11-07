@@ -130,8 +130,14 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.main, menu);
         //return true;
-        MenuItem mi = menu.add(0, 1, 0, "Settings");
+    	MenuItem mi;
+    	mi = menu.add(0,1,0,"Library");
+        mi.setIntent(new Intent(this, LibraryActivity.class));
+        mi = menu.add(0, 1, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
+        mi = menu.add(0, 1, 0, "About");
+        mi.setIntent(new Intent(this, AboutActivity.class));
+        
         return super.onCreateOptionsMenu(menu);
     }
 
