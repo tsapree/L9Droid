@@ -30,6 +30,7 @@ public class LibraryActivity extends Activity {
 	        //Log.d(LOG_TAG, "itemClick: position = " + position + ", id = "
 	        //    + id);
 	    	  //Toast.makeText(this, view.toString(), Toast.LENGTH_LONG).show();
+	    	  finish();
 	      }
 	    });
 	    
