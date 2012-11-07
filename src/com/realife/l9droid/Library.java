@@ -9,10 +9,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.app.Activity;
+import android.widget.Toast;
 
 public class Library {
 
-	final String DIR_SD = "L9Droid/Worm In Paradise/Speccy";
+	final String LIBDIR_SD = "/L9Droid/";
+	final String DIR_SD = "Worm In Paradise/Speccy";
 	final String FILE_SD="worm.sna";
 	
 	boolean prepareLibrary(Activity act) {
@@ -20,28 +22,33 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
-			//
-			sdPath.mkdirs();
-			File sdFile = new File(sdPath, FILE_SD);
-		    try {
-		    	
-		        byte buff[]=new byte[49179];	        
-//				try {
-//					//InputStream is=getResources().openRawResource(R.raw.timev2);
-//					InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
-//					is.read(gamedata);            
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-				InputStream is=act.getResources().openRawResource(R.raw.wormv3);
-				is.read(buff);            
-		    	OutputStream out = new FileOutputStream(sdFile);
-                out.write(buff, 0, buff.length);
-                out.close();
-		    } catch (IOException e) {
-		      e.printStackTrace();
-		    }
+			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD+DIR_SD);
+			if (sdPath.isDirectory()) {
+				//directory presents
+			} else {
+				Toast.makeText(act, "Creating library", Toast.LENGTH_LONG).show();
+				//
+				sdPath.mkdirs();
+				File sdFile = new File(sdPath, FILE_SD);
+			    try {
+			    	
+			        byte buff[]=new byte[49179];	        
+	//				try {
+	//					//InputStream is=getResources().openRawResource(R.raw.timev2);
+	//					InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
+	//					is.read(gamedata);            
+	//				} catch (IOException e) {
+	//					e.printStackTrace();
+	//				}
+					InputStream is=act.getResources().openRawResource(R.raw.wormv3);
+					is.read(buff);            
+			    	OutputStream out = new FileOutputStream(sdFile);
+	                out.write(buff, 0, buff.length);
+	                out.close();
+			    } catch (IOException e) {
+			      e.printStackTrace();
+			    }
+			}
 		} else return false;
 		return true;
 	}
@@ -51,7 +58,7 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD+DIR_SD);
 			File sdFile = new File(sdPath, FILE_SD);
 		    try {
 		    	InputStream in = new FileInputStream(sdFile);
