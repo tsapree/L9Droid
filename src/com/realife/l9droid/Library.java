@@ -53,13 +53,14 @@ public class Library {
 		return true;
 	}
 	
-	byte[] fileLoadGame() {
+	byte[] fileLoadGame(String path) {
 		byte buff[]=null;
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD+DIR_SD);
-			File sdFile = new File(sdPath, FILE_SD);
+			//sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD+DIR_SD);
+			//File sdFile = new File(sdPath, FILE_SD);
+			File sdFile = new File(sdPath.getAbsolutePath() + LIBDIR_SD + path);
 		    try {
 		    	InputStream in = new FileInputStream(sdFile);
                 byte[] tempbuff = new byte[80000];

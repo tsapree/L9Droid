@@ -1,15 +1,11 @@
 package com.realife.l9droid;
 
-import java.util.concurrent.TimeUnit;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -71,6 +67,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    	mt=new Threads();
 	    	mt.link(this);
 	        mt.create();
+	        SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+	        String lastGame = sPref.getString("lastgame", "Worm In Paradise/Speccy/worm.sna");
+	        mt.startGame(lastGame);
+	        if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
+	        else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
+	        
 	    } else mt.link(this);
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
@@ -154,7 +156,17 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    if (resultCode == RESULT_OK) {
 	      switch (requestCode) {
 	      case 1:
-	    	  Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
+	    	  //Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
+	    	  String newGame=data.getStringExtra("opengame");
+		      mt.startGame(newGame);
+	    	  etLog.setText(""); //TODO: поумнее очищать лог, есть вероятность потерять начало предложения.
+		      if (mt.l9!=null) {
+		    	  Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
+		    	  SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+		    	  Editor ed = sPref.edit();
+		    	  ed.putString("lastgame", newGame);
+		    	  ed.commit();
+		      } else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
 	        break;
 	      }
 	    // если вернулось не ОК

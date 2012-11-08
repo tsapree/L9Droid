@@ -95,7 +95,6 @@ public class Threads {
 		};
 		h.sendEmptyMessage(MACT_L9WORKING);
 		
-		gamedata=lib.fileLoadGame();
 //        gamedata=new byte[49179];	        
 //		try {
 //			//InputStream is=getResources().openRawResource(R.raw.timev2);
@@ -105,6 +104,19 @@ public class Threads {
 //			e.printStackTrace();
 //		}
 
+	};
+	
+	void startGame(String path) {
+
+		destroy();
+
+		gamedata=lib.fileLoadGame(path);
+        l9=new L9implement(gamedata,h);
+        if (l9.LoadGame("test", "")!=true) {
+        	l9=null;
+        	return;
+        }
+		
 		gfx_ready=false;
 		g = new Thread(new Runnable() {
 			public void run() {
@@ -112,7 +124,7 @@ public class Threads {
 					//Log.d("l9droid", "thread g still working");
 					try {
 						if (gfx_ready) {
-							if (l9.L9DoPeriodGfxTask()) {
+							if ((l9!=null) && (l9.L9DoPeriodGfxTask())) {
 								h.removeMessages(MACT_GFXUPDATE);
 								h.sendEmptyMessage(MACT_GFXUPDATE);
 								TimeUnit.MILLISECONDS.sleep(50);
@@ -126,45 +138,43 @@ public class Threads {
 			}
 		});
 		g.start();
-		
+
 		t = new Thread(new Runnable() {
 			public void run() {
-		        l9=new L9implement(gamedata,h);
-		        if (l9.LoadGame("test", "")==true) {
-			        while (l9.L9State!=l9.L9StateStopped && needToQuit!=true) {
-			        	if (l9.L9State==l9.L9StateWaitForCommand) {
-			        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
-			        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
-							try {
-								while ((activity==null || activity.command==null) && needToQuit!=true ) {
-						        	//Log.d("l9droid", "thread t still working");
-									TimeUnit.MILLISECONDS.sleep(200);
-								};
-								h.sendEmptyMessage(MACT_L9WORKING);
-								//TODO: t.wait - возможно, более правильное решение.
-								//TODO: возможна потеря activity при повороте экрана
-								l9.InputCommand(activity.command);
-								activity.command=null;
-							} catch (InterruptedException e) {
-								e.printStackTrace();
+		        while (l9.L9State!=l9.L9StateStopped && needToQuit!=true) {
+		        	if (l9.L9State==l9.L9StateWaitForCommand) {
+		        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
+		        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
+						try {
+							while ((activity==null || activity.command==null) && needToQuit!=true ) {
+					        	//Log.d("l9droid", "thread t still working");
+								TimeUnit.MILLISECONDS.sleep(200);
 							};
-			        	} else l9.step();
-			        };
-		        }
+							h.sendEmptyMessage(MACT_L9WORKING);
+							//TODO: t.wait - возможно, более правильное решение.
+							//TODO: возможна потеря activity при повороте экрана
+							l9.InputCommand(activity.command);
+							activity.command=null;
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						};
+		        	} else l9.step();
+		        };
 			}
 		});
 		t.start();
-	
-	};
+	}
 	
 	void destroy() {
 		needToQuit=true;
-		l9.StopGame();
-		while (t.isAlive() || g.isAlive());
+		//TODO: почистить очередь?
+		if (l9!=null) l9.StopGame();
+		if (g!=null) while (g.isAlive());
+		if (t!=null) while (t.isAlive());
 		t=null;
 		g=null;
-		//h=null;
-		//l9=null;
+		l9=null;
+		needToQuit=false;
 	};
 	
 }
