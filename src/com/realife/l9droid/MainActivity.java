@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,8 +24,9 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener {
+public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener, OnMenuItemClickListener {
 	
 	public final static int MACT_L9WORKING = 0;
 	public final static int MACT_L9WAITFORCOMMAND = 1;
@@ -132,15 +134,45 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         //return true;
     	MenuItem mi;
     	mi = menu.add(0,1,0,"Library");
-        mi.setIntent(new Intent(this, LibraryActivity.class));
-        mi = menu.add(0, 1, 0, "Settings");
+    	mi.setOnMenuItemClickListener(this);
+        mi = menu.add(0, 2, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
-        mi = menu.add(0, 1, 0, "About");
+        mi = menu.add(0, 3, 0, "About");
         mi.setIntent(new Intent(this, AboutActivity.class));
         
         return super.onCreateOptionsMenu(menu);
     }
 
+	@Override
+	public boolean onMenuItemClick(MenuItem arg0) {
+		// TODO Auto-generated method stub
+		switch (arg0.getItemId()) {
+		case 1: //library TODO: переделать в id, возможно перенести меню в ресурсы
+			Intent intent=new Intent(this, LibraryActivity.class);
+			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
+	        //mi.setIntent(intent);
+			break;
+		};
+		return false;
+	}
+	
+	@Override
+	  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    // запишем в лог значения requestCode и resultCode
+	    Log.d("myLogs", "requestCode = " + requestCode + ", resultCode = " + resultCode);
+	    // если пришло ОК
+	    if (resultCode == RESULT_OK) {
+	      switch (requestCode) {
+	      case 1:
+	    	  Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
+	        break;
+	      }
+	    // если вернулось не ОК
+	    } else {
+	      Toast.makeText(this, "Wrong result", Toast.LENGTH_SHORT).show();
+	    }
+	  }
+    
     // some text
 	//@Override
 	public void onClick(View v) {
@@ -319,7 +351,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		};
 		
 	}
-
 }
 
 class L9implement extends L9 {
