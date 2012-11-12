@@ -13,17 +13,24 @@ public class LibraryActivity extends Activity {
 	
 	ListView lvMain;
 	String[] paths;
+	Library lib; //TODO: временно - свой экземпляр для доступа к библиотеке
 	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.library);
 	    
-	    paths = getResources().getStringArray(R.array.lib_paths);
+	    lib=new Library();
+	    lib.prepareLibrary(this);
+	    
+	    //paths = getResources().getStringArray(R.array.lib_paths);
+	    paths=lib.getPaths();
 	    lvMain = (ListView) findViewById(R.id.lvMain);
 
-	    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-	        this, R.array.lib_paths, android.R.layout.simple_list_item_1);
+	    //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+	    //    this, R.array.lib_paths, android.R.layout.simple_list_item_1);
+	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+	    		android.R.layout.simple_list_item_1, paths);
 	    lvMain.setAdapter(adapter);
 
 	    lvMain.setOnItemClickListener(new OnItemClickListener() {
