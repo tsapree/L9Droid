@@ -751,10 +751,10 @@ int V2M_ERIK=2;
 				wordtable=startdata + L9WORD(startdata+0xe);
 				break;
 		};
-
+		
 		// If there was no graphics file, look in the game data 
 		if (picturedata<0) {
-			int sz=filesize-(acodeptr-startdata);
+			int sz=filesize-acodeptr;
 			i=0;
 			while ((i<sz-0x1000)&&(picturedata<0))
 			{
