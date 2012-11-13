@@ -1010,19 +1010,21 @@ int V2M_ERIK=2;
 	}*/
 	int msglenV2(int ptr)
 	{
+		//original function changes ptr sometimes, I'd replaced this functionality by 'j'
 		int i=0;
+		int j=0;
 		int a;
 
 		/* catch berzerking code */
 		if (ptr >= startdata+datasize) return 0;
 
-		while ((a=(l9memory[ptr]&0xff))==0) {
-			ptr++;
-			if (ptr >= startdata+datasize) return 0;
+		while ((a=(l9memory[ptr+j]&0xff))==0) {
+			j++;
+			if (ptr+j >= startdata+datasize) return j;
 			i+=255;
 		}
-		i+=a;
-		return i;
+		//i+=a;
+		return i+j+a;
 	}
 	
 	/*--was-- int msglenV25(L9BYTE **ptr)
@@ -2885,7 +2887,6 @@ int V2M_ERIK=2;
 		if (c==0x25) c=0xd;
 		else if (c==0x5f) c=0x20;
 		printautocase(c);
-		L9DEBUG("'%c'",c); //tokill
 	}
 
 	/*--was--	void displaywordV2(L9BYTE *ptr,int msg)
@@ -2910,7 +2911,6 @@ int V2M_ERIK=2;
 	}*/
 	void displaywordV2(int ptr,int msg)
 	{
-		L9DEBUG("displaywordV2 ptr=%d msg=%d",ptr,msg);
 		int n;
 		int a;
 		if (msg==0) return;
@@ -2918,7 +2918,6 @@ int V2M_ERIK=2;
 		{
 			ptr+=msglenV2(ptr);
 		}
-		L9DEBUG("ptr=%d",ptr); //tokill
 		n=msglenV2(ptr);
 
 		while (--n>0)
@@ -5976,7 +5975,7 @@ int V2M_ERIK=2;
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-		os_debug(txt);
+//		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
@@ -6002,8 +6001,8 @@ int V2M_ERIK=2;
 	
 	void CODEFOLLOW(String txt) {
 //uncomment for CODEFOLLOW feature
-		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
-		CODEFOLLOWSTRING+=txt;
+//		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
+//		CODEFOLLOWSTRING+=txt;
 	}
 	
 	void CODEFOLLOW(String txt1, String txt2) {
