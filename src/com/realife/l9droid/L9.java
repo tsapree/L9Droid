@@ -3130,6 +3130,9 @@ int V2M_ERIK=2;
 
 		/* notfn4 */
 	//notfn4:
+		//TODO: fix by tsap, d6 cannot be >15. превышение массива и crash в snowball.sna
+		if (d6>15) d6=15; //пофиксил только выход из диапазона, правильно ли - не знаю.
+		//TODO: end of fix
 		d6=(byte)(exitreversaltable[d6]&0xff);
 		a0=absdatablock;
 		d5[0]=1;
@@ -5996,8 +5999,8 @@ int V2M_ERIK=2;
 	
 	void CODEFOLLOW(String txt) {
 //uncomment for CODEFOLLOW feature
-//		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
-//		CODEFOLLOWSTRING+=txt;
+		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
+		CODEFOLLOWSTRING+=txt;
 	}
 	
 	void CODEFOLLOW(String txt1, String txt2) {
