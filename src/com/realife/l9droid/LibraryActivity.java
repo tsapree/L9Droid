@@ -29,24 +29,25 @@ public class LibraryActivity extends Activity {
 
 	    //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 	    //    this, R.array.lib_paths, android.R.layout.simple_list_item_1);
-	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-	    		android.R.layout.simple_list_item_1, paths);
-	    lvMain.setAdapter(adapter);
-
-	    lvMain.setOnItemClickListener(new OnItemClickListener() {
-	      public void onItemClick(AdapterView<?> parent, View view,
-	          int position, long id) {
-	    	  Intent intent = new Intent();
-	        //Log.d(LOG_TAG, "itemClick: position = " + position + ", id = "
-	        //    + id);
-	    	  //Toast.makeText(this, view.toString(), Toast.LENGTH_LONG).show();
-	    	  intent.putExtra("opengame",/*view.toString()*/ paths[position]);
-	    	  
-	    	  setResult(RESULT_OK,intent);
-	    	  finish();
-	      }
-	    });
-	    
+	    if (paths!=null) {
+		    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+		    		android.R.layout.simple_list_item_1, paths);
+		    lvMain.setAdapter(adapter);
+	
+		    lvMain.setOnItemClickListener(new OnItemClickListener() {
+		      public void onItemClick(AdapterView<?> parent, View view,
+		          int position, long id) {
+		    	  Intent intent = new Intent();
+		        //Log.d(LOG_TAG, "itemClick: position = " + position + ", id = "
+		        //    + id);
+		    	  //Toast.makeText(this, view.toString(), Toast.LENGTH_LONG).show();
+		    	  intent.putExtra("opengame",/*view.toString()*/ paths[position]);
+		    	  
+		    	  setResult(RESULT_OK,intent);
+		    	  finish();
+		      }
+		    });
+	    };
 	    
 	  }
 }
