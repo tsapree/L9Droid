@@ -2885,6 +2885,7 @@ int V2M_ERIK=2;
 		if (c==0x25) c=0xd;
 		else if (c==0x5f) c=0x20;
 		printautocase(c);
+		L9DEBUG("'%c'",c); //tokill
 	}
 
 	/*--was--	void displaywordV2(L9BYTE *ptr,int msg)
@@ -2909,6 +2910,7 @@ int V2M_ERIK=2;
 	}*/
 	void displaywordV2(int ptr,int msg)
 	{
+		L9DEBUG("displaywordV2 ptr=%d msg=%d",ptr,msg);
 		int n;
 		int a;
 		if (msg==0) return;
@@ -2916,6 +2918,7 @@ int V2M_ERIK=2;
 		{
 			ptr+=msglenV2(ptr);
 		}
+		L9DEBUG("ptr=%d",ptr); //tokill
 		n=msglenV2(ptr);
 
 		while (--n>0)
@@ -5973,7 +5976,7 @@ int V2M_ERIK=2;
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-		//os_debug(txt);
+		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
