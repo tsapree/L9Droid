@@ -120,6 +120,7 @@ public class Threads {
 		gfx_ready=false;
 		g = new Thread(new Runnable() {
 			public void run() {
+				h.sendEmptyMessage(MACT_GFXOFF);
 				while(needToQuit!=true) {
 					//Log.d("l9droid", "thread g still working");
 					try {
