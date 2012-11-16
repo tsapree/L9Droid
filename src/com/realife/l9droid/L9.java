@@ -552,7 +552,7 @@ int MSGT_V2=2;
 				break;
 			case L9_V2:
 			{
-				double a2,a25;
+				double a2,a21;
 				startmd=startdata + L9WORD(startdata+0x0);
 				startmdV2=startdata + L9WORD(startdata+0x2);
 
@@ -564,7 +564,7 @@ int MSGT_V2=2;
 					printf("V2 msg table: wordlen=%.2lf",a2);
 					#endif
 				}
-				else if (analyseV25(&a25) && a25>2 && a25<10)
+				else if (analyseV1(&a25) && a1>2 && a1<10)
 				{
 					L9MsgType=MSGT_V1;
 					#ifdef L9DEBUG
@@ -711,7 +711,7 @@ int MSGT_V2=2;
 				break;
 			case L9_V2:
 			{
-				double a2,a25;
+				double a2,a1;
 				startmd=startdata + L9WORD(startdata+0x0);
 				startmdV2=startdata + L9WORD(startdata+0x2);
 
@@ -723,11 +723,11 @@ int MSGT_V2=2;
 					L9DEBUG("V2 msg table: wordlen=%d/10\r",(int)(a2*10));
 				}
 				else {
-					a25=analyseV25();
-					if (a25>0 && a25>2 && a25<10)
+					a1=analyseV1();
+					if (a1>0 && a1>2 && a1<10)
 					{
 						L9MsgType=MSGT_V1;
-						L9DEBUG("V1 msg table: wordlen=%d/10\r",(int)(a25*10));
+						L9DEBUG("V1 msg table: wordlen=%d/10\r",(int)(a1*10));
 					}
 					else
 					{
@@ -805,14 +805,14 @@ int MSGT_V2=2;
 		return words!=0 ? (double) chars/words : 0.0;
 	}
 
-	/*--was-- L9BOOL analyseV25(double *wl)
+	/*--was-- L9BOOL analyseV1(double *wl)
 	{
 		long words=0,chars=0;
 		int i;
 		for (i=0;i<256;i++)
 		{
 			long w=0,c=0;
-			if (amessageV25(startmd,i,&w,&c))
+			if (amessageV1(startmd,i,&w,&c))
 			{
 				words+=w;
 				chars+=c;
@@ -823,7 +823,7 @@ int MSGT_V2=2;
 		*wl=words ? (double) chars/words : 0.0;
 		return TRUE;
 	}*/
-	double analyseV25()
+	double analyseV1()
 	{
 		int words=0,chars=0;
 		int i;
@@ -832,7 +832,7 @@ int MSGT_V2=2;
 			//long w=0,c=0;
 			int w[]={0};
 			int c[]={0};
-			if (amessageV25(startmd,i,w,c))
+			if (amessageV1(startmd,i,w,c))
 			{
 				words+=w[0];
 				chars+=c[0];
@@ -913,7 +913,7 @@ int MSGT_V2=2;
 		return true;
 	}
 
-	/*--was-- L9BOOL amessageV25(L9BYTE *ptr,int msg,long *w,long *c)
+	/*--was-- L9BOOL amessageV1(L9BYTE *ptr,int msg,long *w,long *c)
 	{
 		int n;
 		L9BYTE a;
@@ -921,10 +921,10 @@ int MSGT_V2=2;
 
 		while (msg--)
 		{
-			ptr+=msglenV25(&ptr);
+			ptr+=msglenV1(&ptr);
 		}
 		if (ptr >= startdata+FileSize) return FALSE;
-		n=msglenV25(&ptr);
+		n=msglenV1(&ptr);
 
 		while (--n>0)
 		{
@@ -933,7 +933,7 @@ int MSGT_V2=2;
 
 			if (a>=0x5e)
 			{
-				if (++depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
+				if (++depth>10 || !amessageV1(startmdV2,a-0x5e,w,c))
 				{
 					depth--;
 					return FALSE;
@@ -949,17 +949,17 @@ int MSGT_V2=2;
 		}
 		return TRUE;
 	}*/
-	boolean amessageV25(int ptr,int msg,int w[],int c[])
+	boolean amessageV1(int ptr,int msg,int w[],int c[])
 	{
 		int n;
 		int a;
 		
 		while (msg--!=0)
 		{
-			ptr+=msglenV25(ptr);
+			ptr+=msglenV1(ptr);
 		}
 		if (ptr >= startdata+datasize) return false;
-		n=msglenV25(ptr);
+		n=msglenV1(ptr);
 
 		while (--n>0)
 		{
@@ -968,7 +968,7 @@ int MSGT_V2=2;
 
 			if (a>=0x5e)
 			{
-				if (++amessageV25_depth>10 || !amessageV25(startmdV2,a-0x5e,w,c))
+				if (++amessageV25_depth>10 || !amessageV1(startmdV2,a-0x5e,w,c))
 				{
 					amessageV25_depth--;
 					return false;
@@ -1024,13 +1024,13 @@ int MSGT_V2=2;
 		return i+j+a;
 	}
 	
-	/*--was-- int msglenV25(L9BYTE **ptr)
+	/*--was-- int msglenV1(L9BYTE **ptr)
 	{
 		L9BYTE *ptr2=*ptr;
 		while (ptr2<startdata+FileSize && *ptr2++!=1) ;
 		return ptr2-*ptr;
 	}*/
-	int msglenV25(int ptr)
+	int msglenV1(int ptr)
 	{
 		int ptr2=ptr;
 		while (ptr2<startdata+datasize && l9memory[ptr2++]!=1) ;
@@ -2471,14 +2471,14 @@ int MSGT_V2=2;
 
 	/*--was--	void messagec(void)
 	{
-		if (L9GameType==L9_V2)
+		if (L9GameType<=L9_V2)
 			printmessageV2(getcon());
 		else
 			printmessage(getcon());
 	}*/
 	void messagec()
 	{
-		if (L9GameType==L9_V2)
+		if (L9GameType<=L9_V2)
 			printmessageV2(getcon());
 		else
 			printmessage(getcon());
@@ -2486,14 +2486,14 @@ int MSGT_V2=2;
 
 	/*--was--	void messagev(void)
 	{
-		if (L9GameType==L9_V2)
+		if (L9GameType<=L9_V2)
 			printmessageV2(*getvar());
 		else
 			printmessage(*getvar());
 	}*/
 	void messagev()
 	{
-		if (L9GameType==L9_V2)
+		if (L9GameType<=L9_V2)
 			printmessageV2(workspace.vartable[getvar()]&0xffff);
 		else
 			printmessage(workspace.vartable[getvar()]&0xffff);
@@ -2787,7 +2787,7 @@ int MSGT_V2=2;
 		L9BYTE* Msgptr=startmd;
 		L9BYTE Data;
 
-		int len,msgtmp;
+		int len;
 		L9UINT16 Off;
 
 		while (Msg>0 && Msgptr-endmd<=0)
@@ -2799,8 +2799,8 @@ int MSGT_V2=2;
 				Msg-=Data&0x7f;
 			}
 			else {
-				msgtmp=getmdlength(&Msgptr);
-				Msgptr+=msgtmp;
+				len=getmdlength(&Msgptr);
+				Msgptr+=len;
 			}
 			Msg--;
 		}
@@ -2832,7 +2832,7 @@ int MSGT_V2=2;
 		int Msgptr[]={startmd};
 		int Data;
 
-		int len,msgtmp;
+		int len;
 		int Off;
 
 		while (Msg>0 && Msgptr[0]-endmd<=0)
@@ -2844,8 +2844,8 @@ int MSGT_V2=2;
 				Msg-=Data&0x7f;
 			}
 			else {
-				msgtmp=getmdlength(Msgptr);
-				Msgptr[0]+=msgtmp;
+				len=getmdlength(Msgptr);
+				Msgptr[0]+=len;
 			}
 			Msg--;
 		}
@@ -2927,41 +2927,41 @@ int MSGT_V2=2;
 		}
 	}
 
-	/*--was--	void displaywordV25(L9BYTE *ptr,int msg)
+	/*--was--	void displaywordV1(L9BYTE *ptr,int msg)
 	{
 		int n;
 		L9BYTE a;
 		while (msg--)
 		{
-			ptr+=msglenV25(&ptr);
+			ptr+=msglenV1(&ptr);
 		}
-		n=msglenV25(&ptr);
+		n=msglenV1(&ptr);
 
 		while (--n>0)
 		{
 			a=*ptr++;
 			if (a<3) return;
 
-			if (a>=0x5e) displaywordV25(startmdV2,a-0x5e);
+			if (a>=0x5e) displaywordV1(startmdV2,a-0x5e);
 			else printcharV2((char)(a+0x1d));
 		}
 	}*/
-	void displaywordV25(int ptr,int msg)
+	void displaywordV1(int ptr,int msg)
 	{
 		int n;
 		int a;
 		while (msg--!=0)
 		{
-			ptr+=msglenV25(ptr);
+			ptr+=msglenV1(ptr);
 		}
-		n=msglenV25(ptr);
+		n=msglenV1(ptr);
 
 		while (--n>0)
 		{
 			a=l9memory[ptr++]&0xff;
 			if (a<3) return;
 
-			if (a>=0x5e) displaywordV25(startmdV2,a-0x5e);
+			if (a>=0x5e) displaywordV1(startmdV2,a-0x5e);
 			else printcharV2(a+0x1d);
 		}
 	}
@@ -2969,12 +2969,12 @@ int MSGT_V2=2;
 	/*--was--	void printmessageV2(int Msg)
 	{
 		if (L9MsgType==MSGT_V2) displaywordV2(startmd,Msg);
-		else displaywordV25(startmd,Msg);
+		else displaywordV1(startmd,Msg);
 	}*/
 	void printmessageV2(int Msg)
 	{
 		if (L9MsgType==MSGT_V2) displaywordV2(startmd,Msg);
-		else displaywordV25(startmd,Msg);
+		else displaywordV1(startmd,Msg);
 	};
 	
 	void picture()
@@ -3468,7 +3468,7 @@ int MSGT_V2=2;
 			// check for invalid chars 
 			for (iptr=ibuff;*iptr!=0;iptr++)
 			{
-				if (!isalnum(*iptr))
+				if (!IsInputChar(*iptr))
 					*iptr=' ';
 			}
 
@@ -3520,6 +3520,7 @@ int MSGT_V2=2;
 				}
 
 				++ibuffptr;
+				if (!IsDictionaryChar(x&0x7f)) x = 0;
 				if (tolower(x&0x7f) != tolower(a))
 				{
 					while (x>0 && x<0x7f) x=*list0ptr++;
@@ -3593,7 +3594,7 @@ int MSGT_V2=2;
 
 			// check for invalid chars
 			for (int i=0;i<ibuff.length-1;i++) {
-				if (!((ibuff[i]>='a' && ibuff[i]<='z') || (ibuff[i]>='A' && ibuff[i]<='Z') || (ibuff[i]>='0' && ibuff[i]<='9')))
+				if (!IsInputChar(ibuff[i]))
 					ibuff[i]=' ';
 			}
 
@@ -3637,6 +3638,7 @@ int MSGT_V2=2;
 				}
 
 				++ibuffptr;
+				if (!IsDictionaryChar((char)(x&0x7f))) x = 0;
 				if (tolower((char)(x&0x7f)) != tolower(a))
 				{
 					while (x>0 && x<0x7f) x=(char)(l9memory[list0ptr++]&0xff);
@@ -3702,7 +3704,7 @@ int MSGT_V2=2;
 		{
 			CheatWord=0;
 			printstring("\r");
-			while ((L9GameType==L9_V2) ? GetWordV2(ibuff,CheatWord++) : GetWordV3(ibuff,CheatWord++))
+			while ((L9GameType<=L9_V2) ? GetWordV2(ibuff,CheatWord++) : GetWordV3(ibuff,CheatWord++))
 			{
 				error("%s ",ibuff);
 				if (os_stoplist() || !Running) break;
@@ -3753,7 +3755,7 @@ int MSGT_V2=2;
 		{
 			CheatWord=0;
 			printstring("\r");
-			while ((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))
+			while ((L9GameType<=L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))
 			{
 				error("%s ",ibuffstr);
 				if ((CheatWord&0x1f)==0) error("\r");
@@ -3796,7 +3798,7 @@ int MSGT_V2=2;
 		//   are called out of line 
 
 		codeptr--;
-		if (L9GameType==L9_V2)
+		if (L9GameType<=L9_V2)
 		{
 			int wordcount;
 			if (inputV2(&wordcount))
@@ -3821,7 +3823,7 @@ int MSGT_V2=2;
 		//os_flush();
 		
 		codeptr--;
-		if (L9GameType==L9_V2)
+		if (L9GameType<=L9_V2)
 		{
 			if (inputV2())
 			{
@@ -3838,6 +3840,22 @@ int MSGT_V2=2;
 			if (corruptinginput()) codeptr+=5;
 	}
 
+	/*--was--	L9BOOL IsInputChar(char c)	{
+		if (c=='-' || c=='\'')
+			return TRUE;
+		if ((L9GameType>=L9_V3) && (c=='.' || c==','))
+			return TRUE;
+		return isalnum(c);
+	}
+	*/
+	boolean IsInputChar (char c) {
+		if (c=='-' || c=='\'')
+			return true;
+		if ((L9GameType>=L9_V3) && (c=='.' || c==','))
+			return true;
+		return isalnum(c);
+	}
+	
 	/*--was--	L9BOOL corruptinginput(void) {
 		L9BYTE *a0,*a2,*a6;
 		int d0,d1,d2,keywordnumber,abrevword;
@@ -3887,8 +3905,9 @@ int MSGT_V2=2;
 			if (d0!=0x20)
 			{
 				ibuffptr=a6;
-				L9SETWORD(list9ptr,d0);
+				L9SETWORD(list9ptr,0);
 				L9SETWORD(list9ptr+2,0);
+				list9ptr[1]=d0;
 				*a2=0x20;
 				keywordnumber=-1;
 				return TRUE;
@@ -4033,7 +4052,7 @@ int MSGT_V2=2;
 
 				// check for invalid chars
 				for (int i=0;i<ibuff.length-1;i++) {
-					if (!((ibuff[i]>='a' && ibuff[i]<='z') || (ibuff[i]>='A' && ibuff[i]<='Z') || (ibuff[i]>='0' && ibuff[i]<='9')))
+					if (!IsInputChar(ibuff[i]))
 						ibuff[i]=' ';
 				}
 
@@ -4062,6 +4081,7 @@ int MSGT_V2=2;
 				ibuffptr=a6;
 				L9SETWORD(list9ptr,d0);
 				L9SETWORD(list9ptr+2,0);
+				l9memory[list9ptr+1]=(byte)d0;
 				obuff[a2]=0x20;
 				keywordnumber=-1;
 				return true;
@@ -4311,7 +4331,7 @@ int MSGT_V2=2;
 	
 	/*--was--	void findmsgequiv(int d7)
 	{
-		int d4=-1,d0,atmp;
+		int d4=-1,d0;
 		L9BYTE* a2=startmd;
 
 		do
@@ -4358,14 +4378,14 @@ int MSGT_V2=2;
 				} while (TRUE);
 			}
 			else {
-				atmp=getmdlength(&a2);
-				a2+=atmp;
+				int len=getmdlength(&a2);
+				a2+=len;
 			}
 		} while (TRUE);
 	}*/
 	void findmsgequiv(int d7)
 	{
-		int d4=-1,d0,atmp;
+		int d4=-1,d0;
 		int a2[]={startmd};
 
 		do
@@ -4413,8 +4433,8 @@ int MSGT_V2=2;
 				} while (true);
 			}
 			else {
-				atmp=getmdlength(a2);
-				a2[0]+=atmp;
+				int len=getmdlength(a2);
+				a2[0]+=len;
 			}
 		} while (true);
 	}
@@ -4914,7 +4934,7 @@ int MSGT_V2=2;
 		memmove(&workspace,&CheatWorkspace,sizeof(GameState));
 		codeptr=acodeptr+workspace.codeptr;
 
-		if (!((L9GameType==L9_V2) ? GetWordV2(ibuff,CheatWord++) : GetWordV3(ibuff,CheatWord++)))
+		if (!((L9GameType<=L9_V2) ? GetWordV2(ibuff,CheatWord++) : GetWordV3(ibuff,CheatWord++)))
 		{
 			Cheating=FALSE;
 			printstring("\rCheat failed.\r");
@@ -4928,7 +4948,7 @@ int MSGT_V2=2;
 		workspace=CheatWorkspace.clone();
 		codeptr=acodeptr+workspace.codeptr;
 
-		if (!((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))) {
+		if (!((L9GameType<=L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))) {
 			Cheating=false;
 			printstring("\rCheat failed.\r");
 			ibuffstr="";
@@ -5011,6 +5031,24 @@ int MSGT_V2=2;
 	};
 
 	/* version 2 stuff hacked from bbc v2 files */
+	
+	/*--was--	L9BOOL IsDictionaryChar(char c)
+	{
+		switch (c)
+		{
+		case '?': case '-': case '\'': case '/': return TRUE;
+		case '!': case '.': case ',': return TRUE;
+		}
+		return isupper(c) || isdigit(c);
+	}*/
+	boolean IsDictionaryChar(char c) {
+		switch (c) {
+		case '?': case '-': case '\'': case '/': return true;
+		case '!': case '.': case ',': return true;
+		}
+		return isupper(c) || isdigit(c);
+	};
+	
 	/*--was--	L9BOOL GetWordV2(char *buff,int Word)
 	{
 		L9BYTE *ptr=L9Pointers[1],x;
@@ -5027,6 +5065,7 @@ int MSGT_V2=2;
 		do
 		{
 			x=*ptr++;
+			if (!IsDictionaryChar(x&0x7f)) return FALSE;
 			*buff++=x&0x7f;
 		} while (x>0 && x<0x7f);
 		*buff=0;
@@ -5052,6 +5091,7 @@ int MSGT_V2=2;
 		do
 		{
 			x=(char)(l9memory[ptr++]&0xff);
+			if (!IsDictionaryChar((char)(x&0x7f))) return false;
 			ibuffstr+=(char)(x>32?(x&0x7f):' ');
 		} while (x>31 && x<0x7f);
 		return true;
@@ -5957,6 +5997,14 @@ int MSGT_V2=2;
 		return c;
 	}
 	
+	boolean isdigit(char c) {
+		return (c>='0' && c<='9');
+	};
+	
+	boolean isupper(char c) {
+		return (c>='A' && c<='Z');
+	};
+	
 	//compare buff to lowercase string, true if least #len# of chars equals.  
 	boolean stricmp(char[] buff,String str, int len) {
 		if (len>buff.length) return false;
@@ -5968,6 +6016,10 @@ int MSGT_V2=2;
 	boolean stricmp(char[] buff,String str) {
 		int len=str.length();
 		return stricmp(buff,str,len);
+	}
+	
+	boolean isalnum(char c) {
+		return ((c>='a' && c<='z') || (c>='A' && c<='Z') || (c>='0' && c<='9'));
 	}
 	
 	//L9DEBUG
