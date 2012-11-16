@@ -54,9 +54,9 @@ public class L9 {
 	private static final int L9_V2=2;
 	private static final int L9_V3=3;
 	private static final int L9_V4=4;
-//enum V2MsgTypes {V2M_NORMAL,V2M_ERIK};
-int V2M_NORMAL=1;
-int V2M_ERIK=2;
+//enum L9MsgTypes { MSGT_V1, MSGT_V2 };
+int MSGT_V1=1;
+int MSGT_V2=2;
 //
 
 // Global Variables
@@ -91,7 +91,7 @@ int V2M_ERIK=2;
 	int dictptr;
 	byte threechars[];
 	int L9GameType;
-	int V2MsgType;
+	int L9MsgType;
 //
 	SaveStruct ramsavearea[];
 //
@@ -517,7 +517,7 @@ int V2M_ERIK=2;
 				L9GameType=L9_V1;
 				if (Offset<0)
 				{
-					error("\rUnable to locate valid header in file: %s\r",filename);
+					error("\rUnable to locate valid Level 9 game in file: %s\r",filename);
 				 	return FALSE;
 				}
 			}
@@ -542,9 +542,6 @@ int V2M_ERIK=2;
 			list2ptr=L9Pointers[3];
 			list3ptr=L9Pointers[4];
 			//list9startptr 
-
-			// if ((((L9UINT32) L9Pointers[10])&1)==0) L9Pointers[10]++; amiga word access hack
-
 			list9startptr=L9Pointers[10];
 			acodeptr=L9Pointers[11];
 		}
@@ -562,16 +559,16 @@ int V2M_ERIK=2;
 				// determine message type 
 				if (analyseV2(&a2) && a2>2 && a2<10)
 				{
-					V2MsgType=V2M_NORMAL;
+					L9MsgType=MSGT_V2;
 					#ifdef L9DEBUG
-					printf("V2 msg table: normal, wordlen=%.2lf",a2);
+					printf("V2 msg table: wordlen=%.2lf",a2);
 					#endif
 				}
 				else if (analyseV25(&a25) && a25>2 && a25<10)
 				{
-					V2MsgType=V2M_ERIK;
+					L9MsgType=MSGT_V1;
 					#ifdef L9DEBUG
-					printf("V2 msg table: Erik, wordlen=%.2lf",a25);
+					printf("V1 msg table: wordlen=%.2lf",a25);
 					#endif
 				}
 				else
@@ -680,7 +677,7 @@ int V2M_ERIK=2;
 				L9GameType=L9_V1;
 				if (Offset<0)
 				{
-					error("\rUnable to locate valid header in file: %s\r",filename);
+					error("\rUnable to locate valid Level 9 game in file: %s\r",filename);
 				 	return false;
 				}
 			}
@@ -722,15 +719,15 @@ int V2M_ERIK=2;
 				a2=analyseV2();
 				if (a2>0.0 && a2>2 && a2<10)
 				{
-					V2MsgType=V2M_NORMAL;
-					L9DEBUG("V2 msg table: normal, wordlen=%d/10\r",(int)(a2*10));
+					L9MsgType=MSGT_V2;
+					L9DEBUG("V2 msg table: wordlen=%d/10\r",(int)(a2*10));
 				}
 				else {
 					a25=analyseV25();
 					if (a25>0 && a25>2 && a25<10)
 					{
-						V2MsgType=V2M_ERIK;
-						L9DEBUG("V2 msg table: Erik, wordlen=%d/10\r",(int)(a25*10));
+						L9MsgType=MSGT_V1;
+						L9DEBUG("V1 msg table: wordlen=%d/10\r",(int)(a25*10));
 					}
 					else
 					{
@@ -2971,12 +2968,12 @@ int V2M_ERIK=2;
 
 	/*--was--	void printmessageV2(int Msg)
 	{
-		if (V2MsgType==V2M_NORMAL) displaywordV2(startmd,Msg);
+		if (L9MsgType==MSGT_V2) displaywordV2(startmd,Msg);
 		else displaywordV25(startmd,Msg);
 	}*/
 	void printmessageV2(int Msg)
 	{
-		if (V2MsgType==V2M_NORMAL) displaywordV2(startmd,Msg);
+		if (L9MsgType==MSGT_V2) displaywordV2(startmd,Msg);
 		else displaywordV25(startmd,Msg);
 	};
 	
