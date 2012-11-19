@@ -546,6 +546,7 @@ int MSGT_V2=2;
 				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? workspace.listarea+d0-0x8000 : startdata+d0;
 			}
 			absdatablock=L9Pointers[0];
+			dictdata=L9Pointers[1];
 			list2ptr=L9Pointers[3];
 			list3ptr=L9Pointers[4];
 			//list9startptr 
@@ -706,6 +707,7 @@ int MSGT_V2=2;
 				L9Pointers[i]= (i!=11 && d0>=0x8000 && d0<=0x9000) ? listarea+d0-0x8000 : startdata+d0;
 			}
 			absdatablock=L9Pointers[0];
+			dictdata=L9Pointers[1];
 			list2ptr=L9Pointers[3];
 			list3ptr=L9Pointers[4];
 			list9startptr=L9Pointers[10];
@@ -1108,7 +1110,7 @@ int MSGT_V2=2;
 		#ifdef L9DEBUG
 							printf("Found valid header at %ld, code size %ld",i,Size);
 		#endif
-							if (Size>MaxSize)
+							if (Size>MaxSize && Size>100)
 							{
 								Offset=i;
 								MaxSize=Size;
@@ -1188,7 +1190,7 @@ int MSGT_V2=2;
 					if (ValidateSequence(Image,i+d0,i+d0,scandata,false,true))
 					{
 						L9DEBUG("Found valid header at %d, code size %d\r",i,scandata.Size);
-						if (scandata.Size>MaxSize)
+						if ((scandata.Size>MaxSize) && (scandata.Size>100))
 						{
 							Offset=i;
 							MaxSize=scandata.Size;
@@ -1720,7 +1722,7 @@ int MSGT_V2=2;
 	#ifdef L9DEBUG 
 					printf("Found valid V2 header at %ld, code size %ld",i,Size);
 	#endif
-					if (Size>MaxSize)
+					if (Size>MaxSize && Size>100)
 					{
 						Offset=i;
 						MaxSize=Size;
@@ -1785,7 +1787,7 @@ int MSGT_V2=2;
 				if (ValidateSequence(Image,i+d0,i+d0,scandata,false,false))
 				{
 					L9DEBUG("Found valid V2 header at %d, code size %d\r",i,scandata.Size);
-					if (scandata.Size>MaxSize)
+					if ((scandata.Size>MaxSize)  && (scandata.Size>100))
 					{
 						Offset=i;
 						MaxSize=scandata.Size;
@@ -3501,7 +3503,7 @@ int MSGT_V2=2;
 		// ibuffptr=76,77 
 		// obuffptr=84,85 
 		// list0ptr=7c,7d 
-		list0ptr=L9Pointers[1];
+		list0ptr=dictdata;
 
 		while (*ibuffptr==32) ++ibuffptr;
 
@@ -3551,7 +3553,7 @@ int MSGT_V2=2;
 							}
 						} while (a!=32);
 						while (*ibuffptr==32) ++ibuffptr;
-						list0ptr=L9Pointers[1];
+						list0ptr=dictdata;
 						ptr=ibuffptr;
 					}
 					else
@@ -3574,7 +3576,7 @@ int MSGT_V2=2;
 			while (*list0ptr++<0x7e);
 			*obuffptr++=*list0ptr;
 			while (*ibuffptr==32) ++ibuffptr;
-			list0ptr=L9Pointers[1];
+			list0ptr=dictdata;
 		}
 	}*/
 	boolean inputV2()
@@ -3619,7 +3621,7 @@ int MSGT_V2=2;
 		wordcount=0;
 		ibuffptr=0;
 		obuffptr=0;
-		list0ptr=L9Pointers[1];
+		list0ptr=dictdata;
 
 		while (ibuff[ibuffptr]==32) ++ibuffptr;
 
@@ -3669,7 +3671,7 @@ int MSGT_V2=2;
 							}
 						} while (a!=32);
 						while (ibuff[ibuffptr]==32) ++ibuffptr;
-						list0ptr=L9Pointers[1];
+						list0ptr=dictdata;
 						ptr=ibuffptr;
 					}
 					else
@@ -3692,7 +3694,7 @@ int MSGT_V2=2;
 			while ((l9memory[list0ptr++]&0xff)<0x7e);
 			obuff[obuffptr++]=(char)(l9memory[list0ptr]&0xff);
 			while (ibuff[ibuffptr]==32) ++ibuffptr;
-			list0ptr=L9Pointers[1];
+			list0ptr=dictdata;
 		}
 	}
 	
@@ -5080,7 +5082,7 @@ int MSGT_V2=2;
 	
 	/*--was--	L9BOOL GetWordV2(char *buff,int Word)
 	{
-		L9BYTE *ptr=L9Pointers[1],x;
+		L9BYTE *ptr=dictdata,x;
 
 		while (Word--)
 		{
@@ -5102,7 +5104,7 @@ int MSGT_V2=2;
 	}*/
 	boolean GetWordV2(int Word)
 	{
-		int ptr=L9Pointers[1];
+		int ptr=dictdata;
 		char x;
 		while (Word--!=0)
 		{
