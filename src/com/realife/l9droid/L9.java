@@ -22,6 +22,9 @@ public class L9 {
 	//#define IBUFFSIZE 500
 	private static final int IBUFFSIZE = 500; 
 
+	//#define FIRSTLINESIZE 96
+	private static final int FIRSTLINESIZE = 96;
+	
 	int showtitle=1;
 	
 	//GameState workspace;
@@ -43,6 +46,13 @@ public class L9 {
 	//char LastGame[MAX_PATH];
 	String LastGame;
 	
+	//char FirstLine[FIRSTLINESIZE];
+	//int FirstLinePos=0;
+	//int FirstPicture=-1;
+	char FirstLine[];
+	int FirstLinePos=0;
+	int FirstPicture=-1;
+	
 
 //// "L901"
 //#define L9_ID 0x4c393031
@@ -60,6 +70,20 @@ public class L9 {
 int MSGT_V1=1;
 int MSGT_V2=2;
 //
+/*
+Graphics type    Resolution     Scale stack reset
+-------------------------------------------------    
+GFX_V2           160 x 128            yes
+GFX_V3A          160 x 96             yes
+GFX_V3B          160 x 96             no
+GFX_V3C          320 x 96             no
+*/
+//enum L9GfxTypes { GFX_V2, GFX_V3A, GFX_V3B, GFX_V3C };
+//TOTO: enum?
+	private static final int GFX_V2=1;
+	private static final int GFX_V3A=2;
+	private static final int GFX_V3B=3;
+	private static final int GFX_V3C=4;
 
 // Global Variables
 //*pictureaddress=NULL
@@ -119,6 +143,7 @@ int MSGT_V2=2;
 	boolean scalegfx=true;
 //Bitmap* bitmap=NULL;
 	
+	int gfx_mode=GFX_V2;
 	
 	public static final int GFXSTACKSIZE=100;
 	GfxState GfxStack[];
@@ -255,6 +280,8 @@ int MSGT_V2=2;
 		for (int i=0;i<GFXSTACKSIZE;i++) {
 			GfxStack[i]=new GfxState();
 		};
+		
+		FirstLine=new char [FIRSTLINESIZE];
 	};
 	
 	/*--was--	L9BOOL LoadGame(char *filename,char *picname)
@@ -502,7 +529,6 @@ int MSGT_V2=2;
 					pictureaddress=NULL;
 					picturesize=0;
 				}
-				picturedata=pictureaddress;
 				fclose(f);
 			}
 		}
@@ -617,6 +643,10 @@ int MSGT_V2=2;
 			}
 		}
 	#endif
+	
+		memset(FirstLine,0,FIRSTLINESIZE);
+		FirstLinePos=0;
+	
 		return TRUE;
 	}
 	*/
@@ -662,7 +692,6 @@ int MSGT_V2=2;
 					pictureaddress=NULL;
 					picturesize=0;
 				}
-				picturedata=pictureaddress;
 				fclose(f);
 			}
 		}*/
@@ -775,6 +804,10 @@ int MSGT_V2=2;
 			}
 		}
 		//TODO: kill: error("picturedata=%d",picturedata);
+		
+		for (i=0;i<FIRSTLINESIZE;i++) FirstLine[i]=0;
+		FirstLinePos=0;
+		
 		return true;
 	}
 	
@@ -1945,7 +1978,12 @@ int MSGT_V2=2;
 			lastchar=c;
 		}
 		// eat multiple CRs
-		if (c!=0x0d || lastactualchar!=0x0d) os_printchar(c);
+		if (c!=0x0d || lastactualchar!=0x0d)
+		{
+			os_printchar(c);
+			if (FirstLinePos < FIRSTLINESIZE-1)
+				FirstLine[FirstLinePos++]=tolower(c);
+		}
 		lastactualchar=c;
 	}
 	*/
@@ -1961,7 +1999,12 @@ int MSGT_V2=2;
 			lastchar=c;
 		}
 		// eat multiple CRs
-		if (c!=0x0d || lastactualchar!=0x0d) os_printchar(c);
+		if (c!=0x0d || lastactualchar!=0x0d)
+		{
+			os_printchar(c);
+			if (FirstLinePos < FIRSTLINESIZE-1)
+				FirstLine[FirstLinePos++]=tolower(c);
+		}
 		lastactualchar=c;
 	}
  
@@ -3004,6 +3047,15 @@ int MSGT_V2=2;
 	{
 		int mode = 0;
 
+		if (L9GameType == L9_V3 && strlen(FirstLine) == 0)
+		{
+			if (*codeptr++)
+				codeptr++;
+			return;
+		}
+	
+		detect_gfx_mode();
+
 		l9textmode = *codeptr++;
 		if (l9textmode)
 		{
@@ -3039,6 +3091,16 @@ int MSGT_V2=2;
 	void _screen()
 	{
 		int mode = 0;
+		
+		//if (L9GameType == L9_V3 && strlen(FirstLine) == 0)
+		if ((L9GameType == L9_V3) && (FirstLine[0]==0))
+		{
+			if ((l9memory[codeptr++]&0xff)!=0)
+				codeptr++;
+			return;
+		}
+
+		//TODO: detect_gfx_mode();
 
 		l9textmode = l9memory[codeptr++]&0xff;
 		if (l9textmode!=0)
@@ -3477,7 +3539,7 @@ int MSGT_V2=2;
 		else
 		{
 			os_flush();
-			lastchar='.';
+			lastchar=lastactualchar='.';
 			// get input 
 			if (!os_input(ibuff,IBUFFSIZE)) return FALSE; // fall through 
 			if (CheckHash()) return FALSE;
@@ -3599,7 +3661,7 @@ int MSGT_V2=2;
 				break;
 			}
 			
-			lastchar='.';
+			lastchar=lastactualchar='.';
 			// get input 
 			//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
 			if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
@@ -3824,6 +3886,12 @@ int MSGT_V2=2;
 	
 	/*--was-- void input(void)
 	{
+		if (L9GameType == L9_V3 && FirstPicture >= 0)
+		{
+			show_picture(FirstPicture);
+			FirstPicture = -1;
+		}
+
 		//  if corruptinginput() returns false then, input will be called again
 		//   next time around instructionloop, this is used when save() and restore()
 		//   are called out of line 
@@ -3847,6 +3915,13 @@ int MSGT_V2=2;
 	}*/
 	void input()
 	{
+		
+		if (L9GameType == L9_V3 && FirstPicture >= 0)
+		{
+			show_picture(FirstPicture);
+			FirstPicture = -1;
+		}
+		
 		// if corruptinginput() returns false then, input will be called again
 		// next time around instructionloop, this is used when save() and restore()
 		// are called out of line 
@@ -3901,7 +3976,7 @@ int MSGT_V2=2;
 			{
 				// flush 
 				os_flush();
-				lastchar='.';
+				lastchar=lastactualchar='.';
 				// get input 
 				if (!os_input(ibuff,IBUFFSIZE)) return FALSE; // fall through 
 				if (CheckHash()) return FALSE;
@@ -4071,7 +4146,7 @@ int MSGT_V2=2;
 				
 				/* flush */
 				os_flush();
-				lastchar='.';
+				lastchar=lastactualchar='.';
 				/* get input */
 				if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
 				
@@ -4509,7 +4584,12 @@ int MSGT_V2=2;
 
 		switch (d0)
 		{
-			case 1: calldriver(); break;
+			case 1: 
+				if (L9GameType==L9_V1)
+					StopGame();
+				else
+					calldriver();
+				break;
 			case 2: L9Random(); break;
 			case 3: save(); break;
 			case 4: NormalRestore(); break;
@@ -4530,8 +4610,13 @@ int MSGT_V2=2;
 
 		switch (d0)
 		{
+			case 1:
+				if (L9GameType==L9_V1)
+					StopGame();
+				else
+					calldriver();
+				break;
 			case 2: L9Random(); break;
-			case 1: calldriver(); break;
 			case 3: save(); break;
 			case 4: NormalRestore(); break;
 			case 5: clearworkspace(); break;
@@ -5129,7 +5214,13 @@ int MSGT_V2=2;
 	}
 	
 	/*--was-- void show_picture(int pic)
-	{
+	{	
+		if (L9GameType == L9_V3 && strlen(FirstLine) == 0)
+		{
+			FirstPicture = pic;
+			return;
+		}
+
 		if (picturedata)
 		{
 			// Some games don't call the screen() opcode before drawing
@@ -5162,6 +5253,12 @@ int MSGT_V2=2;
 	}*/
 	void show_picture(int pic)
 	{
+		if ((L9GameType == L9_V3) && (FirstLine[0] == 0))
+		{
+			FirstPicture = pic;
+			return;
+		}
+
 		if (picturedata>=0)
 		{
 			// Some games don't call the screen() opcode before drawing
