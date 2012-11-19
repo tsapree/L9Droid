@@ -3101,7 +3101,7 @@ GFX_V3C          320 x 96             no
 			return;
 		}
 
-		//TODO: detect_gfx_mode();
+		detect_gfx_mode();
 
 		l9textmode = l9memory[codeptr++]&0xff;
 		if (l9textmode!=0)
@@ -5228,6 +5228,7 @@ GFX_V3C          320 x 96             no
 			// graphics, so here graphics are enabled if necessary. 
 			if ((screencalled == 0) && (l9textmode == 0))
 			{
+				detect_gfx_mode();
 				l9textmode = 1;
 				os_graphics(1);
 			}
@@ -5267,6 +5268,7 @@ GFX_V3C          320 x 96             no
 			// graphics, so here graphics are enabled if necessary.
 			if ((screencalled == 0) && (l9textmode == 0))
 			{
+				detect_gfx_mode();
 				l9textmode = 1;
 				os_graphics(1);
 			}
@@ -5521,6 +5523,74 @@ GFX_V3C          320 x 96             no
 		return (gfx_mode == GFX_V2) ? 127 - (y>>7) : 95 - (((y>>5)+(y>>6))>>3);
 	}
 	
+	/*--was--	void detect_gfx_mode(void)
+	{
+		if (L9GameType == L9_V3)
+		{
+			// These V3 games use graphics logic similar to the V2 games
+			if (strstr(FirstLine,"price of magik") != 0)
+				gfx_mode = GFX_V3A;
+			else if (strstr(FirstLine,"the archers") != 0)
+				gfx_mode = GFX_V3A;
+			else if (strstr(FirstLine,"secret diary of adrian mole") != 0)
+				gfx_mode = GFX_V3A;
+			else if ((strstr(FirstLine,"worm in paradise") != 0)
+				&& (strstr(FirstLine,"silicon dreams") == 0))
+				gfx_mode = GFX_V3A;
+			else if (strstr(FirstLine,"growing pains of adrian mole") != 0)
+				gfx_mode = GFX_V3B;
+			else if (strstr(FirstLine,"jewels of darkness") != 0 && picturesize < 11000)
+				gfx_mode = GFX_V3B;
+			else if (strstr(FirstLine,"silicon dreams") != 0)
+			{
+				if (picturesize > 11000
+					|| (startdata[0] == 0x14 && startdata[1] == 0x7d)  // Return to Eden /SD (PC) 
+					|| (startdata[0] == 0xd7 && startdata[1] == 0x7c)) // Worm in Paradise /SD (PC) 
+					gfx_mode = GFX_V3C;
+				else
+					gfx_mode = GFX_V3B;
+			} 
+			else
+				gfx_mode = GFX_V3C;
+		}
+		else
+			gfx_mode = GFX_V2;
+	}*/
+	void detect_gfx_mode()
+	{
+		if (L9GameType == L9_V3)
+		{
+			/* These V3 games use graphics logic similar to the V2 games */
+			if (strstr(FirstLine,"price of magik") != 0)
+				gfx_mode = GFX_V3A;
+			else if (strstr(FirstLine,"the archers") != 0)
+				gfx_mode = GFX_V3A;
+			else if (strstr(FirstLine,"secret diary of adrian mole") != 0)
+				gfx_mode = GFX_V3A;
+			else if ((strstr(FirstLine,"worm in paradise") != 0)
+				&& (strstr(FirstLine,"silicon dreams") == 0))
+				gfx_mode = GFX_V3A;
+			else if (strstr(FirstLine,"growing pains of adrian mole") != 0)
+				gfx_mode = GFX_V3B;
+			else if (strstr(FirstLine,"jewels of darkness") != 0 && picturesize < 11000)
+				gfx_mode = GFX_V3B;
+			else if (strstr(FirstLine,"silicon dreams") != 0)
+			{
+				if (picturesize > 11000
+					|| (l9memory[startdata] == 0x14 && l9memory[startdata+1] == 0x7d)  /* Return to Eden /SD (PC) */
+					|| (l9memory[startdata] == 0xd7 && l9memory[startdata+1] == 0x7c)) /* Worm in Paradise /SD (PC) */
+					gfx_mode = GFX_V3C;
+				else
+					gfx_mode = GFX_V3B;
+			} 
+			else
+				gfx_mode = GFX_V3C;
+		}
+		else
+			gfx_mode = GFX_V2;
+	}
+	
+
 	/*--was--	void gosubd0(int d0, L9BYTE** a5)
 	{
 		if (GfxStackPos < GFXSTACKSIZE)
@@ -6149,6 +6219,25 @@ GFX_V3C          320 x 96             no
 		};
 		return num;
 	};
+	
+	//for now returns 1 if string s found in array c, 0 otherwise
+	int strstr(char[] c, String s) {
+		int i=0;
+		int j;
+		int sl=s.length();
+		int cl=c.length;
+		int rez=0;
+		while (i<cl-sl) {
+			rez=1;
+			for (j=0;j<sl;j++)
+				if (toupper(c[i+j])!=s.charAt(j)) {
+					rez=0;
+					break;
+				};
+			if (rez==1) break;
+		}
+		return rez;
+	}
 
 	
 	//L9DEBUG
