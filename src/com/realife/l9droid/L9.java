@@ -140,14 +140,17 @@ GFX_V3C          320 x 96             no
 	int drawx=0,drawy=0;
 	int screencalled=0;
 	int gfxa5[]={-1};
-	boolean scalegfx=true;
 //Bitmap* bitmap=NULL;
 	
 	int gfx_mode=GFX_V2;
 	
 	public static final int GFXSTACKSIZE=100;
-	GfxState GfxStack[];
-	int GfxStackPos=0;
+	
+	int GfxA5Stack[];
+	int GfxA5StackPos=0;
+	int GfxScaleStack[];
+	int GfxScaleStackPos=0;
+	
 //
 	char lastchar='.';
 	char lastactualchar=0;
@@ -276,10 +279,8 @@ GFX_V3C          320 x 96             no
 		for (int i=0;i<RAMSAVESLOTS;i++) {
 			ramsavearea[i]=new SaveStruct();
 		};
-		GfxStack=new GfxState[GFXSTACKSIZE];
-		for (int i=0;i<GFXSTACKSIZE;i++) {
-			GfxStack[i]=new GfxState();
-		};
+		GfxScaleStack=new int [GFXSTACKSIZE];
+		GfxA5Stack=new int [GFXSTACKSIZE];
 		
 		FirstLine=new char [FIRSTLINESIZE];
 	};
@@ -5245,7 +5246,8 @@ GFX_V3C          320 x 96             no
 	// sizereset 
 			scale = 0x80;
 
-			GfxStackPos=0;
+			GfxA5StackPos=0;
+			GfxScaleStackPos=0;
 			absrunsub(0);
 			if (!findsub(pic,&gfxa5))
 				gfxa5 = NULL;
@@ -5281,7 +5283,8 @@ GFX_V3C          320 x 96             no
 	// sizereset 
 			scale = 0x80;
 
-			GfxStackPos=0;
+			GfxA5StackPos=0;
+			GfxScaleStackPos=0;
 			absrunsub(0);
 			if (!findsub(pic,gfxa5))
 				gfxa5[0] = -1;
@@ -5502,59 +5505,58 @@ GFX_V3C          320 x 96             no
 	
 	/*--was--	int scalex(int x)
 	{
-		if (scalegfx)
-			return (L9GameType == L9_V2) ? x>>6 : x>>5;
-		return x;
+		return (gfx_mode != GFX_V3C) ? (x>>6) : (x>>5);
 	}*/
 	int scalex(int x)
 	{
-		if (scalegfx)
-			return (L9GameType == L9_V2) ? x>>6 : x>>5;
-		return x;
+		return (gfx_mode != GFX_V3C) ? (x>>6) : (x>>5);
 	}
 
 	/*--was--	int scaley(int y)
 	{
-		if (scalegfx)
-			return 96 - (((y>>5)+(y>>6))>>3);
-		return (96<<3) - ((y>>5)+(y>>6));
+		return (gfx_mode == GFX_V2) ? 127 - (y>>7) : 95 - (((y>>5)+(y>>6))>>3);
 	}*/
 	int scaley(int y)
 	{
-		if (scalegfx)
-			return 96 - (((y>>5)+(y>>6))>>3);
-		return (96<<3) - ((y>>5)+(y>>6));
+		return (gfx_mode == GFX_V2) ? 127 - (y>>7) : 95 - (((y>>5)+(y>>6))>>3);
 	}
 	
 	/*--was--	void gosubd0(int d0, L9BYTE** a5)
 	{
 		if (GfxStackPos < GFXSTACKSIZE)
 		{
-			GfxStack[GfxStackPos].a5 = *a5;
-			GfxStack[GfxStackPos].scale = scale;
-			GfxStackPos++;
+			GfxA5Stack[GfxA5StackPos] = *a5;
+			GfxA5StackPos++;
+			GfxScaleStack[GfxScaleStackPos] = scale;
+			GfxScaleStackPos++;
 	
 			if (findsub(d0,a5) == FALSE)
 			{
-				GfxStackPos--;
-				*a5 = GfxStack[GfxStackPos].a5;
-				scale = GfxStack[GfxStackPos].scale;
+				GfxA5StackPos--;
+				*a5 = GfxA5Stack[GfxA5StackPos];
+				GfxScaleStackPos--;
+				scale = GfxScaleStack[GfxScaleStackPos];
 			}
 		}
 	}*/
 	void gosubd0(int d0, int a5[])
 	{
-		if (GfxStackPos < GFXSTACKSIZE)
+		if (GfxA5StackPos < GFXSTACKSIZE)
 		{
-			GfxStack[GfxStackPos].a5 = a5[0];
-			GfxStack[GfxStackPos].scale = scale;
-			GfxStackPos++;
+			GfxA5Stack[GfxA5StackPos] = a5[0];
+			GfxA5StackPos++;
+			GfxScaleStack[GfxScaleStackPos] = scale;
+			GfxScaleStackPos++;
 	
 			if (findsub(d0,a5) == false)
 			{
-				GfxStackPos--;
-				a5[0] = GfxStack[GfxStackPos].a5;
-				scale = GfxStack[GfxStackPos].scale;
+				//GfxStackPos--;
+				//a5[0] = GfxStack[GfxStackPos].a5;
+				//scale = GfxStack[GfxStackPos].scale;
+				GfxA5StackPos--;
+				a5[0] = GfxA5Stack[GfxA5StackPos];
+				GfxScaleStackPos--;
+				scale = GfxScaleStack[GfxScaleStackPos];
 			}
 		}
 	}
@@ -5829,9 +5831,12 @@ GFX_V3C          320 x 96             no
 			int d0 = (scale*sizetable[d7-1])>>3;
 			scale = (d0 < 0x100) ? d0 : 0xff;
 		}
-		else
+		else {
 	// sizereset
 			scale = 0x80;
+			if (gfx_mode == GFX_V2 || gfx_mode == GFX_V3A)
+			GfxScaleStackPos = 0;
+		}	
 	
 	#ifdef L9DEBUG
 		printf("gfx - size 0x%.2x",scale);
@@ -5848,10 +5853,12 @@ GFX_V3C          320 x 96             no
 			int d0 = (scale*sizetable[d7-1])>>3;
 			scale = (d0 < 0x100) ? d0 : 0xff;
 		}
-		else
+		else {
 	/* sizereset */
 			scale = 0x80;
-	
+			if (gfx_mode == GFX_V2 || gfx_mode == GFX_V3A)
+				GfxScaleStackPos = 0;
+		}
 		L9DEBUG("gfx - size 0x%d",scale);
 	}
 
@@ -5997,41 +6004,48 @@ GFX_V3C          320 x 96             no
 	#ifdef L9DEBUG
 		printf("gfx - restorescale");
 	#endif
-		if (GfxStackPos > 0)
-			scale = GfxStack[GfxStackPos-1].scale;
+		if (GfxScaleStackPos > 0)
+			scale = GfxScaleStack[GfxScaleStackPos-1];
 	}*/
 	void restorescale()
 	{
 		L9DEBUG ("gfx - restorescale");
-		if (GfxStackPos > 0)
-			scale = GfxStack[GfxStackPos-1].scale;
+		if (GfxScaleStackPos > 0)
+			scale = GfxScaleStack[GfxScaleStackPos-1];
 	}
 	
 	/*--was--	L9BOOL rts(L9BYTE** a5)
 	{
-		if (GfxStackPos > 0)
+		if (GfxA5StackPos > 0)
 		{
-			GfxStackPos--;
-			*a5 = GfxStack[GfxStackPos].a5;
-			scale = GfxStack[GfxStackPos].scale;
+			GfxA5StackPos--;
+			*a5 = GfxA5Stack[GfxA5StackPos];
+			if (GfxScaleStackPos > 0)
+			{
+				GfxScaleStackPos--;
+				scale = GfxScaleStack[GfxScaleStackPos];
+			}
 			return TRUE;
 		}
 		return FALSE;
 	}*/
 	boolean rts(int a5[])
 	{
-		if (GfxStackPos > 0)
+		if (GfxA5StackPos > 0)
 		{
-			GfxStackPos--;
-			a5[0] = GfxStack[GfxStackPos].a5;
-			scale = GfxStack[GfxStackPos].scale;
+			GfxA5StackPos--;
+			a5[0] = GfxA5Stack[GfxA5StackPos];
+			if (GfxScaleStackPos > 0)
+			{
+				GfxScaleStackPos--;
+				scale = GfxScaleStack[GfxScaleStackPos];
+			}
 			return true;
 		}
 		return false;
 	}
 	
-	/*--was--	void GetPictureSize(int* width, int* height)
-	{
+	/*--was--	void GetPictureSize(int* width, int* height) {
 		if (L9GameType == L9_V4)
 		{
 			if (width != NULL)
@@ -6039,19 +6053,13 @@ GFX_V3C          320 x 96             no
 			if (height != NULL)
 				*height = 0;
 		}
-		else if (scalegfx)
-		{
-			if (width != NULL)
-				*width = (L9GameType == L9_V2) ? 160 : 320;
-			if (height != NULL)
-				*height = 96;
-		}
 		else
 		{
 			if (width != NULL)
-				*width = 320<<6;
+				*width = (gfx_mode != GFX_V3C) ? 160 : 320;
 			if (height != NULL)
-				*height = 96<<3;
+				*height = (gfx_mode == GFX_V2) ? 128 : 96;			
+	
 		}
 	}*/
 
@@ -6059,24 +6067,13 @@ GFX_V3C          320 x 96             no
 	{
 		if (L9GameType == L9_V4)
 		{
-			//if (width != NULL)
-				width[0] = 0;
-			//if (height != NULL)
-				height[0] = 0;
-		}
-		else if (scalegfx)
-		{
-			//if (width != NULL)
-				width[0] = (L9GameType == L9_V2) ? 160 : 320;
-			//if (height != NULL)
-				height[0] = 96;
+			width[0] = 0;
+			height[0] = 0;
 		}
 		else
 		{
-			//if (width != NULL)
-				width[0] = 320<<6;
-			//if (height != NULL)
-				height[0] = 96<<3;
+			width[0] = (gfx_mode != GFX_V3C) ? 160 : 320;
+			height[0] = (gfx_mode == GFX_V2) ? 128 : 96;			
 		}
 	}
 
@@ -6100,17 +6097,6 @@ GFX_V3C          320 x 96             no
 		}
 		return false;
 	}
-
-	/*--was--	void SetScaleGraphics(L9BOOL scale)
-	{
-		scalegfx = scale;
-	}
-	*/
-	void SetScaleGraphics(boolean scale)
-	{
-		scalegfx = scale;
-	}
-
 
 	
 	///////////////////// New (tsap) implementations ////////////////////
@@ -6371,16 +6357,6 @@ class SaveStruct {
 		vartable=new short[256];
 		listarea=new byte[LISTAREASIZE];
 	}
-}
-//
-//typedef struct
-//{
-//L9BYTE *a5;
-//int scale;
-//} GfxState;
-class GfxState {
-	int a5;
-	int scale;
 }
 
 class ScanData {
