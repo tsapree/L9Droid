@@ -28,6 +28,8 @@ public class L9 {
 	GameState workspace;
 	//L9UINT16 randomseed;
 	short randomseed;
+	//L9UINT16 constseed=0;
+	short constseed=0;
 	//L9BOOL Running;
 	//boolean Running;
 	int L9State;
@@ -438,7 +440,10 @@ int MSGT_V2=2;
 	// 	if (!checksumgamedata()) return FALSE; 
 
 		codeptr=acodeptr;
-		randomseed=(L9UINT16)time(NULL);
+		if (constseed > 0)
+			randomseed=constseed;
+		else
+			randomseed=(L9UINT16)time(NULL);
 		strcpy(LastGame,filename);
 		return Running=TRUE;
 	}
@@ -449,8 +454,10 @@ int MSGT_V2=2;
 		ibuffptr=-1; //указатель на текст в строке команды для V3,4
 		if (!intinitialise(filename,picname)) return L9StateStopped;
 		codeptr=acodeptr;
-		//TODO: вернуть!! randomseed = (short)(Math.random()*32767);
-		randomseed = 0;
+		if (constseed > 0)
+			randomseed=constseed;
+		else
+			randomseed = (short)(Math.random()*32767);
 		LastGame=filename;
 		L9State=L9StateRunning;
 		return L9State;
@@ -2390,10 +2397,18 @@ int MSGT_V2=2;
 
 	/*--was-- void Goto(void)
 	{
-		codeptr=getaddr();
+		L9BYTE* target = getaddr();
+		if (target == codeptr - 2)
+			Running = FALSE; // Endless loop! 
+		else
+			codeptr = target;
 	}*/
 	void Goto() {
-		codeptr=getaddr();
+		int target=getaddr();
+		if (target==codeptr-2)
+			StopGame(); //Endless loop!
+		else
+			codeptr=target;
 	}
 	
 	/*--was--	void intgosub(void)
@@ -3727,6 +3742,20 @@ int MSGT_V2=2;
 			printchar('\r');
 			return TRUE;
 		}
+		else if (strnicmp(ibuff,"#seed ",6)==0)
+		{
+			int seed = 0;
+			if (sscanf(ibuff+6,"%d",&seed) == 1)
+				randomseed = constseed = seed;
+			lastactualchar = 0;
+			printchar('\r');
+			return TRUE;
+		}
+		else if (stricmp(ibuff,"#play")==0)
+		{
+			playback();
+			return TRUE;
+		}
 		return FALSE;
 	}*/
 	boolean CheckHash()
@@ -3766,15 +3795,7 @@ int MSGT_V2=2;
 		}
 		else if (stricmp(ibuff,"#picture ",9))
 		{
-			int pic = -1;
-			int n;
-			for (int i=9;i<ibuff.length;i++) {
-				n=ibuff[i]-'0';
-				if (n>=0 && n<=9) pic=(pic<0?0:(pic*10))+n;
-				else {
-					if (pic>=0) break; 
-				};
-			};
+			int pic=sscanf(ibuff,9);
 			if (pic>=0)
 			{
 				if (L9GameType==L9_V4)
@@ -3787,10 +3808,18 @@ int MSGT_V2=2;
 			printchar('\r');
 			return true;
 		}
+		else if (stricmp(ibuff,"#seed ",6))
+		{
+			short seed=(short)sscanf(ibuff,6);
+			if ( seed>0 )
+				randomseed = constseed = seed;
+			lastactualchar = 0;
+			printchar('\r');
+			return true;
+		}
 		return false;
 	}
-
-
+	
 	/*--was-- void input(void)
 	{
 		//  if corruptinginput() returns false then, input will be called again
@@ -6021,6 +6050,21 @@ int MSGT_V2=2;
 	boolean isalnum(char c) {
 		return ((c>='a' && c<='z') || (c>='A' && c<='Z') || (c>='0' && c<='9'));
 	}
+	
+	//returns NUM from array of chars, begins from index, or -1 if wrong rezult
+	int sscanf(char[] symbbuff, int index) {
+		int num = -1;
+		int n;
+		for (int i=index;i<ibuff.length;i++) {
+			n=ibuff[i]-'0';
+			if (n>=0 && n<=9) num=(num<0?0:(num*10))+n;
+			else {
+				if (num>=0) break; 
+			};
+		};
+		return num;
+	};
+
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
