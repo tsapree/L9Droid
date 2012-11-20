@@ -5728,13 +5728,13 @@ GFX_V3C          320 x 96             no
 				gfx_mode = GFX_V3A;
 			else if (strstr(FirstLine,"growing pains of adrian mole") != 0)
 				gfx_mode = GFX_V3B;
-			else if (strstr(FirstLine,"jewels of darkness") != 0 && picturesize < 11000)
+			else if ((strstr(FirstLine,"jewels of darkness") != 0) && (picturesize < 11000))
 				gfx_mode = GFX_V3B;
 			else if (strstr(FirstLine,"silicon dreams") != 0)
 			{
-				if (picturesize > 11000
-					|| (l9memory[startdata] == 0x14 && l9memory[startdata+1] == 0x7d)  /* Return to Eden /SD (PC) */
-					|| (l9memory[startdata] == 0xd7 && l9memory[startdata+1] == 0x7c)) /* Worm in Paradise /SD (PC) */
+				if ((picturesize > 11000)
+					|| ((l9memory[startdata] == 0x14) && (l9memory[startdata+1] == 0x7d))  /* Return to Eden /SD (PC) */
+					|| ((l9memory[startdata] == 0xd7) && (l9memory[startdata+1] == 0x7c))) /* Worm in Paradise /SD (PC) */
 					gfx_mode = GFX_V3C;
 				else
 					gfx_mode = GFX_V3B;
@@ -6390,6 +6390,7 @@ GFX_V3C          320 x 96             no
 					break;
 				};
 			if (rez==1) break;
+			i++;
 		}
 		return rez;
 	}
