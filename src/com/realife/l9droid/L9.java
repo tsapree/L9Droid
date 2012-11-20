@@ -87,6 +87,7 @@ GFX_V3C          320 x 96             no
 
 // Global Variables
 //*pictureaddress=NULL
+	int pictureaddress=-1;
 	int picturedata=-1;
 	int picturesize;	
 	byte l9memory[];
@@ -491,6 +492,165 @@ GFX_V3C          320 x 96             no
 		return L9State;
 	}
 	
+	/*--was--	L9BOOL findsubs(L9BYTE* testptr, L9UINT32 testsize, L9BYTE** picdata, L9UINT32 *picsize)
+	{
+		int i, j, length, count;
+		L9BYTE *picptr, *startptr, *tmpptr;
+	
+		if (testsize < 16) return FALSE;
+		
+		//
+		//	Try to traverse the graphics subroutines.
+		//	
+		//	Each subroutine starts with a header: nn | nl | ll
+		//	nnn : the subroutine number ( 0x000 - 0x7ff ) 
+		//	lll : the subroutine length ( 0x004 - 0x3ff )
+		//	
+		//	The first subroutine usually has the number 0x000.
+		//	Each subroutine ends with 0xff.
+		//	
+		//	findsubs() searches for the header of the second subroutine
+		//	(pattern: 0xff | nn | nl | ll) and then tries to find the
+		//	first and next subroutines by evaluating the length fields
+		//	of the subroutine headers.
+		//
+		for (i = 4; i < (int)(testsize - 4); i++)
+		{
+			picptr = testptr + i;
+			if (*(picptr - 1) != 0xff || (*picptr & 0x80) || (*(picptr + 1) & 0x0c) || (*(picptr + 2) < 4))
+				continue;
+	
+			count = 0;
+			startptr = picptr;
+	
+			while (TRUE)
+			{			
+				length = ((*(picptr + 1) & 0x0f) << 8) + *(picptr + 2);
+				if (length > 0x3ff || picptr + length + 4 > testptr + testsize)
+					break;
+				
+				picptr += length;
+				if (*(picptr - 1) != 0xff)
+				{
+					picptr -= length;
+					break;
+				}
+				if ((*picptr & 0x80) || (*(picptr + 1) & 0x0c) || (*(picptr + 2) < 4))
+					break;
+				
+				count++;
+			}
+	
+			if (count > 10)
+			{
+				// Search for the start of the first subroutine
+				for (j = 4; j < 0x3ff; j++)
+				{
+					tmpptr = startptr - j;				
+					if (*tmpptr == 0xff || tmpptr < testptr)
+						break;
+						
+					length = ((*(tmpptr + 1) & 0x0f) << 8) + *(tmpptr + 2);
+					if (tmpptr + length == startptr)
+					{
+						startptr = tmpptr;					
+						break;
+					}
+				}
+				
+				if (*tmpptr != 0xff)
+				{ 		
+					*picdata = startptr;
+					*picsize = picptr - startptr;
+					return TRUE;
+				}		
+			}
+		}
+		return FALSE;
+	}*/
+	boolean findsubs(int testptr, int testsize, int picdata[], int picsize[])
+	{
+		int i, j, length, count;
+		int picptr, startptr, tmpptr;
+
+		if (testsize < 16) return false;
+		
+		//
+		//	Try to traverse the graphics subroutines.
+		//	
+		//	Each subroutine starts with a header: nn | nl | ll
+		//	nnn : the subroutine number ( 0x000 - 0x7ff ) 
+		//	lll : the subroutine length ( 0x004 - 0x3ff )
+		//	
+		//	The first subroutine usually has the number 0x000.
+		//	Each subroutine ends with 0xff.
+		//	
+		//	findsubs() searches for the header of the second subroutine
+		//	(pattern: 0xff | nn | nl | ll) and then tries to find the
+		//	first and next subroutines by evaluating the length fields
+		//	of the subroutine headers.
+		//
+		for (i = 4; i < (int)(testsize - 4); i++)
+		{
+			picptr = testptr + i;
+			if (	((l9memory[picptr - 1]&0xff)    != 0xff) ||
+					((l9memory[picptr] & 0x80) !=0) ||
+					((l9memory[picptr + 1] & 0x0c)  !=0) ||
+					((l9memory[picptr + 2]&0xff)    < 4) 
+				)
+				continue;
+
+			count = 0;
+			startptr = picptr;
+			tmpptr=picptr;
+
+			while (true)
+			{			
+				length = ((l9memory[picptr + 1] & 0x0f) << 8) + (l9memory[picptr + 2]&0xff);
+				if ((length > 0x3ff) || (picptr + length + 4 > testptr + testsize))
+					break;
+				
+				picptr += length;
+				if ((l9memory[picptr - 1]&0xff) != 0xff)
+				{
+					picptr -= length;
+					break;
+				}
+				if (((l9memory[picptr] & 0x80)!=0) || ((l9memory[picptr + 1] & 0x0c)!=0) || ((l9memory[picptr + 2]&0xff) < 4))
+					break;
+				
+				count++;
+			}
+
+			if (count > 10)
+			{
+				/* Search for the start of the first subroutine */
+				for (j = 4; j < 0x3ff; j++)
+				{
+					tmpptr = startptr - j;				
+					if ((l9memory[tmpptr]&0xff) == 0xff || tmpptr < testptr)
+						break;
+						
+					length = ((l9memory[tmpptr + 1] & 0x0f) << 8) + l9memory[tmpptr + 2];
+					if (tmpptr + length == startptr)
+					{
+						startptr = tmpptr;					
+						break;
+					}
+				}
+				
+				if ((l9memory[tmpptr]&0xff) != 0xff)
+				{ 		
+					picdata[0] = startptr;
+					picsize[0] = picptr - startptr;
+					return true;
+				}		
+			}
+		}
+		return false;
+	}
+	
+	
 	/*--was-- L9BOOL intinitialise(char*filename,char*picname)
 	{
 	// init 
@@ -627,20 +787,21 @@ GFX_V3C          320 x 96             no
 
 	#ifndef NO_SCAN_GRAPHICS
 		// If there was no graphics file, look in the game data 
-		if (picturedata==NULL)
+		if (pictureaddress)
 		{
-			int sz=FileSize-(acodeptr-startdata);
-			int i=0;
-			while ((i<sz-0x1000)&&(picturedata==NULL))
+			if (!findsubs(pictureaddress, picturesize, &picturedata, &picturesize))
 			{
-				picturedata=acodeptr+i;
-				picturesize=sz-i;
-				if (!checksubs())
-				{
-					picturedata=NULL;
-					picturesize=0;
-				}
-				i++;
+				picturedata = NULL;
+				picturesize = 0;
+			}
+		}
+		else
+		{
+			if (!findsubs(startdata, FileSize, &picturedata, &picturesize)
+				&& !findsubs(startfile, startdata - startfile, &picturedata, &picturesize))
+			{
+				picturedata = NULL;
+				picturesize = 0;
 			}
 		}
 	#endif
@@ -789,21 +950,47 @@ GFX_V3C          320 x 96             no
 		};
 		
 		// If there was no graphics file, look in the game data 
-		if (picturedata<0) {
-			int sz=filesize-acodeptr;
-			i=0;
-			while ((i<sz-0x1000)&&(picturedata<0))
+	//	if (picturedata<0) {
+	//		int sz=filesize-acodeptr;
+	//		i=0;
+	//		while ((i<sz-0x1000)&&(picturedata<0))
+	//		{
+	//			picturedata=acodeptr+i;
+	//			picturesize=sz-i;
+	//			if (!checksubs())
+	//			{
+	//				picturedata=-1;
+	//				picturesize=0;
+	//			}
+	//			i++;
+	//		}
+	//	}
+		
+		
+		int pdata[]={-1};
+		int psize[]={0};
+
+		if (pictureaddress>=0)
+		{
+			if (!findsubs(pictureaddress, picturesize, pdata, psize))
 			{
-				picturedata=acodeptr+i;
-				picturesize=sz-i;
-				if (!checksubs())
-				{
-					picturedata=-1;
-					picturesize=0;
-				}
-				i++;
+				//picturedata = -1;
+				//picturesize = 0;
 			}
 		}
+		else
+		{
+			if (!findsubs(startdata, datasize, pdata, psize)
+				&& !findsubs(startfile, startdata - startfile, pdata, psize))
+			{
+				//picturedata = -1;
+				//picturesize = 0;
+			}
+		}
+		
+		picturedata=pdata[0];
+		picturesize=psize[0];
+		
 		//TODO: kill: error("picturedata=%d",picturedata);
 		
 		for (i=0;i<FIRSTLINESIZE;i++) FirstLine[i]=0;
@@ -5376,37 +5563,6 @@ GFX_V3C          320 x 96             no
 		}
 	}
 
-	/*--was--	L9BOOL checksubs(void)
-	{
-		L9BYTE* a5;
-		int i,cnt=0;
-
-		if (picturedata[0]!=0 || picturedata[1]!=0)
-			return FALSE;
-
-		for (i = 1; i < 50; i++)
-		{
-			if (findsub(i,&a5))
-				cnt++;
-		}
-		return (cnt > 30);
-	}*/
-	boolean checksubs()
-	{
-		int a5[]={0};
-		int i,cnt=0;
-
-		if (l9memory[picturedata]!=0 || l9memory[picturedata+1]!=0)
-			return false;
-
-		for (i = 1; i < 50; i++)
-		{
-			if (findsub(i,a5))
-				cnt++;
-		}
-		return (cnt > 30);
-	}
-
 	/*--was--	void absrunsub(int d0)
 	{
 		L9BYTE* a5;
@@ -6132,7 +6288,6 @@ GFX_V3C          320 x 96             no
 	
 		}
 	}*/
-
 	void GetPictureSize(int width[], int height[])
 	{
 		if (L9GameType == L9_V4)
