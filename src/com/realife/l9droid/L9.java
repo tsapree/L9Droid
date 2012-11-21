@@ -175,6 +175,39 @@ GFX_V3C          320 x 96             no
 	short gnosp;
 	short object;
 	short numobjectfound;
+	
+	//struct L9V1GameInfo
+	//{
+	//	L9BYTE dictVal1, dictVal2;
+	//	int dictStart, L9Ptrs[5], absData, msgStart, msgLen;
+	//};
+	//struct L9V1GameInfo L9V1Games[] =
+	//{
+	//	0x1a,0x24,301, 0x0000,-0x004b, 0x0080,-0x002b, 0x00d0,0x03b0, 0x0f80,0x4857, /* Colossal Adventure */
+	//	0x20,0x3b,283,-0x0583, 0x0000,-0x0508,-0x04e0, 0x0000,0x0800, 0x1000,0x39d1, /* Adventure Quest */
+	//	0x14,0xff,153,-0x00d6, 0x0000, 0x0000, 0x0000, 0x0000,0x0a20, 0x16bf,0x420d, /* Dungeon Adventure */
+	//	0x15,0x5d,252,-0x3e70, 0x0000,-0x3d30,-0x3ca0, 0x0100,0x4120,-0x3b9d,0x3988, /* Lords of Time */
+	//	0x15,0x6c,284,-0x00f0, 0x0000,-0x0050,-0x0050,-0x0050,0x0300, 0x1930,0x3c17, /* Snowball */
+	//};
+	int L9V1Games[][] =
+	{
+		{0x1a,0x24,301, 0x0000,-0x004b, 0x0080,-0x002b, 0x00d0,0x03b0, 0x0f80,0x4857}, /* Colossal Adventure */
+		{0x20,0x3b,283,-0x0583, 0x0000,-0x0508,-0x04e0, 0x0000,0x0800, 0x1000,0x39d1}, /* Adventure Quest */
+		{0x14,0xff,153,-0x00d6, 0x0000, 0x0000, 0x0000, 0x0000,0x0a20, 0x16bf,0x420d}, /* Dungeon Adventure */
+		{0x15,0x5d,252,-0x3e70, 0x0000,-0x3d30,-0x3ca0, 0x0100,0x4120,-0x3b9d,0x3988}, /* Lords of Time */
+		{0x15,0x6c,284,-0x00f0, 0x0000,-0x0050,-0x0050,-0x0050,0x0300, 0x1930,0x3c17}, /* Snowball */
+	};
+	int L9V1Games_dictVal1=0;
+	int L9V1Games_dictVal2=1;
+	int L9V1Games_dictStart=2;
+	int L9V1Games_L9Ptrs=3;//,4,5,6,7; 
+	int L9V1Games_absData=8;
+	int L9V1Games_msgStart=9; 
+	int L9V1Games_msgLen=10;
+	
+	
+	//int L9V1Game = -1;
+	int L9V1Game = -1;
 
 //vars added by tsap
 	int amessageV2_depth=0;
@@ -721,8 +754,23 @@ GFX_V3C          320 x 96             no
 		FileSize-=Offset;
 
 	// setup pointers 
-		if (L9GameType!=L9_V1)
+		if (L9GameType==L9_V1)
 		{
+			if (L9V1Game < 0)
+			{
+				error("\rWhat appears to be V1 game data was found, but the game was not recognised.\rEither this is an unknown V1 game file or, more likely, it is corrupted.\r");
+				return FALSE;
+			}
+			for (i=0;i<6;i++)
+			{
+				int off=L9V1Games[L9V1Game].L9Ptrs[i];
+				if (off<0)
+					L9Pointers[i+2]=acodeptr+off;
+				else
+					L9Pointers[i+2]=workspace.listarea+off;
+			}
+			absdatablock=acodeptr-L9V1Games[L9V1Game].absData;
+		} else {
 			// V2,V3,V4 
 
 			hdoffset=L9GameType==L9_V2 ? 4 : 0x12;
@@ -744,7 +792,25 @@ GFX_V3C          320 x 96             no
 		switch (L9GameType)
 		{
 			case L9_V1:
+			{
+				double a1;
+				startmd=acodeptr+L9V1Games[L9V1Game].msgStart;
+				startmdV2=startmd+L9V1Games[L9V1Game].msgLen;
+	
+				if (analyseV1(&a1) && a1>2 && a1<10)
+				{
+					L9MsgType=MSGT_V1;
+					#ifdef L9DEBUG
+					printf("V1 msg table: wordlen=%.2lf",a1);
+					#endif
+				}
+				else
+				{
+					error("\rUnable to identify V1 message table in file: %s\r",filename);
+					return FALSE;
+				}
 				break;
+			}
 			case L9_V2:
 			{
 				double a2,a21;
@@ -886,8 +952,22 @@ GFX_V3C          320 x 96             no
 		datasize=filesize-Offset;
 
 	// setup pointers 
-		if (L9GameType!=L9_V1)
-		{
+		if (L9GameType==L9_V1) {
+			if (L9V1Game < 0)
+			{
+				error("\rWhat appears to be V1 game data was found, but the game was not recognised.\rEither this is an unknown V1 game file or, more likely, it is corrupted.\r");
+				return false;
+			}
+			for (i=0;i<5;i++) //TODO: в оригинале "i<6" но в массиве только 5 значений, поправил, нужно убедиться в правильности (v1_time.sna запускается работает)
+			{
+				int off=L9V1Games[L9V1Game][L9V1Games_L9Ptrs+i];
+				if (off<0)
+					L9Pointers[i+2]=acodeptr+off;
+				else
+					L9Pointers[i+2]=listarea+off;
+			}
+			absdatablock=acodeptr-L9V1Games[L9V1Game][L9V1Games_absData];
+		} else {
 			// V2,V3,V4 
 
 			hdoffset=L9GameType==L9_V2 ? 4 : 0x12;
@@ -908,7 +988,24 @@ GFX_V3C          320 x 96             no
 		switch (L9GameType)
 		{
 			case L9_V1:
+			{
+				double a1;
+				startmd=acodeptr+L9V1Games[L9V1Game][L9V1Games_msgStart];
+				startmdV2=startmd+L9V1Games[L9V1Game][L9V1Games_msgLen];
+
+				a1=analyseV1();
+				if (a1>0.0 && a1>2 && a1<10)
+				{
+					L9MsgType=MSGT_V1;
+					L9DEBUG("V1 msg table: wordlen=%d/10\r",(int)(a1*10));
+				}
+				else
+				{
+					error("\rUnable to identify V1 message table in file: %s\r",filename);
+					return false;
+				}
 				break;
+			}
 			case L9_V2:
 			{
 				double a2,a1;
@@ -2019,81 +2116,275 @@ GFX_V3C          320 x 96             no
 		return Offset;
 	}
 	
-	/*--was-- long ScanV1(L9BYTE* StartFile,L9UINT32 FileSize)
+	/*--was--	long ScanV1(L9BYTE* StartFile,L9UINT32 FileSize)
 	{
+
+
+		L9BYTE *Image=calloc(FileSize,1);
+		L9UINT32 i,Size;
+		int Replace;
+		L9BYTE* ImagePtr;
+		long MaxPos=-1;
+		L9UINT32 MaxCount=0;
+		L9UINT32 Min,Max,MaxMin,MaxMax;
+		L9BOOL JumpKill,MaxJK;
+
+		int dictOff1, dictOff2;
+		L9BYTE dictVal1 = 0xff, dictVal2 = 0xff;
+
+		if (Image==NULL)
+		{
+			fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
+			exit(0);
+		}
+
+		for (i=0;i<FileSize;i++)
+		{
+			if ((StartFile[i]==0 && StartFile[i+1]==6) || (StartFile[i]==32 && StartFile[i+1]==4))
+			{
+				Size=0;
+				Min=Max=i;
+				Replace=0;
+				if (ValidateSequence(StartFile,Image,i,i,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,NULL))
+				{
+					if (Size>MaxCount && Size>100 && Size<10000)
+					{
+						MaxCount=Size;
+						MaxMin=Min;
+						MaxMax=Max;
+
+						MaxPos=i;
+						MaxJK=JumpKill;
+					}
+					Replace=0;
+				}
+
+				for (ImagePtr=Image+Min;ImagePtr<=Image+Max;ImagePtr++)
+				{
+					if (*ImagePtr==2)
+						*ImagePtr=Replace;
+				}
+			}
+		}
+	#ifdef L9DEBUG
+		printf("V1scan found code at %ld size %ld",MaxPos,MaxCount);
+	#endif
+
+		// V1 dictionary detection from L9Cut by Paul David Doherty 
+		for (i=0;i<FileSize-20;i++)
+		{
+			if (StartFile[i]=='A')
+			{
+				if (StartFile[i+1]=='T' && StartFile[i+2]=='T' && StartFile[i+3]=='A' && StartFile[i+4]=='C' && StartFile[i+5]==0xcb)
+				{
+					dictOff1 = i;
+					dictVal1 = StartFile[dictOff1+6];
+					break;
+				}
+			}
+		}
+		for (i=dictOff1;i<FileSize-20;i++)
+		{
+			if (StartFile[i]=='B')
+			{
+				if (StartFile[i+1]=='U' && StartFile[i+2]=='N' && StartFile[i+3]=='C' && StartFile[i+4] == 0xc8)
+				{
+					dictOff2 = i;
+					dictVal2 = StartFile[dictOff2+5];
+					break;
+				}
+			}
+		}
+		L9V1Game = -1;
+		if (dictVal1 != 0xff || dictVal2 != 0xff)
+		{
+			for (i = 0; i < sizeof L9V1Games / sizeof L9V1Games[0]; i++)
+			{
+				if ((L9V1Games[i].dictVal1 == dictVal1) && (L9V1Games[i].dictVal2 == dictVal2))
+				{
+					L9V1Game = i;
+					dictdata = StartFile+dictOff1-L9V1Games[i].dictStart;
+				}
+			}
+		}
+
+	#ifdef L9DEBUG
+		if (L9V1Game >= 0)
+			printf("V1scan found known dictionary: %d",L9V1Game);
+	#endif
+
+		free(Image);
+
+		if (MaxPos>0)
+		{
+			acodeptr=StartFile+MaxPos;
+			return 0;
+		}
 		return -1;
-	
-//		L9BYTE *Image=calloc(FileSize,1);
-//		L9UINT32 i,Size;
-//		int Replace;
-//		L9BYTE* ImagePtr;
-//		long MaxPos=-1;
-//		L9UINT32 MaxCount=0;
-//		L9UINT32 Min,Max,MaxMin,MaxMax;
-//		L9BOOL JumpKill,MaxJK;
-//	
-//		L9BYTE c;
-//		int maxdict,maxdictlen;
-//		L9BYTE *ptr,*start;
-//	
-//		for (i=0;i<FileSize;i++)
-//		{
-//			Size=0;
-//			Min=Max=i;
-//			Replace=0;
-//			if (ValidateSequence(StartFile,Image,i,i,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,NULL))
-//			{
-//				if (Size>MaxCount)
-//				{
-//					MaxCount=Size;
-//					MaxMin=Min;
-//					MaxMax=Max;
-//	
-//					MaxPos=i;
-//					MaxJK=JumpKill;
-//				}
-//				Replace=0;
-//			}
-//			for (ImagePtr=Image+Min;ImagePtr<=Image+Max;ImagePtr++) if (*ImagePtr==2) *ImagePtr=Replace;
-//		}
-//	#ifdef L9DEBUG
-//		printf("V1scan found code at %ld size %ld",MaxPos,MaxCount);
-//	#endif
-//	
-//		ptr=StartFile;
-//		maxdictlen=0;
-//		do
-//		{
-//			start=ptr;
-//			do
-//			{
-//				do
-//				{
-//					c=*ptr++;
-//				} while (((c>='A' && c<='Z') || c=='-') && ptr<StartFile+FileSize);
-//				if (c<0x7f || (((c&0x7f)<'A' || (c&0x7f)>'Z') && (c&0x7f)!='/')) break;
-//				ptr++;
-//			} while (TRUE);
-//			if (ptr-start-1>maxdictlen)
-//			{
-//				maxdict=start-StartFile;
-//				maxdictlen=ptr-start-1;
-//			}
-//		} while (ptr<StartFile+FileSize);
-//	#ifdef L9DEBUG
-//		if (maxdictlen>0) printf("V1scan found dictionary at %ld size %ld",maxdict,maxdictlen);
-//	#endif
-//	
-//		MaxPos=-1;
-//	
-//		free(Image);
-//		return MaxPos;
-//	
 	}*/
-	//TODO: в оригинале - большой закоментированный блок. вернуть?
-	int ScanV1() {
+	int ScanV1()
+	{
+		byte Image[] = new byte[filesize];
+		int ImagePtr;
+		int i;
+		byte Replace;
+		int MaxPos=-1;
+		int MaxCount=0;
+		ScanData scandata=new ScanData();
+		int MaxMin,MaxMax;
+		boolean MaxJK;
+		
+		int dictOff1=0;
+		int dictOff2=0;
+		int dictVal1 = 0xff, dictVal2 = 0xff;
+
+		//TODO: есть ли шанс, что массив Image не будет создан?
+		//if (Image==NULL)
+		//{
+		//	fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
+		//	exit(0);
+		//}
+
+		for (i=0;i<filesize;i++)
+		{
+			if (((l9memory[startfile+i]==0) && (l9memory[startfile+i+1]==6)) || ((l9memory[startfile+i]==32) && (l9memory[startfile+i+1]==4)))
+			{
+				scandata.Size=0;
+				scandata.Min=scandata.Max=i;
+				scandata.DriverV4=false;
+				Replace=0;
+				if (ValidateSequence(Image,i,i,scandata, false,false))
+					
+				{
+					if ((scandata.Size>MaxCount) && (scandata.Size>100) && (scandata.Size<10000))
+					{
+						MaxCount=scandata.Size;
+						MaxMin=scandata.Min;
+						MaxMax=scandata.Max;
+
+						MaxPos=i;
+						MaxJK=scandata.JumpKill;
+					}
+					Replace=0;
+				}
+
+				for (ImagePtr=scandata.Min;ImagePtr<=scandata.Max;ImagePtr++)
+				{
+					if (Image[ImagePtr]==2)
+						Image[ImagePtr]=Replace;
+				}
+			}
+		}
+		L9DEBUG("V1scan found code at %d size %d",MaxPos,MaxCount);
+
+		// V1 dictionary detection from L9Cut by Paul David Doherty 
+		for (i=0;i<filesize-20;i++)
+		{
+			if (l9memory[startfile+i]=='A')
+			{
+				if ((l9memory[startfile+i+1]=='T') && (l9memory[startfile+i+2]=='T') && (l9memory[startfile+i+3]=='A') && (l9memory[startfile+i+4]=='C') && ((l9memory[startfile+i+5]&0xff)==0xcb))
+				{
+					dictOff1 = i;
+					dictVal1 = l9memory[startfile+dictOff1+6]&0xff;
+					break;
+				}
+			}
+		}
+		for (i=dictOff1;i<filesize-20;i++)
+		{
+			if (l9memory[startfile+i]=='B')
+			{
+				if ((l9memory[startfile+i+1]=='U') && (l9memory[startfile+i+2]=='N') && (l9memory[startfile+i+3]=='C') && ((l9memory[startfile+i+4]&0xff) == 0xc8))
+				{
+					dictOff2 = i;
+					dictVal2 = l9memory[startfile+dictOff2+5]&0xff;
+					break;
+				}
+			}
+		}
+		L9V1Game = -1;
+		if ((dictVal1 != 0xff) || (dictVal2 != 0xff))
+		{
+			for (i = 0; i < L9V1Games.length; i++)
+			{
+				if ((L9V1Games[i][L9V1Games_dictVal1] == dictVal1) && (L9V1Games[i][L9V1Games_dictVal2] == dictVal2))
+				{
+					L9V1Game = i;
+					dictdata = startfile+dictOff1-L9V1Games[i][L9V1Games_dictStart];
+				}
+			}
+		}
+
+		if (L9V1Game >= 0)
+			L9DEBUG ("V1scan found known dictionary: %d",L9V1Game);
+
+		if (MaxPos>0)
+		{
+			acodeptr=startfile+MaxPos;
+			return 0;
+		}
 		return -1;
 	}
+
+	//TODO: Нужна ли реализация FullScan?
+	/*--was--	#ifdef FULLSCAN
+	void FullScan(L9BYTE* StartFile,L9UINT32 FileSize)
+	{
+		L9BYTE *Image=calloc(FileSize,1);
+		L9UINT32 i,Size;
+		int Replace;
+		L9BYTE* ImagePtr;
+		L9UINT32 MaxPos=0;
+		L9UINT32 MaxCount=0;
+		L9UINT32 Min,Max,MaxMin,MaxMax;
+		int Offset;
+		L9BOOL JumpKill,MaxJK;
+		for (i=0;i<FileSize;i++)
+		{
+			Size=0;
+			Min=Max=i;
+			Replace=0;
+			if (ValidateSequence(StartFile,Image,i,i,&Size,FileSize,&Min,&Max,FALSE,&JumpKill,NULL))
+			{
+				if (Size>MaxCount)
+				{
+					MaxCount=Size;
+					MaxMin=Min;
+					MaxMax=Max;
+
+					MaxPos=i;
+					MaxJK=JumpKill;
+				}
+				Replace=0;
+			}
+			for (ImagePtr=Image+Min;ImagePtr<=Image+Max;ImagePtr++)
+			{
+				if (*ImagePtr==2)
+					*ImagePtr=Replace;
+			}
+		}
+		printf("%ld %ld %ld %ld %s",MaxPos,MaxCount,MaxMin,MaxMax,MaxJK ? "jmp killed" : "");
+		// search for reference to MaxPos 
+		Offset=0x12 + 11*2;
+		for (i=0;i<FileSize-Offset-1;i++)
+		{
+			if ((L9WORD(StartFile+i+Offset)) +i==MaxPos)
+			{
+				printf("possible v3,4 Code reference at : %ld",i);
+				// startdata=StartFile+i; 
+			}
+		}
+		Offset=13*2;
+		for (i=0;i<FileSize-Offset-1;i++)
+		{
+			if ((L9WORD(StartFile+i+Offset)) +i==MaxPos)
+				printf("possible v2 Code reference at : %ld",i);
+		}
+		free(Image);
+	}
+	#endif
+	*/
+
 	
 	/*--was--	L9BOOL load(char *filename)
 	{
