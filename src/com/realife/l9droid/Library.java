@@ -63,8 +63,6 @@ public class Library {
 			    }
 			};
 			
-			Toast.makeText(act, getAbsolutePath("Saves/1.sav"), Toast.LENGTH_LONG).show();
-			
 			String[] temppaths=new String[100];
 			sdPath = android.os.Environment.getExternalStorageDirectory();
 			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD);
@@ -151,7 +149,9 @@ public class Library {
 	}
 	
 	public byte[] fileLoad() {
-		return null;
+		String path="Saves/1.sav";
+		path=getAbsolutePath(path);
+		return fileLoadToArray(path);
 	}
 	
 	//returns:
