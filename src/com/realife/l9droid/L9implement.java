@@ -152,6 +152,14 @@ public class L9implement extends L9 {
 		return saveloadBuff; //TODO:mAct.fileLoad();
 	};
 
+	byte[] os_open_script_file() {
+		byte script[] = {'u','n','f','a','s',' ','p','a','r','a','\r',
+				'u','\r',
+				't','a','k','e',' ','p','a','r','a','\r'
+		};
+		return script;
+	};
+	
 	void os_graphics(int mode) {
 		int pw[]={0};
 		int ph[]={0};

@@ -129,7 +129,8 @@ GFX_V3C          320 x 96             no
 	int ibuffptr;
 	
 	String InputString;
-	
+	byte[] scriptArray=null;
+	int scriptArrayIndex=0;
 	
 //
 	boolean Cheating=false;
@@ -3482,6 +3483,176 @@ GFX_V3C          320 x 96             no
 		} else printstring("\rUnable to restore game.\r");
 	}
 
+	/*--was--	void playback(void)
+	{
+		if (scriptfile) fclose(scriptfile);
+		scriptfile = os_open_script_file();
+		if (scriptfile)
+			printstring("\rPlaying back input from script file.\r");
+		else
+			printstring("\rUnable to play back script file.\r");
+	}*/
+	void playback()
+	{
+		if (scriptArray!=null) scriptArray=null;
+		scriptArray = os_open_script_file();
+		scriptArrayIndex=0;
+		if (scriptArray!=null)
+			printstring("\rPlaying back input from script file.\r");
+		else
+			printstring("\rUnable to play back script file.\r");
+	}
+
+	/*--was--	void l9_fgets(char* s, int n, FILE* f)
+	{
+		int c = '\0';
+		int count = 0;
+
+		while ((c != '\n') && (c != '\r') && (c != EOF) && (count < n-1))
+		{
+			c = fgetc(f);
+			*s++ = c;
+			count++;
+		}
+		*s = '\0';
+
+		if (c == EOF)
+		{
+			s--;
+			*s = '\n';
+		}
+		else if (c == '\r')
+		{
+			s--;
+			*s = '\n';
+
+			c = fgetc(f);
+			if ((c != '\r') && (c != EOF))
+				fseek(f,-1,SEEK_CUR);
+		}
+	}*/
+	void l9_fgets(char [] s, int si,int n)
+	{
+		char c = '\0';
+		char c_eof=(char)(-1);
+		int count = 0;
+
+		while ((c != '\n') && (c != '\r') && (c != c_eof) && (count < n-1))
+		{
+			if (scriptArrayIndex<scriptArray.length) c=(char) (scriptArray[scriptArrayIndex++]&0xff);
+			else c=c_eof;
+			s[si++] = c;
+			count++;
+		}
+		s[si] = '\0';
+
+		if (c == c_eof)
+		{
+			si--;
+			s[si] = '\n';
+		}
+		else if (c == '\r')
+		{
+			si--;
+			s[si] = '\n';
+
+			if (scriptArrayIndex<scriptArray.length) c=(char) (scriptArray[scriptArrayIndex++]&0xff);
+			else c=c_eof;
+			if ((c != '\r') && (c != c_eof))
+				scriptArrayIndex--;
+		}
+	}
+
+	/*--was--	L9BOOL scriptinput(char* ibuff, int size)
+	{
+		while (scriptfile != NULL)
+		{
+			if (feof(scriptfile))
+			{
+				fclose(scriptfile);
+				scriptfile=NULL;
+			}
+			else
+			{
+				char* p = ibuff;
+				*p = '\0';
+				l9_fgets(ibuff,size,scriptfile);
+				while (*p != '\0')
+				{
+					switch (*p)
+					{
+					case '\n':
+					case '\r':
+					case '[':
+					case ';':
+						*p = '\0';
+						break;
+					case '#':
+						if ((p==ibuff) && (strnicmp(p,"#seed ",6)==0))
+							p++;
+						else
+							*p = '\0';
+						break;
+					default:
+						p++;
+						break;
+					}
+				}
+				if (*ibuff != '\0')
+				{
+					printstring(ibuff);
+					lastchar=lastactualchar='.';
+					return TRUE;
+				}
+			}
+		}
+		return FALSE;
+	}*/
+	boolean scriptinput(char[] ibuff, int size)
+	{
+		int ibuffIndex;
+		while (scriptArray != null)
+		{
+			if (scriptArray.length<=scriptArrayIndex)
+				scriptArray=null;
+			else
+			{
+				ibuffIndex=0;
+				ibuff[ibuffIndex]='\0';
+				l9_fgets(ibuff,ibuffIndex,size);
+				while (ibuff[ibuffIndex] != '\0')
+				{
+					switch (ibuff[ibuffIndex])
+					{
+					case '\n':
+					case '\r':
+					case '[':
+					case ';':
+						ibuff[ibuffIndex] = '\0';
+						break;
+					case '#':
+						if ((ibuffIndex==0) && (stricmp(ibuff,"#seed ",6)))
+							ibuffIndex++;
+						else
+							ibuff[ibuffIndex] = '\0';
+						break;
+					default:
+						ibuffIndex++;
+						break;
+					}
+				}
+				if (ibuff[ibuffIndex] != '\0')
+				{
+					int i=0;
+					while (ibuff[i]!=0) printchar(ibuff[i++]);
+					lastchar=lastactualchar='.';
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	/*--was--	void clearworkspace(void)
 	{
 		memset(workspace.vartable,0,sizeof(workspace.vartable));
@@ -4033,6 +4204,11 @@ GFX_V3C          320 x 96             no
 			lastactualchar = 0;
 			printchar('\r');
 			return true;
+		} 
+		else if (stricmp(ibuff,"#play"))
+		{
+			playback();
+			return true;
 		}
 		return false;
 	}
@@ -4069,8 +4245,13 @@ GFX_V3C          320 x 96             no
 				os_flush();
 				lastchar=lastactualchar='.';
 				// get input 
-				if (!os_input(ibuff,IBUFFSIZE)) return FALSE; // fall through 
-				if (CheckHash()) return FALSE;
+				if (!scriptinput(ibuff,IBUFFSIZE))
+				{
+					if (!os_input(ibuff,IBUFFSIZE))
+						return FALSE; // fall through 
+				}
+				if (CheckHash())
+					return FALSE;
 	
 				// check for invalid chars 
 				for (iptr=ibuff;*iptr!=0;iptr++)
@@ -4239,12 +4420,12 @@ GFX_V3C          320 x 96             no
 				os_flush();
 				lastchar=lastactualchar='.';
 				/* get input */
-				if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
-				
-				L9DEBUG(">"+ibuffstr);
-				
-				ibuffstr=ibuffstr.concat(" \0");
-				ibuff=ibuffstr.toCharArray();
+				if (!scriptinput(ibuff,IBUFFSIZE)) {
+					if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
+					L9DEBUG(">"+ibuffstr);
+					ibuffstr=ibuffstr.concat(" \0");
+					ibuff=ibuffstr.toCharArray();
+				}
 				if (CheckHash()) return false;
 	
 				// check for invalid chars
@@ -4465,10 +4646,15 @@ GFX_V3C          320 x 96             no
 		{
 			os_flush();
 			lastchar=lastactualchar='.';
-			// get input 
-			if (!os_input(ibuff,IBUFFSIZE)) return FALSE; // fall through 
-			if (CheckHash()) return FALSE;
-
+			// get input
+			if (!scriptinput(ibuff,IBUFFSIZE))
+			{
+				if (!os_input(ibuff,IBUFFSIZE))
+					return FALSE; // fall through 
+			}
+			if (CheckHash())
+				return FALSE;  
+ 
 			// check for invalid chars 
 			for (iptr=ibuff;*iptr!=0;iptr++)
 			{
@@ -4588,12 +4774,15 @@ GFX_V3C          320 x 96             no
 			
 			lastchar=lastactualchar='.';
 			// get input 
-			//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
-			if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
-			L9DEBUG(">"+ibuffstr);
-			// add space and zero onto end
-			ibuffstr=ibuffstr.concat(" \0");
-			ibuff=ibuffstr.toCharArray();
+			if (!scriptinput(ibuff,IBUFFSIZE)) {
+				//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
+				if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
+				L9DEBUG(">"+ibuffstr);
+				// add space and zero onto end
+				ibuffstr=ibuffstr.concat(" \0");
+				ibuff=ibuffstr.toCharArray();
+			}
+			
 			if (CheckHash()) return false;
 
 			// check for invalid chars
@@ -6651,6 +6840,7 @@ GFX_V3C          320 x 96             no
 	void os_drawline(int x1, int y1, int x2, int y2, int colour1, int colour2) {};
 	void os_fill(int x, int y, int colour1, int colour2) {};
 	void os_show_bitmap(int pic, int x, int y) {};
+	byte[] os_open_script_file() {return null;};
 	
 	//TODO: added by tsap
 	byte[] os_load(String filename) { return null; };
