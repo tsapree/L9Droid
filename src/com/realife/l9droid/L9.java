@@ -4420,6 +4420,8 @@ GFX_V3C          320 x 96             no
 				os_flush();
 				lastchar=lastactualchar='.';
 				/* get input */
+				
+				ibuff=new char[IBUFFSIZE];
 				if (!scriptinput(ibuff,IBUFFSIZE)) {
 					if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
 					L9DEBUG(">"+ibuffstr);
@@ -4774,6 +4776,7 @@ GFX_V3C          320 x 96             no
 			
 			lastchar=lastactualchar='.';
 			// get input 
+			ibuff=new char[IBUFFSIZE];
 			if (!scriptinput(ibuff,IBUFFSIZE)) {
 				//TODO: упростить, уже передаю строку в os_input, она совсем не нужна.
 				if ((ibuffstr=os_input(IBUFFSIZE))==null) return false; // fall through
