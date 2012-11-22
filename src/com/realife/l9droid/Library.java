@@ -1,5 +1,6 @@
 package com.realife.l9droid;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.app.Activity;
-import android.util.Log;
 import android.widget.Toast;
 
 public class Library {
@@ -18,13 +18,16 @@ public class Library {
 	final String DIR_SD = "Worm In Paradise/Speccy";
 	final String FILE_SD="worm.sna";
 	
+	String GameFullPathName;
+	String paths[];
+	int paths_num;
+	
 	Library() {
 		paths=null;
 		paths_num=0;
+		//GameFullPathName="";
+		GameFullPathName="/mnt/sdcard/l9droid/timev1/v1_time.sna";
 	};
-	
-	String paths[];
-	int paths_num;
 	
 	boolean prepareLibrary(Activity act) {
 		paths=null;
@@ -60,6 +63,8 @@ public class Library {
 			    }
 			};
 			
+			Toast.makeText(act, getAbsolutePath("Saves/1.sav"), Toast.LENGTH_LONG).show();
+			
 			String[] temppaths=new String[100];
 			sdPath = android.os.Environment.getExternalStorageDirectory();
 			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD);
@@ -78,7 +83,6 @@ public class Library {
 				for (int i=0; i<paths_num; i++) paths[i]=temppaths[i];
 			};
 			
-			
 		} else return false;
 		return true;
 	}
@@ -88,12 +92,18 @@ public class Library {
 	};
 	
 	byte[] fileLoadGame(String path) {
+		byte resbuff[]=fileLoadToArray(path);
+		if (resbuff!=null) GameFullPathName=path;
+		return resbuff;
+	}
+	
+	byte[] fileLoadToArray(String absolutePath) {
 		byte buff[]=null;
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			//File sdPath = android.os.Environment.getExternalStorageDirectory();
 			//File sdFile = new File(sdPath.getAbsolutePath() + LIBDIR_SD + path);
-			File sdFile = new File(path);
+			File sdFile = new File(absolutePath);
 		    try {
 		    	InputStream in = new FileInputStream(sdFile);
 		    	//TODO: tempbuff - lame! kill it!
@@ -110,34 +120,60 @@ public class Library {
 		return buff;
 	};
 	
-	public boolean fileSave(byte buff[]) {
-		try {
-			OutputStream out = null; //TODO: openFileOutput ("1.sav", MODE_PRIVATE);
-			out.write(buff);
-			out.close();
-			return true;
-		} catch (FileNotFoundException e) {
-			//TODO: e.printStackTrace();
-		} catch (IOException e) {
-			//TODO: e.printStackTrace();
-		}
+	boolean fileSaveFromArray(String path,byte buff[]) {
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			try {
+				File sdFile = new File(path);
+				//folder exists?
+				File sdPath = new File(sdFile.getParent());
+				if (!sdPath.isDirectory()) {
+					//create folder
+					sdPath.mkdirs();
+				};
+				OutputStream out = new FileOutputStream(sdFile);
+				out.write(buff);
+				out.close();
+				return true;
+			} catch (FileNotFoundException e) {
+				//TODO: e.printStackTrace();
+			} catch (IOException e) {
+				//TODO: e.printStackTrace();
+			}
+		};
 		return false;
 	}
 	
+	public boolean fileSave(byte buff[]) {
+		String path="Saves/1.sav";
+		path=getAbsolutePath(path);
+		return fileSaveFromArray(path,buff);
+	}
+	
 	public byte[] fileLoad() {
-		try {
-			InputStream in=null; //TODO: openFileInput("1.sav");
-			byte tempbuff[]=new byte[0x2000];
-			int len=in.read(tempbuff);
-			byte buff[]=new byte[len];
-			for (int i=0;i<len;i++) buff[i]=tempbuff[i];
-			in.close();
-			return buff;
-		} catch (FileNotFoundException e) {
-			//TODO: e.printStackTrace();
-		} catch (IOException e) {
-			//TODO: e.printStackTrace();
-		}
 		return null;
+	}
+	
+	//returns:
+	//	if (relativePath='/****') absolute path = relativePath
+	//	else if (relativePath='.****') absolute path = gamePath-gameName
+	//	else absolute path = gamePath-gameName+relativePath
+	String getAbsolutePath(String relativePath) { 
+		String absolutePath=null;
+		File sdFile = new File(GameFullPathName);
+		absolutePath=sdFile.getParent()+'/';
+		if (relativePath!=null) {
+			//if relativePath starts with '/', when assume it is absolute path already, don't change it
+			if (relativePath.length()>0) {
+				if (relativePath.charAt(0)=='/') {
+					absolutePath=relativePath;
+				} else if (relativePath.charAt(0)=='.') {
+					//do nothing
+				} else {
+					absolutePath+=relativePath;
+				};
+			}
+		};
+		return absolutePath;
 	}
 }
