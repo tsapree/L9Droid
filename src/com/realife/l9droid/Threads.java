@@ -15,6 +15,7 @@ public class Threads {
 	public final static int MACT_GFXON=5;
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
+	public final static int MACT_L9WAITBEFORESCRIPT=8;
 	
 	MainActivity activity;
 	Library lib;
@@ -62,6 +63,9 @@ public class Threads {
 		    		activity.bCmd.setText("Do");
 		    		activity.bCmd.setEnabled(true);
 		    		break;
+		    	case MACT_L9WAITBEFORESCRIPT:
+		    		activity.bCmd.setText("<!>");
+		    		activity.bCmd.setEnabled(false);
 	    		case MACT_PRINTCHAR:
 	    			char c=(char)msg.arg1;
 	    			if (c==0x0d) activity.etLog.append("\n");
@@ -159,6 +163,19 @@ public class Threads {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						};
+		        	} else if (l9.L9State==l9.L9StateWaitBeforeScriptCommand) {
+		        		h.sendEmptyMessage(MACT_L9WAITBEFORESCRIPT);
+		        		try {
+							TimeUnit.MILLISECONDS.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		        		//TODO: лучше так не менять значение переменных, заменить
+		        		// на l9.InputCommand("") либо создать отдельный метод.
+		        		//l9.L9State=l9.L9StateCommandReady;
+		        		//h.sendEmptyMessage(MACT_L9WORKING);
+		        		l9.InputCommand("");
 		        	} else l9.step();
 		        };
 			}

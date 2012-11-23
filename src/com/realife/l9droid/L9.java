@@ -41,6 +41,7 @@ public class L9 {
 	public static final int L9StateWaitForCommand=2;
 	public static final int L9StateCommandReady = 3;	//TODO: Переназвать, глупо как-то звучит
 	public static final int L9StateWaitForKey=4;
+	public static final int L9StateWaitBeforeScriptCommand=5; //включить паузу перед скриптовой командой
 	
 	
 	//char LastGame[MAX_PATH];
@@ -3641,7 +3642,7 @@ GFX_V3C          320 x 96             no
 						break;
 					}
 				}
-				if (ibuff[ibuffIndex] != '\0')
+				if (ibuff[0] != '\0')
 				{
 					int i=0;
 					while (ibuff[i]!=0) printchar(ibuff[i++]);
@@ -4409,7 +4410,8 @@ GFX_V3C          320 x 96             no
 				
 				switch (L9State) {
 				case L9StateRunning:
-					L9State=L9StateWaitForCommand;
+					if (scriptArray!=null) L9State=L9StateWaitBeforeScriptCommand;
+					else L9State=L9StateWaitForCommand;
 					return false;
 				case L9StateCommandReady:
 					L9State=L9StateRunning;
@@ -4767,7 +4769,8 @@ GFX_V3C          320 x 96             no
 			
 			switch (L9State) {
 			case L9StateRunning:
-				L9State=L9StateWaitForCommand;
+				if (scriptArray!=null) L9State=L9StateWaitBeforeScriptCommand;
+				else L9State=L9StateWaitForCommand;
 				return false;
 			case L9StateCommandReady:
 				L9State=L9StateRunning;
@@ -6753,10 +6756,6 @@ GFX_V3C          320 x 96             no
 		//TODO: возможно нужна строка:
 		//TODO: if (L9State!=L9StateRunning && L9State!=L9StateCommandReady) return L9State;
 		code=l9memory[codeptr++]&0xff;
-		if(code==233) {
-			int t=code;
-			if (t>0) {};
-		}
 		executeinstruction();
 		return L9State;
 	}
