@@ -66,6 +66,7 @@ public class Threads {
 		    	case MACT_L9WAITBEFORESCRIPT:
 		    		activity.bCmd.setText("<!>");
 		    		activity.bCmd.setEnabled(false);
+		    		break;
 	    		case MACT_PRINTCHAR:
 	    			char c=(char)msg.arg1;
 	    			if (c==0x0d) activity.etLog.append("\n");

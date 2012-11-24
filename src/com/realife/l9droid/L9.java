@@ -13,6 +13,45 @@ package com.realife.l9droid;
 //if (var) -> if(var!=0)
 //*getvar()->workspace.vartable[getvar()]&0xffff
 
+/***********************************************************************\
+*
+* Level 9 interpreter
+* Version 4.1
+* Copyright (c) 1996 Glen Summers
+* Copyright (c) 2002,2003 Glen Summers and David Kinder
+* Copyright (c) 2005,2007 Glen Summers, David Kinder, Alan Staniforth,
+* Simon Baldwin and Dieter Baron
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+*
+* The input routine will repond to the following 'hash' commands
+*  #save         saves position file directly (bypasses any
+*                disk change prompts)
+*  #restore      restores position file directly (bypasses any
+*                protection code)
+*  #quit         terminates current game, RunGame() will return FALSE
+*  #cheat        tries to bypass restore protection on v3,4 games
+*                (can be slow)
+*  #dictionary   lists game dictionary (press a key to interrupt)
+*  #picture <n>  show picture <n>
+*  #seed <n>     set the random number seed to the value <n>
+*  #play         plays back a file as the input to the game
+*
+\***********************************************************************/
+
+
 public class L9 {
 	
 	//TODO: перенести LISTAREASIZE и STACKSIZE в какой-либо класс, а не таскать по всем.
