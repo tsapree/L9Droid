@@ -160,6 +160,7 @@ public class Library {
 	//	else absolute path = gamePath-gameName+relativePath
 	String getAbsolutePath(String relativePath) { 
 		String absolutePath=null;
+		//TODO: на момент, пока игра не стартанула, в пути GameFullPathName ерунда
 		File sdFile = new File(GameFullPathName);
 		absolutePath=sdFile.getParent()+'/';
 		if (relativePath!=null) {
@@ -176,4 +177,25 @@ public class Library {
 		};
 		return absolutePath;
 	}
+	
+	boolean FileExist(String path) {
+		//TODO: на момент, пока игра не стартанула, в пути GameFullPathName ерунда
+		String checkPath=getAbsolutePath(path);
+		File sdFile = new File(checkPath);
+		return sdFile.exists();
+	};
+	
+	String changeFileExtension(String path, String newExtension) {
+		if ((path==null) || (newExtension==null)) return null;
+		int i=path.length();
+		if (i==0) return null;
+		int j=i;
+		while (i>0) {
+			if (path.charAt(--i)=='.') {
+				j=i+1;
+				break;
+			}
+		};
+		return path.substring(0, j-1)+'.'+newExtension;
+	};
 }

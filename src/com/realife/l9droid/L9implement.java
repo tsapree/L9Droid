@@ -14,6 +14,7 @@ public class L9implement extends L9 {
     String vStr;
     Handler mHandler;
     Message msg;
+    Library lib;
     byte saveloadBuff[];
     String saveloadFileName;
     boolean saveloaddone;
@@ -73,8 +74,9 @@ public class L9implement extends L9 {
 	int L9_FillColour1;
 	int L9_FillColour2;
 	
-	L9implement(/*EditText et1,*/ byte dat[], Handler h) {
+	L9implement(/*EditText et1,*/ Library l, Handler h) {
 		//et=et1;
+		lib=l;
 		gamedata=null;//dat;
 		cmdStr=null;
 		ds=new DebugStorage();
@@ -92,18 +94,19 @@ public class L9implement extends L9 {
 	};
 	
 	byte[] os_load(String filename) {
-		saveloadFileName=filename;
-		saveloadBuff=null;
-		saveloaddone=false;
-		mHandler.sendEmptyMessage(Threads.MACT_LOADFILE);
-		while (saveloaddone==false) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			};
-		};
-		return saveloadBuff; //TODO:mAct.fileLoad();
+		return lib.fileLoadGame(filename);
+		//saveloadFileName=filename;
+		//saveloadBuff=null;
+		//saveloaddone=false;
+		//mHandler.sendEmptyMessage(Threads.MACT_LOADFILE);
+		//while (saveloaddone==false) {
+		//	try {
+		//		TimeUnit.MILLISECONDS.sleep(200);
+		//	} catch (InterruptedException e) {
+		//		e.printStackTrace();
+		//	};
+		//};
+		//return saveloadBuff; //TODO:mAct.fileLoad();
 		//return gamedata;
 	};
 	
@@ -374,4 +377,20 @@ public class L9implement extends L9 {
 		
 		return j!=0;
 	};
+	
+	String findPictureFile(String filename) {
+		String pictureFile=lib.changeFileExtension(filename, "pic");
+		if (lib.FileExist(pictureFile)) return pictureFile;
+		pictureFile=lib.changeFileExtension(filename, "pic");
+		if (lib.FileExist(pictureFile)) return pictureFile;
+		pictureFile=lib.changeFileExtension(pictureFile, "cga");
+		if (lib.FileExist(pictureFile)) return pictureFile;
+		pictureFile=lib.changeFileExtension(pictureFile, "hrc");
+		if (lib.FileExist(pictureFile)) return pictureFile;
+		//pictureFile="picture.dat";
+		pictureFile="emerald.sna";
+		if (lib.FileExist(pictureFile)) return pictureFile;
+		return null;
+	}
+	
 }

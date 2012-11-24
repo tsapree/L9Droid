@@ -121,8 +121,9 @@ public class Threads {
 		destroy();
 
 		//gamedata=lib.fileLoadGame(path);
-        l9=new L9implement(null,h);
-        if (l9.LoadGame(path, "")!=true) {
+        l9=new L9implement(lib,h);
+        String picturefilename=l9.findPictureFile(path);
+        if (l9.LoadGame(path, picturefilename)!=true) {
         	l9=null;
         	return;
         }
