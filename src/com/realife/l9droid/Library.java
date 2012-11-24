@@ -25,8 +25,7 @@ public class Library {
 	Library() {
 		paths=null;
 		paths_num=0;
-		//GameFullPathName="";
-		GameFullPathName="/mnt/sdcard/l9droid/timev1/v1_time.sna";
+		GameFullPathName="";
 	};
 	
 	boolean prepareLibrary(Activity act) {
@@ -91,8 +90,12 @@ public class Library {
 	
 	byte[] fileLoadGame(String path) {
 		byte resbuff[]=fileLoadToArray(path);
-		if (resbuff!=null) GameFullPathName=path;
+		//if (resbuff!=null) GameFullPathName=path;
 		return resbuff;
+	}
+	
+	void setPath(String path) {
+		GameFullPathName=path;
 	}
 	
 	byte[] fileLoadToArray(String absolutePath) {

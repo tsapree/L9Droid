@@ -2723,13 +2723,8 @@ GFX_V3C          320 x 96             no
 		int i;
 		int hdoffset;
 		int Offset;
-		//TODO: FILE *f;
 
-		//TODO: if (pictureaddress)
-		//TODO: {
-		//TODO: 	free(pictureaddress);
-		//TODO: 	pictureaddress=NULL;
-		//TODO: }
+		pictureaddress=-1;
 		picturedata=-1;
 		picturesize=0;
 		gfxa5[0]=-1;
@@ -2741,25 +2736,23 @@ GFX_V3C          320 x 96             no
 		}
 		
 		L9DEBUG("Loaded ok, size=%d\r",filesize);
+
+		//TODO: проверить наличие игр с несколькими игровыми файлами данных и линейной графикой в отдельном файле,
+		//		такие игры будут отображать картинку только на первом загруженном дата-файле, второй и следующие убъют картинки
+		if (picname!=null) {
+			byte picbuff[]= os_load(picname);
+			if (picbuff!=null) {
+				//TODO: tempbuff - lame! kill it slowly!
+				byte tempbuff[]=new byte[l9memory.length+picbuff.length];
+				pictureaddress=l9memory.length;
+				picturesize=picbuff.length;
+				for (i=0; i<pictureaddress;i++) tempbuff[i]=l9memory[i];
+				for (i=0; i<picturesize;i++) tempbuff[pictureaddress+i]=picbuff[i];
+				l9memory=tempbuff;
+			};
+		}
 		
-		/*TODO:
-		// try to load graphics
-		if (picname)
-		{
-			f=fopen(picname,"rb");
-			if (f)
-			{
-				picturesize=filelength(f);
-				L9Allocate(&pictureaddress,picturesize);
-				if (fread(pictureaddress,1,picturesize,f)!=picturesize)
-				{
-					free(pictureaddress);
-					pictureaddress=NULL;
-					picturesize=0;
-				}
-				fclose(f);
-			}
-		}*/
+		
 		screencalled=0;
 		l9textmode=0;
 /*
@@ -2883,24 +2876,6 @@ GFX_V3C          320 x 96             no
 				break;
 		};
 		
-		// If there was no graphics file, look in the game data 
-	//	if (picturedata<0) {
-	//		int sz=filesize-acodeptr;
-	//		i=0;
-	//		while ((i<sz-0x1000)&&(picturedata<0))
-	//		{
-	//			picturedata=acodeptr+i;
-	//			picturesize=sz-i;
-	//			if (!checksubs())
-	//			{
-	//				picturedata=-1;
-	//				picturesize=0;
-	//			}
-	//			i++;
-	//		}
-	//	}
-		
-		
 		int pdata[]={-1};
 		int psize[]={0};
 
@@ -2924,8 +2899,6 @@ GFX_V3C          320 x 96             no
 		
 		picturedata=pdata[0];
 		picturesize=psize[0];
-		
-		//TODO: kill: error("picturedata=%d",picturedata);
 		
 		for (i=0;i<FIRSTLINESIZE;i++) FirstLine[i]=0;
 		FirstLinePos=0;

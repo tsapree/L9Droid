@@ -16,7 +16,6 @@ public class Threads {
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
 	public final static int MACT_L9WAITBEFORESCRIPT=8;
-	public final static int MACT_LOADFILE=9;
 	
 	MainActivity activity;
 	Library lib;
@@ -81,10 +80,6 @@ public class Threads {
 	    			l9.saveloadBuff=lib.fileLoad();
 	    			l9.saveloaddone=true;
 	    			break;
-	    		case MACT_LOADFILE:
-	    			l9.saveloadBuff=lib.fileLoadGame(l9.saveloadFileName);
-	    			l9.saveloaddone=true;
-	    			break;
 	    		case MACT_GFXOFF:
 	    			bm=null;
 	    			activity.ivScreen.setImageBitmap(bm);
@@ -104,24 +99,14 @@ public class Threads {
 		    };
 		};
 		h.sendEmptyMessage(MACT_L9WORKING);
-		
-//        gamedata=new byte[49179];	        
-//		try {
-//			//InputStream is=getResources().openRawResource(R.raw.timev2);
-//			InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
-//			is.read(gamedata);            
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-
 	};
 	
 	void startGame(String path) {
-
+		
 		destroy();
 
-		//gamedata=lib.fileLoadGame(path);
-        l9=new L9implement(lib,h);
+		l9=new L9implement(lib,h);
+        lib.setPath(path);
         String picturefilename=l9.findPictureFile(path);
         if (l9.LoadGame(path, picturefilename)!=true) {
         	l9=null;
@@ -153,7 +138,7 @@ public class Threads {
 
 		t = new Thread(new Runnable() {
 			public void run() {
-		        while (l9.L9State!=l9.L9StateStopped && needToQuit!=true) {
+		        while ((l9.L9State!=l9.L9StateStopped) && (needToQuit!=true)) {
 		        	if (l9.L9State==l9.L9StateWaitForCommand) {
 		        		h.sendEmptyMessage(MACT_L9WAITFORCOMMAND);
 		        		//TODO: проверить try-catch на грамотность, не нужно ли все заключить в них, что произойдет, если наступит exception?
@@ -178,10 +163,6 @@ public class Threads {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-		        		//TODO: лучше так не менять значение переменных, заменить
-		        		// на l9.InputCommand("") либо создать отдельный метод.
-		        		//l9.L9State=l9.L9StateCommandReady;
-		        		//h.sendEmptyMessage(MACT_L9WORKING);
 		        		l9.InputCommand("");
 		        	} else l9.step();
 		        };

@@ -75,9 +75,8 @@ public class L9implement extends L9 {
 	int L9_FillColour2;
 	
 	L9implement(/*EditText et1,*/ Library l, Handler h) {
-		//et=et1;
 		lib=l;
-		gamedata=null;//dat;
+		gamedata=null;
 		cmdStr=null;
 		ds=new DebugStorage();
 		mHandler=h;
@@ -95,19 +94,6 @@ public class L9implement extends L9 {
 	
 	byte[] os_load(String filename) {
 		return lib.fileLoadGame(filename);
-		//saveloadFileName=filename;
-		//saveloadBuff=null;
-		//saveloaddone=false;
-		//mHandler.sendEmptyMessage(Threads.MACT_LOADFILE);
-		//while (saveloaddone==false) {
-		//	try {
-		//		TimeUnit.MILLISECONDS.sleep(200);
-		//	} catch (InterruptedException e) {
-		//		e.printStackTrace();
-		//	};
-		//};
-		//return saveloadBuff; //TODO:mAct.fileLoad();
-		//return gamedata;
 	};
 	
 	void os_debug(String str) {
@@ -221,7 +207,6 @@ public class L9implement extends L9 {
 		if ((index>7) || (index<0) || (colour >3) || (colour<0)) return;
 		L9PaletteIndexes[colour]=index;
 		L9UpdatePalette();
-		//TODO:iApV->DrawDeferred();
 	};
 	
 	void L9Plot(int x, int y, int colour1, int colour2) {
@@ -387,8 +372,7 @@ public class L9implement extends L9 {
 		if (lib.FileExist(pictureFile)) return pictureFile;
 		pictureFile=lib.changeFileExtension(pictureFile, "hrc");
 		if (lib.FileExist(pictureFile)) return pictureFile;
-		//pictureFile="picture.dat";
-		pictureFile="emerald.sna";
+		pictureFile="picture.dat";
 		if (lib.FileExist(pictureFile)) return pictureFile;
 		return null;
 	}
