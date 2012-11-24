@@ -3538,9 +3538,9 @@ GFX_V3C          320 x 96             no
 		scriptArray = os_open_script_file();
 		scriptArrayIndex=0;
 		if (scriptArray!=null)
-			printstring("\rPlaying back input from script file.\r");
+			printstring("\rPlaying back input from script file.\r\r");
 		else
-			printstring("\rUnable to play back script file.\r");
+			printstring("\rUnable to play back script file.\r\r");
 	}
 
 	/*--was--	void l9_fgets(char* s, int n, FILE* f)
@@ -4469,6 +4469,11 @@ GFX_V3C          320 x 96             no
 					ibuffstr=ibuffstr.concat(" \0");
 					ibuff=ibuffstr.toCharArray();
 				}
+				
+				//TODO: сделать настройку отключения функции пустой строки после команды
+				//if need empty line after command:
+				os_printchar('\r');
+				
 				if (CheckHash()) return false;
 	
 				// check for invalid chars
@@ -4477,6 +4482,7 @@ GFX_V3C          320 x 96             no
 						ibuff[i]=' ';
 				}
 	
+
 				/* force CR but prevent others */
 				os_printchar(lastactualchar='\r');
 			}
@@ -4827,6 +4833,10 @@ GFX_V3C          320 x 96             no
 				ibuffstr=ibuffstr.concat(" \0");
 				ibuff=ibuffstr.toCharArray();
 			}
+
+			//TODO: сделать настройку отключения функции пустой строки после команды
+			//if need empty line after command:
+			os_printchar('\r');
 			
 			if (CheckHash()) return false;
 
