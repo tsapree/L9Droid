@@ -15,6 +15,7 @@ public class L9implement extends L9 {
     Handler mHandler;
     Message msg;
     byte saveloadBuff[];
+    String saveloadFileName;
     boolean saveloaddone;
     boolean saveok;
 	
@@ -74,7 +75,7 @@ public class L9implement extends L9 {
 	
 	L9implement(/*EditText et1,*/ byte dat[], Handler h) {
 		//et=et1;
-		gamedata=dat;
+		gamedata=null;//dat;
 		cmdStr=null;
 		ds=new DebugStorage();
 		mHandler=h;
@@ -91,7 +92,19 @@ public class L9implement extends L9 {
 	};
 	
 	byte[] os_load(String filename) {
-		return gamedata;
+		saveloadFileName=filename;
+		saveloadBuff=null;
+		saveloaddone=false;
+		mHandler.sendEmptyMessage(Threads.MACT_LOADFILE);
+		while (saveloaddone==false) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			};
+		};
+		return saveloadBuff; //TODO:mAct.fileLoad();
+		//return gamedata;
 	};
 	
 	void os_debug(String str) {

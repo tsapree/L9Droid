@@ -16,6 +16,7 @@ public class Threads {
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
 	public final static int MACT_L9WAITBEFORESCRIPT=8;
+	public final static int MACT_LOADFILE=9;
 	
 	MainActivity activity;
 	Library lib;
@@ -80,6 +81,10 @@ public class Threads {
 	    			l9.saveloadBuff=lib.fileLoad();
 	    			l9.saveloaddone=true;
 	    			break;
+	    		case MACT_LOADFILE:
+	    			l9.saveloadBuff=lib.fileLoadGame(l9.saveloadFileName);
+	    			l9.saveloaddone=true;
+	    			break;
 	    		case MACT_GFXOFF:
 	    			bm=null;
 	    			activity.ivScreen.setImageBitmap(bm);
@@ -115,13 +120,13 @@ public class Threads {
 
 		destroy();
 
-		gamedata=lib.fileLoadGame(path);
-        l9=new L9implement(gamedata,h);
-        if (l9.LoadGame("test", "")!=true) {
+		//gamedata=lib.fileLoadGame(path);
+        l9=new L9implement(null,h);
+        if (l9.LoadGame(path, "")!=true) {
         	l9=null;
         	return;
         }
-		
+        
 		gfx_ready=false;
 		g = new Thread(new Runnable() {
 			public void run() {
