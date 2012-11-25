@@ -162,6 +162,8 @@ GFX_V3C          320 x 96             no
 //
 	SaveStruct ramsavearea[];
 //
+	L9Bitmap l9bitmap;
+	
 	char obuff[];
 	int wordcount;
 	char ibuff[];
@@ -342,6 +344,7 @@ GFX_V3C          320 x 96             no
 	
 	
 	L9() {
+		l9bitmap=new L9Bitmap();
 		workspace=new GameState();
 		unpackbuf=new int[8];
 		L9Pointers=new int[12];
