@@ -3285,12 +3285,12 @@ GFX_V3C          320 x 96             no
 		}
 		else if (d0==0x0b)
 		{
-/*TODO:		char NewName[MAX_PATH];
-			strcpy(NewName,LastGame);
-			if (*a6==0)
+			String NewName=new String(LastGame);
+			if (l9memory[a6]==0)
 			{
 				printstring("\rSearching for next sub-game file.\r");
-				if (!os_get_game_file(NewName,MAX_PATH))
+				NewName=os_get_game_file(NewName);
+				if (NewName==null)
 				{
 					printstring("\rFailed to load game.\r");
 					return;
@@ -3298,10 +3298,9 @@ GFX_V3C          320 x 96             no
 			}
 			else
 			{
-				os_set_filenumber(NewName,MAX_PATH,*a6);
+				NewName=os_set_filenumber(NewName,l9memory[a6]);
 			}
 			LoadGame2(NewName,null);
-*/
 		}
 		else driver(d0,a6);
 	}
@@ -6859,8 +6858,6 @@ GFX_V3C          320 x 96             no
 	boolean os_save_file(byte[] buff) {return false;}
 	//L9BOOL os_load_file(L9BYTE* Ptr, int* Bytes, int Max)
 	byte[] os_load_file() {return null;}
-	//L9BOOL os_get_game_file(char* NewName, int Size)
-	//void os_set_filenumber(char* NewName, int Size, int n)
 	void os_graphics(int mode) {};
 	void os_cleargraphics() {};
 	void os_setcolour(int colour, int index) {};
@@ -6868,6 +6865,8 @@ GFX_V3C          320 x 96             no
 	void os_fill(int x, int y, int colour1, int colour2) {};
 	void os_show_bitmap(int pic, int x, int y) {};
 	byte[] os_open_script_file() {return null;};
+	String os_get_game_file(String NewName) {return NewName;};
+	String os_set_filenumber(String NewName, int num) {return NewName;};
 	
 	//TODO: added by tsap
 	byte[] os_load(String filename) { return null; };

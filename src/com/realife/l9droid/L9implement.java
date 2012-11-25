@@ -377,4 +377,19 @@ public class L9implement extends L9 {
 		return null;
 	}
 	
+	String os_get_game_file(String NewName) {
+		return os_set_filenumber(NewName,0);
+	};
+	
+	String os_set_filenumber(String NewName, int num) {
+		int i=NewName.length();
+		char c;
+		while (i>0) {
+			c=NewName.charAt(--i);
+			if (c=='/' || c=='\\') return NewName;
+			if (c>'0' && c<='9') break;
+		};
+		return NewName.substring(0, i)+String.valueOf(num)+NewName.substring(i+1, NewName.length());
+	};
+	
 }
