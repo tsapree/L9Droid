@@ -28,6 +28,8 @@ public class L9implement extends L9 {
     int PicColorBuff[]=null;
     Bitmap bm=null;
     int L9BitmapType=0;
+    L9Picture pic_bitmap=null;
+    int lastpic=-1;
     
 	int PicWidth=0;
 	int PicHeight=0;
@@ -194,6 +196,33 @@ public class L9implement extends L9 {
 		//TODO:iApV->DrawDeferred();
 		
 	};
+	
+	void os_show_bitmap(int pic, int x, int y) {
+		if (PicMode==0 || PicMode==1 ) {
+			lastpic=-1;
+			return;
+		};
+		if (pic!=lastpic || PicWidth==0 || PicHeight==0) {
+			lastpic=pic;
+			pic_bitmap=DecodeBitmap(lib, L9BitmapType, pic, x, y);
+			PicWidth=pic_bitmap.width;
+			PicHeight=pic_bitmap.height;
+			L9UpdateGfxSize();
+		};
+		
+		if (pic_bitmap!=0) {
+			int max_x=pic_bitmap->width;    //if (max_x>PicWidth)  max_x=PicWidth;
+			int max_y=pic_bitmap->height;   //if (max_y>PicHeight) max_y=PicHeight;
+			int max_c=pic_bitmap->npalette; if (max_c>32)        max_c=32;
+			for (int c=0; c<max_c; c++)
+				iApV->SelectedPalette[c] = (pic_bitmap->palette[c].red<<16)|(pic_bitmap->palette[c].green<<8)|(pic_bitmap->palette[c].blue);
+			for (int j=0; j<max_y; j++)
+				for (int i=0; i<max_x; i++)
+					PicBuff[j*PicWidth+i]=pic_bitmap->bitmap[j*pic_bitmap->width+i];
+		};
+		iApV->DrawDeferred();
+	};
+
 
 	void L9UpdatePalette() {
 		for (int i=0;i<4;i++) {

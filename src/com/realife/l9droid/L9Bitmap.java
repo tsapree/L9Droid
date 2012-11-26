@@ -51,6 +51,8 @@ public class L9Bitmap {
 
 	public static final int MAX_BITMAP_WIDTH=512;
 	public static final int MAX_BITMAP_HEIGHT=216;
+	
+	public L9Picture l9picture;
 
 	/*--was--	L9BOOL bitmap_exists(char* file)
 	{
@@ -436,6 +438,14 @@ public class L9Bitmap {
 		col.blue = (((i&1)<<1) | ((i&8)>>3)) * 0x55;
 		return col;
 	}*/
+	L9Colour bitmap_pc1_colour(int i)
+	{
+		L9Colour col=new L9Colour();
+		col.red = (((i&4)>>1) | ((i&0x20)>>5)) * 0x55;
+		col.green = ((i&2) | ((i&0x10)>>4)) * 0x55;
+		col.blue = (((i&1)<<1) | ((i&8)>>3)) * 0x55;
+		return col;
+	}
 
 	/*
 		The PC (v1) image file has the following format. It consists of a 22
@@ -504,6 +514,55 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
+	L9Picture bitmap_pc1_decode(Library lib, String file, int x, int y)
+	{
+		int i, xi, yi, max_x, max_y;
+		int size;
+		byte data[] = null;
+		L9Picture pict=new L9Picture();
+		
+		data = bitmap_load(lib,file);
+		if (data == null) return null;
+
+		max_x = (data[2]&0xff)+(data[3]&0xff)*256;
+		max_y = (data[4]&0xff)+(data[5]&0xff)*256;
+		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT)
+		{
+			return null;
+		}
+
+		if ((x == 0) && (y == 0)) {
+			l9picture=new L9Picture(max_x, max_y);
+		}
+		if (l9picture.bitmap == null) {
+			return null;
+		}
+
+		if (x+max_x > l9picture.width)
+			max_x = l9picture.width-x;
+		if (y+max_y > l9picture.height)
+			max_y = l9picture.height-y;
+
+		for (yi = 0; yi < max_y; yi++)
+		{
+			for (xi = 0; xi < max_x; xi++)
+			{
+				l9picture.bitmap[(l9picture.width*(y+yi))+(x+xi)]=
+					(byte) ((data[23+((yi*max_x)/2)+(xi/2)]>>((1-(xi&1))*4)) & 0x0f);
+			}
+		}
+
+		l9picture.npalette = 16;
+		for (i = 0; i < 16; i++) {
+			//TODO: убрать лишний класс, лучше поизвращаться с массивами или еще чем-то 
+			L9Colour colour=bitmap_pc1_colour(data[6+i]);
+			l9picture.palette_red[i] =(byte)colour.red; 
+			l9picture.palette_green[i] =(byte)colour.green;
+			l9picture.palette_blue[i] =(byte)colour.blue;
+		};
+
+		return l9picture;
+	}
 
 	/*
 		The PC (v2) image file has the following format. It consists of a 44
@@ -1766,10 +1825,70 @@ public class L9Bitmap {
 
 		return NULL;
 	}*/
-	
+	L9Picture DecodeBitmap(Library lib, int bitmaptype, int num, int x, int y)
+	{
+		String name;
+		switch (bitmaptype)
+		{
+		case PC1_BITMAPS:
+			name=bitmap_pc_name(num);
+			return bitmap_pc1_decode(lib,name,x,y);
+			//break;
+
+		case PC2_BITMAPS:
+			name=bitmap_pc_name(num);
+	//		if (bitmap_pc2_decode(file,x,y))
+	//			return bitmap;
+			break;
+
+		case AMIGA_BITMAPS:
+			name=bitmap_noext_name(lib,num);
+	//		if (bitmap_amiga_decode(file,x,y))
+	//			return bitmap;
+			break;
+
+		case C64_BITMAPS:
+			name=bitmap_c64_name(num);
+	//		if (bitmap_c64_decode(file,type,num))
+	//			return bitmap;
+			break;
+
+		case BBC_BITMAPS:
+			name=bitmap_bbc_name(lib,num);
+	//		if (bitmap_bbc_decode(file,type,num))
+	//			return bitmap;
+			break;
+
+		case CPC_BITMAPS:
+			name=bitmap_cpc_name(num);
+	//		if (bitmap_c64_decode(file,type,num)) // Nearly identical to C64 
+	//			return bitmap;
+			break;
+
+		case MAC_BITMAPS:
+			name=bitmap_noext_name(lib,num);
+	//		if (bitmap_mac_decode(file,x,y))
+	//			return bitmap;
+			break;
+
+		case ST1_BITMAPS:
+			name=bitmap_noext_name(lib,num);
+	//		if (bitmap_st1_decode(file,x,y))
+	//			return bitmap;
+			break;
+
+		case ST2_BITMAPS:
+			name=bitmap_st2_name(num);
+	//		if (bitmap_pc2_decode(file,x,y))
+	//			return bitmap;
+			break;
+		}
+
+		return null;
+	}
 }
 	
-class Bitmap {
+class L9Picture {
 	int width, height;
 	byte[] bitmap;
 	byte palette_red[];
@@ -1777,10 +1896,23 @@ class Bitmap {
 	byte palette_blue[];
 	int npalette;
 	
-	Bitmap() {
+	L9Picture() {
 		palette_red=new byte[32];
 		palette_green=new byte[32];
 		palette_blue=new byte[32];
+		bitmap=null;
+	}
+	L9Picture(int x, int y) {
+		palette_red=new byte[32];
+		palette_green=new byte[32];
+		palette_blue=new byte[32];
+		bitmap=new byte[x*y];
 	}
 };
+
+class L9Colour {
+	int red;
+	int green;
+	int blue;
+}
 
