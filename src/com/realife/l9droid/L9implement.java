@@ -27,6 +27,7 @@ public class L9implement extends L9 {
 	byte PicBuff[]=null;
     int PicColorBuff[]=null;
     Bitmap bm=null;
+    int L9BitmapType=0;
     
 	int PicWidth=0;
 	int PicHeight=0;
@@ -166,8 +167,8 @@ public class L9implement extends L9 {
 		int pw[]={0};
 		int ph[]={0};
 		if (mode==2) {
-			/*TODO:L9BitmapType = DetectBitmaps(L9Dir);
-			if (L9BitmapType==NO_BITMAPS)*/ mode=0;
+			L9BitmapType = l9bitmap.DetectBitmaps(lib);
+			if (L9BitmapType==L9Bitmap.NO_BITMAPS) mode=0;
 		};
 		PicMode = mode;
 		if (mode==0) mHandler.sendEmptyMessage(Threads.MACT_GFXOFF);

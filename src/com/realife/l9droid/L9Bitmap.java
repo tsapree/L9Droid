@@ -36,6 +36,21 @@ public class L9Bitmap {
 
 	//L9UINT32 filelength(FILE *f);
 	//void L9Allocate(L9BYTE **ptr,L9UINT32 Size);
+	
+	//enum BitmapType;
+	public static final int NO_BITMAPS=0;
+	public static final int AMIGA_BITMAPS=1;
+	public static final int PC1_BITMAPS=2;
+	public static final int PC2_BITMAPS=3;
+	public static final int C64_BITMAPS=4;
+	public static final int BBC_BITMAPS=5;
+	public static final int CPC_BITMAPS=6;
+	public static final int MAC_BITMAPS=7;
+	public static final int ST1_BITMAPS=8;
+	public static final int ST2_BITMAPS=9;
+
+	public static final int MAX_BITMAP_WIDTH=512;
+	public static final int MAX_BITMAP_HEIGHT=216;
 
 	/*--was--	L9BOOL bitmap_exists(char* file)
 	{
@@ -47,6 +62,9 @@ public class L9Bitmap {
 		}
 		return FALSE;
 	}*/
+	boolean bitmap_exists(Library lib, String file) {
+		return lib.FileExist(file);
+	}
 
 	/*--was--	L9BYTE* bitmap_load(char* file, L9UINT32* size)
 	{
@@ -65,6 +83,9 @@ public class L9Bitmap {
 		}
 		return data;
 	}*/
+	byte[] bitmap_load(Library lib, String file) {
+		return lib.fileLoadRelativeToArray(file);
+	}
 
 	/*--was--	Bitmap* bitmap_alloc(int x, int y)
 	{
@@ -359,6 +380,13 @@ public class L9Bitmap {
 			num = 30;
 		sprintf(out,"%s%d.squ",dir,num);
 	}*/
+	String bitmap_st2_name(int num)
+	{
+		// title picture is #30 
+		if (num == 0)
+			num = 30;
+		return String.format("%d.squ", num);
+	}
 
 	/*
 		PC Bitmaps
@@ -378,6 +406,13 @@ public class L9Bitmap {
 			num = 30;
 		sprintf(out,"%s%d.pic",dir,num);
 	}*/
+	String bitmap_pc_name(int num)
+	{
+		// title picture is #30 
+		if (num == 0)
+			num = 30;
+		return String.format("%d.pic", num);
+	}
 
 	/*
 		The EGA standard for the IBM PCs and compatibles defines 64 colors, any
@@ -783,6 +818,28 @@ public class L9Bitmap {
 
 		return type;
 	}*/
+	int bitmap_pc_type(Library lib, String file)
+	{
+		int type = PC2_BITMAPS;
+		byte data[]=lib.fileLoadRelativeToArray(file);
+		if (data!=null) {
+			int x, y;
+
+			x = (data[2]&0xff)+(data[3]&0xff)*256;
+			y = (data[4]&0xff)+(data[5]&0xff)*256;
+
+			if ((x == 0x0140) && (y == 0x0087))
+				type = PC1_BITMAPS;
+			if ((x == 0x00E0) && (y == 0x0074))
+				type = PC1_BITMAPS;
+			if ((x == 0x0140) && (y == 0x0087))
+				type = PC1_BITMAPS;
+			if ((x == 0x00E1) && (y == 0x0076))
+				type = PC1_BITMAPS;
+		}
+
+		return type;
+	}
 
 	/*
 		Amiga Bitmaps
@@ -807,6 +864,16 @@ public class L9Bitmap {
 
 		sprintf(out,"%s%d",dir,num);
 	}*/
+	String bitmap_noext_name(Library lib, int num)
+	{
+		if (num == 0)
+		{
+			if (lib.FileExist("title")) return "title";
+			else num = 30;
+		}
+
+		return String.format("%d",num);
+	}
 
 	/*--was--	int bitmap_amiga_intensity(int col)
 	{
@@ -959,6 +1026,54 @@ public class L9Bitmap {
 
 		return NO_BITMAPS;
 	}*/
+	int bitmap_noext_type(Library lib, String file)
+	{
+		byte data[]=lib.fileLoadRelativeToArray(file);
+		if (data!=null)
+		{
+			int x, y;
+
+			x = (data[67]&0xff)+(data[66]&0xff)*256;
+			y = (data[71]&0xff)+(data[70]&0xff)*256;
+
+			if ((x == 0x0140) && (y == 0x0088))
+				return AMIGA_BITMAPS;
+			if ((x == 0x0140) && (y == 0x0087))
+				return AMIGA_BITMAPS;
+			if ((x == 0x00E0) && (y == 0x0075))
+				return AMIGA_BITMAPS;
+			if ((x == 0x00E4) && (y == 0x0075))
+				return AMIGA_BITMAPS;
+			if ((x == 0x00E0) && (y == 0x0076))
+				return AMIGA_BITMAPS;
+			if ((x == 0x00DB) && (y == 0x0076))
+				return AMIGA_BITMAPS;
+
+			x = (data[3]&0xff)+(data[2]&0xff)*256;
+			y = (data[7]&0xff)+(data[6]&0xff)*256;
+
+			if ((x == 0x0200) && (y == 0x00D8))
+				return MAC_BITMAPS;
+			if ((x == 0x0168) && (y == 0x00BA))
+				return MAC_BITMAPS;
+			if ((x == 0x0168) && (y == 0x00BC))
+				return MAC_BITMAPS;
+			if ((x == 0x0200) && (y == 0x00DA))
+				return MAC_BITMAPS;
+			if ((x == 0x0168) && (y == 0x00DA))
+				return MAC_BITMAPS;
+
+			x = (data[35]&0xff)+(data[34]&0xff)*256;
+			y = (data[39]&0xff)+(data[38]&0xff)*256;
+
+			if ((x == 0x0050) && (y == 0x0087))
+				return ST1_BITMAPS;
+			if ((x == 0x0038) && (y == 0x0074))
+				return ST1_BITMAPS;
+		}
+
+		return NO_BITMAPS;
+	}
 
 	/*
 		Macintosh Bitmaps
@@ -1081,6 +1196,13 @@ public class L9Bitmap {
 		else
 			sprintf(out,"%spic%d",dir,num);
 	}*/
+	String bitmap_c64_name(int num)
+	{
+		if (num == 0)
+			return String.format("title mpic");
+		else
+			return String.format("pic%d",num);
+	}
 
 	/*--was--	void bitmap_bbc_name(int num, char* dir, char* out)
 	{
@@ -1111,6 +1233,19 @@ public class L9Bitmap {
 			sprintf(out,"%spic%d",dir,num);
 		}
 	}*/
+	String bitmap_bbc_name(Library lib, int num) {
+		if (num == 0)
+		{
+			return "title";
+		}
+		else
+		{
+			
+			String name=String.format("P.Pic%d", num);
+			if (lib.FileExist(name)) return name;
+			return String.format("pic%d",num);
+		}
+	}
 
 	/*--was--	void bitmap_cpc_name(int num, char* dir, char* out)
 	{
@@ -1121,6 +1256,14 @@ public class L9Bitmap {
 		else
 			sprintf(out,"%sallpics.pic",dir);
 	}*/
+	String bitmap_cpc_name(int num) {
+		if (num == 0)
+			return String.format("title.pic");
+		else if (num == 1)
+			return String.format("1.pic");
+		else
+			return String.format("allpics.pic");
+	}
 
 	/*--was--	BitmapType bitmap_c64_type(char* file)
 	{
@@ -1140,6 +1283,22 @@ public class L9Bitmap {
 
 		return type;
 	}*/
+	int bitmap_c64_type(Library lib, String file)
+	{
+		int type = C64_BITMAPS;
+		byte data[]=lib.fileLoadRelativeToArray(file);
+		if (data != null)
+		{
+			int size=data.length;
+			if (size == 10048)
+				type = BBC_BITMAPS;
+			if (size == 6494)
+				type = BBC_BITMAPS;
+		}
+
+		return type;
+	}
+	
 
 	/*
 		The C64 graphics file format is (loosely) based on the layout of
@@ -1515,6 +1674,34 @@ public class L9Bitmap {
 
 		return NO_BITMAPS;
 	}*/
+	int DetectBitmaps(Library lib)
+	{
+		String file=bitmap_noext_name(lib,2);
+		if (bitmap_exists(lib,file))
+			return bitmap_noext_type(lib,file);
+
+		file=bitmap_pc_name(2);
+		if (bitmap_exists(lib,file))
+			return bitmap_pc_type(lib,file);
+
+		file=bitmap_c64_name(2);
+		if (bitmap_exists(lib,file))
+			return bitmap_c64_type(lib,file);
+
+		file=bitmap_bbc_name(lib,2);
+		if (bitmap_exists(lib,file))
+			return BBC_BITMAPS;
+
+		file=bitmap_cpc_name(2);
+		if (bitmap_exists(lib,file))
+			return CPC_BITMAPS;
+
+		file=bitmap_st2_name(2);
+		if (bitmap_exists(lib,file))
+			return ST2_BITMAPS;
+
+		return NO_BITMAPS;
+	};
 
 	/*--was--	Bitmap* DecodeBitmap(char* dir, BitmapType type, int num, int x, int y)
 	{
@@ -1581,3 +1768,19 @@ public class L9Bitmap {
 	}*/
 	
 }
+	
+class Bitmap {
+	int width, height;
+	byte[] bitmap;
+	byte palette_red[];
+	byte palette_green[];
+	byte palette_blue[];
+	int npalette;
+	
+	Bitmap() {
+		palette_red=new byte[32];
+		palette_green=new byte[32];
+		palette_blue=new byte[32];
+	}
+};
+

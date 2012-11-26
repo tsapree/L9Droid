@@ -98,6 +98,10 @@ public class Library {
 		GameFullPathName=path;
 	}
 	
+	byte[] fileLoadRelativeToArray(String relativePath) {
+		return fileLoadToArray(getAbsolutePath(relativePath));
+	}
+	
 	byte[] fileLoadToArray(String absolutePath) {
 		byte buff[]=null;
 		String sdState = android.os.Environment.getExternalStorageState();
