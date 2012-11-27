@@ -241,6 +241,85 @@ public class L9Bitmap {
 	}*/
 	//TODO: Написать!
 	//TODO: Проверить!
+	int bitmap_st1_decode_pixels(L9BYTE* bitmap, byte[] data, L9UINT32 count, L9UINT32 pixels)
+	{
+		L9UINT32 bitplane_length = count / 4; // length of each bitplane 
+		int bitplane0 = 0; // address of bit0 bitplane 
+		int bitplane1 = (bitplane_length); // address of bit1 bitplane
+		int bitplane2 = (bitplane_length * 2); // address of bit2 bitplane
+		int bitplane3 = (bitplane_length * 3); // address of bit3 bitplane 
+		int bitplane_index, pixel_index = 0; // index variables 
+
+		for (bitplane_index = 0; bitplane_index < bitplane_length; bitplane_index++)
+		{
+			// build the eight pixels from the current bitplane bytes, high bit to low 
+
+			// bit7 byte 
+			bitmap[pixel_index] = ((data[bitplane3+bitplane_index]&0xff >> 4) & 0x08) 
+				+ ((data[bitplane2+bitplane_index]&0xff >> 5) & 0x04)
+				+ ((data[bitplane1+bitplane_index]&0xff >> 6) & 0x02) 
+				+ ((data[bitplane0+bitplane_index]&0xff >> 7) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit6 byte
+			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] >> 3) & 0x08) 
+				+ ((data[bitplane2+bitplane_index] >> 4) & 0x04)
+				+ ((data[bitplane1+bitplane_index] >> 5) & 0x02) 
+				+ ((data[bitplane0+bitplane_index] >> 6) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit5 byte
+			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] >> 2) & 0x08) 
+				+ ((data[bitplane2+bitplane_index] >> 3) & 0x04)
+				+ ((data[bitplane1+bitplane_index] >> 4) & 0x02) 
+				+ ((data[bitplane0+bitplane_index] >> 5) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit4 byte
+			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] >> 1) & 0x08) 
+				+ ((data[bitplane2+bitplane_index] >> 2) & 0x04)
+				+ ((data[bitplane1+bitplane_index] >> 3) & 0x02) 
+				+ ((data[bitplane0+bitplane_index] >> 4) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit3 byte
+			bitmap[pixel_index] = ((data[bitplane3+bitplane_index]) & 0x08) 
+				+ ((data[bitplane2+bitplane_index] >> 1) & 0x04)
+				+ ((data[bitplane1+bitplane_index] >> 2) & 0x02) 
+				+ ((data[bitplane0+bitplane_index] >> 3) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit2 byte
+			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] << 1) & 0x08) 
+				+ ((data[bitplane2+bitplane_index]) & 0x04)
+				+ ((data[bitplane1+bitplane_index] >> 1) & 0x02) 
+				+ ((data[bitplane0+bitplane_index] >> 2) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit1 byte 
+			bitmap[pixel_index] = ((bitplane3[bitplane_index] << 2) & 0x08) 
+				+ ((bitplane2[bitplane_index] << 1) & 0x04)
+				+ ((bitplane1[bitplane_index]) & 0x02) 
+				+ ((bitplane0[bitplane_index] >> 1) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+
+			// bit0 byte 
+			bitmap[pixel_index] = ((bitplane3[bitplane_index] << 3) & 0x08) 
+				+ ((bitplane2[bitplane_index] << 2) & 0x04)
+				+ ((bitplane1[bitplane_index] << 1) & 0x02) 
+				+ ((bitplane0[bitplane_index]) & 0x01);
+			if (pixels == ++pixel_index)
+				break;
+		}
+
+		return pixel_index;
 
 	/*
 		The ST image file has the following format. It consists of a 44 byte header
@@ -389,6 +468,75 @@ public class L9Bitmap {
 	}*/
 	//TODO: Написать!
 	//TODO: Проверить!
+	boolean bitmap_st1_decode(Library lib, String file, int x, int y)
+	{
+
+		int i, xi, yi, max_x, max_y, last_block;
+		int bitplanes_row, bitmaps_row, pixel_count, get_pixels;
+
+		byte data[] = bitmap_load(lib,file);
+		if (data == null) return false;
+
+		bitplanes_row = (data[35]&0xff)+((data[34]&0xff)<<8);
+		bitmaps_row = bitplanes_row/4;
+		max_x = bitplanes_row*4;
+		max_y = (data[39]&0xff)+((data[38]&0xff)<<8);
+		last_block = (data[43]&0xff)+((data[42]&0xff)<<8);
+
+		// Check if sub-image with rows shorter than max_x 
+		if (last_block != 0xFFFF)
+		{
+			// use last_block to adjust max_x 
+			i = 0;
+			while ((0x0001 & last_block) == 0) // test for ls bit set 
+			{
+				last_block >>= 1; // if not, shift right one bit 
+				i++;
+			}
+			max_x = max_x - i;
+		}
+
+		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT)
+		{
+			return false;
+		}
+
+		if ((x == 0) && (y == 0))
+		{
+			l9picture=new L9Picture(max_x, max_y);
+		}
+		if (l9picture.bitmap == null)
+		{
+			return false;
+		}
+
+		if (x+max_x > l9picture.width)
+			max_x = l9picture.width-x;
+		if (y+max_y > l9picture.height)
+			max_y = l9picture.height-y;
+
+		for (yi = 0; yi < max_y; yi++)
+		{
+			pixel_count = 0;
+			for (xi = 0; xi < bitmaps_row; xi++)
+			{
+				if ((max_x - pixel_count) < 16)
+					get_pixels = max_x - pixel_count;
+				else
+					get_pixels = 16;
+
+				pixel_count += bitmap_st1_decode_pixels(
+					bitmap->bitmap+((y+yi)*l9picture.width)+x+(xi*16),
+					data+44+(yi*bitplanes_row*2)+(xi*8),8,get_pixels);
+			}
+		}
+
+		l9picture.npalette = 16;
+		for (i = 0; i < 16; i++)
+			l9picture.palette[i] = bitmap_pcst_colour(data[(i*2)],data[1+(i*2)]);
+
+		return true;
+	}	
 
 	/*void bitmap_st2_name(int num, char* dir, char* out)
 	{
