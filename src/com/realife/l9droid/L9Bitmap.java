@@ -54,6 +54,36 @@ public class L9Bitmap {
 	
 	public L9Picture l9picture;
 
+	int bitmap_c64_colours[] = {
+			0x000000,
+			0xffffff,
+			0x894036,
+			0x7abfc7,
+			0x8a46ae,
+			0x68a941,
+			0x3e31a2,
+			0xd0dc71,
+			0x905f25,
+			0x5c4700,
+			0xbb776d,
+			0x555555,
+			0x808080,
+			0xacea88,
+			0x7c70da,
+			0xababab,
+	};
+	
+	int bitmap_bbc_colours[] = {
+			0x000000,
+			0xff0000,
+			0x00ff00,
+			0xffff00,
+			0x0000ff,
+			0xff00ff,
+			0x00ffff,
+			0xffffff,
+	};
+	
 	/*--was--	L9BOOL bitmap_exists(char* file)
 	{
 		FILE* f = fopen(file,"rb");
@@ -239,15 +269,15 @@ public class L9Bitmap {
 
 		return pixel_index;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
-	int bitmap_st1_decode_pixels(L9BYTE* bitmap, byte[] data, L9UINT32 count, L9UINT32 pixels)
+	int bitmap_st1_decode_pixels(int index, byte[] data, int data_index, int count, int pixels)
 	{
-		L9UINT32 bitplane_length = count / 4; // length of each bitplane 
-		int bitplane0 = 0; // address of bit0 bitplane 
-		int bitplane1 = (bitplane_length); // address of bit1 bitplane
-		int bitplane2 = (bitplane_length * 2); // address of bit2 bitplane
-		int bitplane3 = (bitplane_length * 3); // address of bit3 bitplane 
+		
+		int bitplane_length = count / 4; // length of each bitplane 
+		int bitplane0 = data_index; // address of bit0 bitplane 
+		int bitplane1 = data_index+(bitplane_length); // address of bit1 bitplane
+		int bitplane2 = data_index+(bitplane_length * 2); // address of bit2 bitplane
+		int bitplane3 = data_index+(bitplane_length * 3); // address of bit3 bitplane 
 		int bitplane_index, pixel_index = 0; // index variables 
 
 		for (bitplane_index = 0; bitplane_index < bitplane_length; bitplane_index++)
@@ -255,71 +285,72 @@ public class L9Bitmap {
 			// build the eight pixels from the current bitplane bytes, high bit to low 
 
 			// bit7 byte 
-			bitmap[pixel_index] = ((data[bitplane3+bitplane_index]&0xff >> 4) & 0x08) 
-				+ ((data[bitplane2+bitplane_index]&0xff >> 5) & 0x04)
-				+ ((data[bitplane1+bitplane_index]&0xff >> 6) & 0x02) 
-				+ ((data[bitplane0+bitplane_index]&0xff >> 7) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) >> 4) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) >> 5) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) >> 6) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 7) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit6 byte
-			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] >> 3) & 0x08) 
-				+ ((data[bitplane2+bitplane_index] >> 4) & 0x04)
-				+ ((data[bitplane1+bitplane_index] >> 5) & 0x02) 
-				+ ((data[bitplane0+bitplane_index] >> 6) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) >> 3) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) >> 4) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) >> 5) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 6) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit5 byte
-			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] >> 2) & 0x08) 
-				+ ((data[bitplane2+bitplane_index] >> 3) & 0x04)
-				+ ((data[bitplane1+bitplane_index] >> 4) & 0x02) 
-				+ ((data[bitplane0+bitplane_index] >> 5) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) >> 2) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) >> 3) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) >> 4) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 5) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit4 byte
-			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] >> 1) & 0x08) 
-				+ ((data[bitplane2+bitplane_index] >> 2) & 0x04)
-				+ ((data[bitplane1+bitplane_index] >> 3) & 0x02) 
-				+ ((data[bitplane0+bitplane_index] >> 4) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) >> 1) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) >> 2) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) >> 3) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 4) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit3 byte
-			bitmap[pixel_index] = ((data[bitplane3+bitplane_index]) & 0x08) 
-				+ ((data[bitplane2+bitplane_index] >> 1) & 0x04)
-				+ ((data[bitplane1+bitplane_index] >> 2) & 0x02) 
-				+ ((data[bitplane0+bitplane_index] >> 3) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff)) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) >> 1) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) >> 2) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 3) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit2 byte
-			bitmap[pixel_index] = ((data[bitplane3+bitplane_index] << 1) & 0x08) 
-				+ ((data[bitplane2+bitplane_index]) & 0x04)
-				+ ((data[bitplane1+bitplane_index] >> 1) & 0x02) 
-				+ ((data[bitplane0+bitplane_index] >> 2) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) << 1) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff)) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) >> 1) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 2) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit1 byte 
-			bitmap[pixel_index] = ((bitplane3[bitplane_index] << 2) & 0x08) 
-				+ ((bitplane2[bitplane_index] << 1) & 0x04)
-				+ ((bitplane1[bitplane_index]) & 0x02) 
-				+ ((bitplane0[bitplane_index] >> 1) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) << 2) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) << 1) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff)) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff) >> 1) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 
 			// bit0 byte 
-			bitmap[pixel_index] = ((bitplane3[bitplane_index] << 3) & 0x08) 
-				+ ((bitplane2[bitplane_index] << 2) & 0x04)
-				+ ((bitplane1[bitplane_index] << 1) & 0x02) 
-				+ ((bitplane0[bitplane_index]) & 0x01);
+			l9picture.bitmap[pixel_index+index] = (byte)((((data[bitplane3+bitplane_index]&0xff) << 3) & 0x08) 
+				+ (((data[bitplane2+bitplane_index]&0xff) << 2) & 0x04)
+				+ (((data[bitplane1+bitplane_index]&0xff) << 1) & 0x02) 
+				+ (((data[bitplane0+bitplane_index]&0xff)) & 0x01));
 			if (pixels == ++pixel_index)
 				break;
 		}
 
 		return pixel_index;
+	};
 
 	/*
 		The ST image file has the following format. It consists of a 44 byte header
@@ -466,7 +497,6 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
 	boolean bitmap_st1_decode(Library lib, String file, int x, int y)
 	{
@@ -526,8 +556,8 @@ public class L9Bitmap {
 					get_pixels = 16;
 
 				pixel_count += bitmap_st1_decode_pixels(
-					bitmap->bitmap+((y+yi)*l9picture.width)+x+(xi*16),
-					data+44+(yi*bitplanes_row*2)+(xi*8),8,get_pixels);
+					((y+yi)*l9picture.width)+x+(xi*16),
+					data,44+(yi*bitplanes_row*2)+(xi*8),8,get_pixels);
 			}
 		}
 
@@ -1219,9 +1249,11 @@ public class L9Bitmap {
 	{
 		return (int)(pow((double)col/15,1.0/0.8) * 0xff);
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
-
+	int bitmap_amiga_intensity(int col)
+	{
+		return (int)(Math.pow((double)col/15,1.0/0.8) * 0xff);
+	}
 	/*
 		Amiga palette colours are word length structures with the red, green and blue
 		values stored in the second, third and lowest nybles respectively. The high
@@ -1235,9 +1267,15 @@ public class L9Bitmap {
 		col.blue = bitmap_amiga_intensity(i2&0xf);
 		return col;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
-
+	int bitmap_amiga_colour(int i1, int i2)
+	{
+		int red = bitmap_amiga_intensity(i1&0xf);
+		int green = bitmap_amiga_intensity(i2>>4);
+		int blue = bitmap_amiga_intensity(i2&0xf);
+		return ((red&0xff)<<16) | ((green&0xff)<<8) | (blue&0xff);
+	}
+	
 	/*
 		The Amiga image file has the following format. It consists of a 44 byte
 		header followed by the image data. 
@@ -1317,8 +1355,51 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
+	boolean bitmap_amiga_decode(Library lib, String file, int x, int y)
+	{
+		int i, xi, yi, max_x, max_y, p, b;
+
+		byte data[] = bitmap_load(lib,file);
+		if (data == null)
+			return false;
+
+		max_x = (((((data[64]<<8)|data[65])<<8)|data[66])<<8)|data[67];
+		max_y = (((((data[68]<<8)|data[69])<<8)|data[70])<<8)|data[71];
+		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT)
+		{
+			return false;
+		}
+
+		if ((x == 0) && (y == 0))
+			l9picture=new L9Picture(max_x, max_y);
+			
+		if (l9picture.bitmap == null) {
+			return false;
+		}
+
+		if (x+max_x > l9picture.width)
+			max_x = l9picture.width-x;
+		if (y+max_y > l9picture.height)
+			max_y = l9picture.height-y;
+
+		for (yi = 0; yi < max_y; yi++)
+		{
+			for (xi = 0; xi < max_x; xi++)
+			{
+				p = 0;
+				for (b = 0; b < 5; b++)
+					p |= ((data[72+(max_x/8)*(max_y*b+yi)+xi/8]>>(7-(xi%8)))&1)<<b;
+				l9picture.bitmap[(l9picture.width*(y+yi))+(x+xi)] = (byte)p;
+			}
+		}
+
+		l9picture.npalette = 32;
+		for (i = 0; i < 32; i++)
+			l9picture.palette[i] = bitmap_amiga_colour(data[i*2],data[i*2+1]);
+
+		return true;
+	}
 
 	/*--was--	BitmapType bitmap_noext_type(char* file)
 	{
@@ -1502,9 +1583,51 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
+	boolean bitmap_mac_decode(Library lib, String file, int x, int y)
+	{
+		int xi, yi, max_x, max_y;
 
+		byte data[] = bitmap_load(lib,file);
+		if (data == null) return false;
+
+		max_x = (data[3]&0xff)+((data[2]&0xff)<<8);
+		max_y = (data[7]&0xff)+((data[6]&0xff)<<8);
+		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT)
+		{
+			return false;
+		}
+
+		if (x > 0)	// Mac bug, apparently
+			x = 78;
+
+		if ((x == 0) && (y == 0))
+			l9picture=new L9Picture(max_x, max_y);
+			
+		if (l9picture.bitmap == null) {
+			return false;
+		}
+		
+		if (x+max_x > l9picture.width)
+			max_x = l9picture.width-x;
+		if (y+max_y > l9picture.height)
+			max_y = l9picture.height-y;
+
+		for (yi = 0; yi < max_y; yi++)
+		{
+			for (xi = 0; xi < max_x; xi++)
+			{
+				l9picture.bitmap[(l9picture.width*(y+yi))+(x+xi)] = 
+					(byte)((data[10+(max_x/8)*yi+xi/8]>>(7-(xi%8)))&1);
+			}
+		}
+
+		l9picture.npalette = 2;
+		l9picture.palette[0] = 0;
+		l9picture.palette[1] = 0x00ffffff;
+
+		return true;
+	}	
 	/*
 		C64 Bitmaps, also related formats (BBC B, Amstrad CPC and Spectrum +3)
 	*/
@@ -1860,9 +1983,171 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
+	boolean bitmap_c64_decode(Library lib, String file, int type, int num)
+	{
+		int i=0, xi, yi,  cx, cy, px, py, p;
+		int max_x=0,max_y=0;
+		int off=0, off_scr=0, off_col=0, off_bg=0, col_comp=0;
 
+		byte data[] = bitmap_load(lib,file);
+		if (data == null)
+			return false;
+
+		if (type == C64_BITMAPS)
+		{
+			if (data.length == 10018) // C64 title picture 
+			{
+				max_x = 320;
+				max_y = 200;
+				off = 2;
+				off_scr = 8002;
+				off_bg = 9003;
+				off_col = 9018;
+				col_comp = 0;
+			}
+			else if (data.length == 6464) // C64 picture 
+			{
+				max_x = 320;
+				max_y = 136;
+				off = 2;
+				off_scr = 5442;
+				off_col = 6122;
+				off_bg = 6463;
+				col_comp = 1;
+			}
+			else
+				return false;
+		}
+		else if (type == BBC_BITMAPS)
+		{
+			if (data.length == 10058) // BBC title picture 
+			{
+				max_x = 320;
+				max_y = 200;
+				off = 10;
+				off_scr = 8010;
+				off_bg = 9011;
+				off_col = 9026;
+				col_comp = 0;
+			}
+			else if (data.length == 10048) // BBC title picture
+			{
+				max_x = 320;
+				max_y = 200;
+				off = 0;
+				off_scr = 8000;
+				off_bg = 9001;
+				off_col = 9016;
+				col_comp = 0;
+			}
+			else if (data.length == 6504) // BBC picture 
+			{
+				max_x = 320;
+				max_y = 136;
+				off = 10;
+				off_scr = 5450;
+				off_col = 6130;
+				off_bg = 6471;
+				col_comp = 1;
+			}
+			else if (data.length == 6494) // BBC picture 
+			{
+				max_x = 320;
+				max_y = 136;
+				off = 0;
+				off_scr = 5440;
+				off_col = 6120;
+				off_bg = 6461;
+				col_comp = 1;
+			}
+			else
+				return false;
+		}
+		else if (type == CPC_BITMAPS)
+		{
+			if (num == 0) // CPC/+3 title picture
+			{
+				max_x = 320;
+				max_y = 200;
+				off = 128;
+				off_scr = 8128;
+				off_bg = 9128;
+				off_col = 9144;
+				col_comp = 0;
+			}
+			else if (num == 1) // First CPC/+3 picture 
+			{
+				max_x = 320;
+				max_y = 136;
+				off = 128;
+				off_scr = 5568;
+				off_col = 6248;
+				off_bg = 6588;
+				col_comp = 1;
+			}
+			else if (num >= 2 && num <= 29) // Subsequent CPC/+3 pictures 
+			{
+				max_x = 320;
+				max_y = 136;
+				off = ((num-2)*6462);
+				off_scr = 5440+((num-2)*6462);
+				off_col = 6120+((num-2)*6462);
+				off_bg = 6460+((num-2)*6462);
+				col_comp = 1;
+			}
+			else
+				return false;
+		}
+
+		l9picture=new L9Picture(max_x, max_y);
+		if (l9picture.bitmap == null)
+		{
+			return false;
+		}
+
+		for (yi = 0; yi < max_y; yi++)
+		{
+			for (xi = 0; xi < max_x/2; xi++)
+			{
+				cx = xi/4;
+				px = xi%4;
+				cy = yi/8;
+				py = yi%8;
+
+				p = data[off+(cy*40+cx)*8+py];
+				p = (p>>((3-px)*2))&3;
+
+				switch (p)
+				{
+				case 0:
+					i = data[off_bg] & 0x0f;
+					break;
+				case 1:
+					i = data[off_scr+cy*40+cx] >> 4;
+					break;
+				case 2:
+					i = data[off_scr+cy*40+cx] & 0x0f;
+					break;
+				case 3:
+					if (col_comp!=0)
+						i = (data[off_col+(cy*40+cx)/2]>>((1-(cx%2))*4)) & 0x0f;
+					else
+						i = data[off_col+(cy*40+cx)] & 0x0f;
+					break;
+				}
+
+				l9picture.bitmap[(l9picture.width*yi)+(xi*2)] = (byte)i;
+				l9picture.bitmap[(l9picture.width*yi)+(xi*2)+1] = (byte)i;
+			}
+		}
+
+		l9picture.npalette = 16;
+		for (i = 0; i < 16; i++)
+			l9picture.palette[i] = bitmap_c64_colours[i];
+
+		return true;
+	}
 	/*
 		The graphics files used by the BBC B are virtually identical
 		to C64 graphics files. I assume that (as with the CPC and
@@ -1998,9 +2283,63 @@ public class L9Bitmap {
 
 		return TRUE;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
+	boolean bitmap_bbc_decode(Library lib, String file, int type, int num)
+	{
+		int patRowData;
+		int patArray[]=new int[64]; 
+		int i,j,k,isOddColumn,isOddRow;
+		int pixel;
 
+		if (bitmap_c64_decode(lib,file,type,num) == false)
+			return false;
+
+		byte data[] = bitmap_load(lib,file);
+		if (data==null) return false;
+		patRowData=data.length-32;
+		
+		// Extract the patterns 
+		i = 0;
+		for (k = 0; k < 2; k++)
+		{
+			for (j = 0; j < 16; j++)
+			{
+				// Extract the even col pixel for this pattern row 
+				patArray[j*2+k*32+0] =
+					(((data[patRowData+i]&0xff) >> 4) & 0x8) + (((data[patRowData+i]&0xff) >> 3) & 0x4) +
+					(((data[patRowData+i]&0xff) >> 2) & 0x2) + (((data[patRowData+i]&0xff) >> 1) & 0x1);
+				// Extract the odd col pixel for this pattern row
+				patArray[j*2+k*32+1] =
+					(((data[patRowData+i]&0xff) >> 3) & 0x8) + (((data[patRowData+i]&0xff) >> 2) & 0x4) +
+					(((data[patRowData+i]&0xff) >> 1) & 0x2) + ((data[patRowData+i]&0xff) & 0x1);
+				i++;
+			}
+		}
+
+		//Convert the image. Each BBC pixel is represented by two pixels here 
+		i = 0;
+		isOddRow = 0;
+		for (j = 0; j < l9picture.height; j++)
+		{
+			isOddColumn = 0;
+			for (k = 0; k < l9picture.width/2; k++)
+			{
+				pixel = l9picture.bitmap[i]&0x0f;
+				l9picture.bitmap[i] = (byte)(patArray[pixel*2+isOddColumn*32+isOddRow]&0xff);
+				l9picture.bitmap[i+1] = (byte)(patArray[pixel*2+isOddColumn*32+isOddRow]&0xff);
+				isOddColumn ^= 1;
+				i += 2;
+			}
+			isOddRow ^= 1;
+		}
+
+		l9picture.npalette = 8;
+		for (i = 0; i < 8; i++)
+			l9picture.palette[i] = bitmap_bbc_colours[i];
+
+		return true;
+	}
+	
 	/*--was--	BitmapType DetectBitmaps(char* dir)
 	{
 		char file[MAX_PATH];
@@ -2123,7 +2462,6 @@ public class L9Bitmap {
 
 		return NULL;
 	}*/
-	//TODO: Написать!
 	//TODO: Проверить!
 	boolean DecodeBitmap(Library lib, int bitmaptype, int num, int x, int y)
 	{
@@ -2140,45 +2478,31 @@ public class L9Bitmap {
 
 		case AMIGA_BITMAPS:
 			name=bitmap_noext_name(lib,num);
-	//		if (bitmap_amiga_decode(file,x,y))
-	//			return bitmap;
-			break;
+			return bitmap_amiga_decode(lib,name,x,y);
 
 		case C64_BITMAPS:
 			name=bitmap_c64_name(num);
-	//		if (bitmap_c64_decode(file,type,num))
-	//			return bitmap;
-			break;
+			return bitmap_c64_decode(lib,name,bitmaptype,num);
 
 		case BBC_BITMAPS:
 			name=bitmap_bbc_name(lib,num);
-	//		if (bitmap_bbc_decode(file,type,num))
-	//			return bitmap;
-			break;
+			return bitmap_bbc_decode(lib,name,bitmaptype,num);
 
 		case CPC_BITMAPS:
 			name=bitmap_cpc_name(num);
-	//		if (bitmap_c64_decode(file,type,num)) // Nearly identical to C64 
-	//			return bitmap;
-			break;
+			return bitmap_c64_decode(lib,name,bitmaptype,num); // Nearly identical to C64 
 
 		case MAC_BITMAPS:
 			name=bitmap_noext_name(lib,num);
-	//		if (bitmap_mac_decode(file,x,y))
-	//			return bitmap;
-			break;
+			return bitmap_mac_decode(lib,name,x,y);
 
 		case ST1_BITMAPS:
 			name=bitmap_noext_name(lib,num);
-	//		if (bitmap_st1_decode(file,x,y))
-	//			return bitmap;
-			break;
+			return bitmap_st1_decode(lib,name,x,y);
 
 		case ST2_BITMAPS:
 			name=bitmap_st2_name(num);
-	//		if (bitmap_pc2_decode(file,x,y))
-	//			return bitmap;
-			break;
+			return bitmap_pc2_decode(lib,name,x,y);
 		}
 
 		return false;
