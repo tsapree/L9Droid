@@ -28,7 +28,8 @@ public class L9implement extends L9 {
     int PicColorBuff[]=null;
     Bitmap bm=null;
     int L9BitmapType=0;
-    L9Picture pic_bitmap=null;
+    //L9Picture pic_bitmap=null;
+    boolean flgNeedToRepaint=false;
     int lastpic=-1;
     
 	int PicWidth=0;
@@ -179,14 +180,19 @@ public class L9implement extends L9 {
 		PicWidth=pw[0];
 		PicHeight=ph[0];
 		if (PicWidth<=0 || PicHeight<=0 || mode==0) return;
+		L9UpdateGfxSize();
+		MainActivity.mt.gfx_ready=true;
+	};
+	
+	void L9UpdateGfxSize() {
 		PicBuff=new byte[PicWidth*PicHeight];
 		PicColorBuff=new int[PicWidth*PicHeight];
 		if (bm==null || bm.getHeight()!=PicHeight || bm.getWidth()!=PicWidth) {
 			bm=Bitmap.createBitmap(PicWidth, PicHeight, Bitmap.Config.ARGB_8888);
 			PicColorBuff=new int[PicWidth*PicHeight];
 		};
-		MainActivity.mt.gfx_ready=true;
-	};
+
+	}
 	
 	void os_cleargraphics() {
 		if (PicMode==0 || PicMode==2 || PicBuff==null /*|| iApV->iPicturesEnabled==EFalse*/) return;
@@ -204,23 +210,25 @@ public class L9implement extends L9 {
 		};
 		if (pic!=lastpic || PicWidth==0 || PicHeight==0) {
 			lastpic=pic;
-			pic_bitmap=DecodeBitmap(lib, L9BitmapType, pic, x, y);
-			PicWidth=pic_bitmap.width;
-			PicHeight=pic_bitmap.height;
-			L9UpdateGfxSize();
+			if (l9bitmap.DecodeBitmap(lib, L9BitmapType, pic, x, y)) {
+				PicWidth=l9bitmap.l9picture.width;
+				PicHeight=l9bitmap.l9picture.height;
+				if ((PicWidth>0) && (PicHeight>0)) L9UpdateGfxSize();
+			};
 		};
 		
-		if (pic_bitmap!=0) {
-			int max_x=pic_bitmap->width;    //if (max_x>PicWidth)  max_x=PicWidth;
-			int max_y=pic_bitmap->height;   //if (max_y>PicHeight) max_y=PicHeight;
-			int max_c=pic_bitmap->npalette; if (max_c>32)        max_c=32;
+		if (l9bitmap.l9picture!=null) {
+			int max_x=l9bitmap.l9picture.width;    //if (max_x>PicWidth)  max_x=PicWidth;
+			int max_y=l9bitmap.l9picture.height;   //if (max_y>PicHeight) max_y=PicHeight;
+			int max_c=l9bitmap.l9picture.npalette; if (max_c>32) max_c=32;
 			for (int c=0; c<max_c; c++)
-				iApV->SelectedPalette[c] = (pic_bitmap->palette[c].red<<16)|(pic_bitmap->palette[c].green<<8)|(pic_bitmap->palette[c].blue);
+				SelectedPalette[c] = l9bitmap.l9picture.palette[c]|0xff000000;
 			for (int j=0; j<max_y; j++)
 				for (int i=0; i<max_x; i++)
-					PicBuff[j*PicWidth+i]=pic_bitmap->bitmap[j*pic_bitmap->width+i];
+					PicBuff[j*PicWidth+i]=(byte)(l9bitmap.l9picture.bitmap[j*l9bitmap.l9picture.width+i]&0x1f);
+			flgNeedToRepaint=true;
+			MainActivity.mt.gfx_ready=true;
 		};
-		iApV->DrawDeferred();
 	};
 
 
@@ -374,21 +382,28 @@ public class L9implement extends L9 {
 	};
 	
 	boolean L9DoPeriodGfxTask() {
-		if (PicMode==0 || PicMode==2 /*|| iApV->iPicturesEnabled==EFalse*/) return false;
-
-		//Красивая прорисовка Fill. 
 		int j=0;
-		for (int i=0; i<iPicturesSpeed; i++)
-			if (L9Fill_Step()>0) j++;
-			else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
-
-		//draw to bitmap
-		if (PicBuff!=null && PicColorBuff!=null & bm!=null) {
-			int s=PicWidth*PicHeight;
-			for (int i=0;i<s;i++)
-				PicColorBuff[i]=SelectedPalette[PicBuff[i]];
-			bm.setPixels(PicColorBuff, 0, PicWidth, 0, 0, PicWidth, PicHeight);
+		if (PicMode==0) return false;
+		else if (PicMode==1) {
+			//Красивая прорисовка Fill. 
+			for (int i=0; i<iPicturesSpeed; i++)
+				if (L9Fill_Step()>0) j++;
+				else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
+		} else {
+			if (flgNeedToRepaint) j++;
+			flgNeedToRepaint=false;
 		};
+		
+		if (j!=0) {
+			//draw to bitmap
+			if (PicBuff!=null && PicColorBuff!=null & bm!=null) {
+				int s=PicWidth*PicHeight;
+				for (int i=0;i<s;i++) {
+					PicColorBuff[i]=SelectedPalette[PicBuff[i]];
+				};
+				bm.setPixels(PicColorBuff, 0, PicWidth, 0, 0, PicWidth, PicHeight);
+			};
+		}
 		
 		return j!=0;
 	};

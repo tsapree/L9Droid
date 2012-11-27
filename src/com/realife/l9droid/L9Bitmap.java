@@ -125,7 +125,18 @@ public class L9Bitmap {
 		col.blue = (L9BYTE)(b&0xFF);
 		return col;
 	}*/
+	int bitmap_pcst_colour(int big, int small)
+	{
+		int r = big & 0xF;
+		int g = (small >> 4) & 0xF;
+		int b = small & 0xF;
 
+		r *= 0x49; r >>= 1;
+		g *= 0x49; g >>= 1;
+		b *= 0x49; b >>= 1;
+
+		return ((r&0xff)<<16) | ((g&0xff)<<8) | (b&0xff);
+	}
 	/*
 		ST Bitmaps
 
@@ -228,6 +239,8 @@ public class L9Bitmap {
 
 		return pixel_index;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*
 		The ST image file has the following format. It consists of a 44 byte header
@@ -374,6 +387,8 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*void bitmap_st2_name(int num, char* dir, char* out)
 	{
@@ -438,13 +453,13 @@ public class L9Bitmap {
 		col.blue = (((i&1)<<1) | ((i&8)>>3)) * 0x55;
 		return col;
 	}*/
-	L9Colour bitmap_pc1_colour(int i)
+	//TODO: Проверить!
+	int bitmap_pc1_colour(int i)
 	{
-		L9Colour col=new L9Colour();
-		col.red = (((i&4)>>1) | ((i&0x20)>>5)) * 0x55;
-		col.green = ((i&2) | ((i&0x10)>>4)) * 0x55;
-		col.blue = (((i&1)<<1) | ((i&8)>>3)) * 0x55;
-		return col;
+		int red = (((i&4)>>1) | ((i&0x20)>>5)) * 0x55;
+		int green = ((i&2) | ((i&0x10)>>4)) * 0x55;
+		int blue = (((i&1)<<1) | ((i&8)>>3)) * 0x55;
+		return ((red&0xff)<<16) | ((green&0xff)<<8) | (blue&0xff); 
 	}
 
 	/*
@@ -514,28 +529,26 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
-	L9Picture bitmap_pc1_decode(Library lib, String file, int x, int y)
+	//TODO: Проверить!
+	boolean bitmap_pc1_decode(Library lib, String file, int x, int y)
 	{
 		int i, xi, yi, max_x, max_y;
-		int size;
 		byte data[] = null;
-		L9Picture pict=new L9Picture();
 		
 		data = bitmap_load(lib,file);
-		if (data == null) return null;
+		if (data == null) return false;
 
 		max_x = (data[2]&0xff)+(data[3]&0xff)*256;
 		max_y = (data[4]&0xff)+(data[5]&0xff)*256;
-		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT)
-		{
-			return null;
+		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT) {
+			return false;
 		}
 
 		if ((x == 0) && (y == 0)) {
 			l9picture=new L9Picture(max_x, max_y);
 		}
 		if (l9picture.bitmap == null) {
-			return null;
+			return false;
 		}
 
 		if (x+max_x > l9picture.width)
@@ -543,25 +556,18 @@ public class L9Bitmap {
 		if (y+max_y > l9picture.height)
 			max_y = l9picture.height-y;
 
-		for (yi = 0; yi < max_y; yi++)
-		{
-			for (xi = 0; xi < max_x; xi++)
-			{
+		for (yi = 0; yi < max_y; yi++) {
+			for (xi = 0; xi < max_x; xi++) {
 				l9picture.bitmap[(l9picture.width*(y+yi))+(x+xi)]=
 					(byte) ((data[23+((yi*max_x)/2)+(xi/2)]>>((1-(xi&1))*4)) & 0x0f);
 			}
 		}
 
 		l9picture.npalette = 16;
-		for (i = 0; i < 16; i++) {
-			//TODO: убрать лишний класс, лучше поизвращаться с массивами или еще чем-то 
-			L9Colour colour=bitmap_pc1_colour(data[6+i]);
-			l9picture.palette_red[i] =(byte)colour.red; 
-			l9picture.palette_green[i] =(byte)colour.green;
-			l9picture.palette_blue[i] =(byte)colour.blue;
-		};
+		for (i = 0; i < 16; i++) 
+			l9picture.palette[i] =bitmap_pc1_colour(data[6+i]); 
 
-		return l9picture;
+		return true;
 	}
 
 	/*
@@ -848,6 +854,131 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
+	boolean bitmap_pc2_decode(Library lib, String file, int x, int y)
+	{
+		int i, xi, yi, max_x, max_y;
+
+		int theNewPixel, theNewPixelIndex;
+		int theBufferBitCounter, theNewPixelIndexSelector, theBufferBitStripCount;
+		int theBitStreamBuffer, theImageDataIndex;
+		int theImageFileData;
+
+		byte data[] = bitmap_load(lib,file);
+		if (data == null)
+			return false;
+
+		max_x = (data[37]&0xff)+((data[36]&0xff)<<8);
+		max_y = (data[39]&0xff)+((data[38]&0xff)<<8);
+		if (max_x > MAX_BITMAP_WIDTH || max_y > MAX_BITMAP_HEIGHT)
+		{
+			return false;
+		}
+
+		if ((x == 0) && (y == 0))
+			l9picture=new L9Picture(max_x, max_y);
+			
+		if (l9picture.bitmap == null) {
+			return false;
+		}
+
+		if (x+max_x > l9picture.width)
+			max_x = l9picture.width-x;
+		if (y+max_y > l9picture.height)
+			max_y = l9picture.height-y;
+
+		// prime the new pixel variable with the seed byte 
+		theNewPixel = data[40]&0xff;
+		// initialise the index to the image data 
+		theImageDataIndex = 0;
+		// prime the bit stream buffer 
+		theImageFileData = 570;
+		theBitStreamBuffer = (data[theImageFileData+(theImageDataIndex++)]&0xff)
+				+ (0x100 * (data[theImageFileData+(theImageDataIndex++)]&0xff));
+		// initialise the bit stream buffer bit counter 
+		theBufferBitCounter = 8;
+
+		for (yi = 0; yi < max_y; yi++)
+		{
+			for (xi = 0; xi < max_x; xi++)
+			{
+				theNewPixelIndexSelector = (theBitStreamBuffer & 0x00FF);
+				if (theNewPixelIndexSelector != 0xFF)
+				{
+					// get index for new pixel and bit strip count 
+					theNewPixelIndex = data[314+theNewPixelIndexSelector]&0xff;
+					// get the bit strip count 
+					theBufferBitStripCount = data[298+theNewPixelIndex]&0xff;
+					// strip theBufferBitStripCount bits from theBitStreamBuffer 
+					while (theBufferBitStripCount > 0)
+					{
+						theBitStreamBuffer = theBitStreamBuffer >> 1;
+						theBufferBitStripCount--;
+						theBufferBitCounter--;
+						if (theBufferBitCounter == 0)
+						{
+							// need to refill the theBitStreamBuffer high byte
+							theBitStreamBuffer = theBitStreamBuffer + 
+								(0x100 * (data[theImageFileData+(theImageDataIndex++)]&0xff));
+							// re-initialise the bit stream buffer bit counter
+							theBufferBitCounter = 8;
+						}
+					}
+				}
+				else
+				{
+					// strip the 8 bits holding 0xFF from theBitStreamBuffer 
+					theBufferBitStripCount = 8;
+					while (theBufferBitStripCount > 0)
+					{
+						theBitStreamBuffer = theBitStreamBuffer >> 1;
+						theBufferBitStripCount--;
+						theBufferBitCounter--;
+						if (theBufferBitCounter == 0)
+						{
+							// need to refill the theBitStreamBuffer high byte 
+							theBitStreamBuffer = theBitStreamBuffer + 
+								(0x100 * (data[theImageFileData+(theImageDataIndex++)]&0xff));
+							// re-initialise the bit stream buffer bit counter 
+							theBufferBitCounter = 8;
+						}
+					}
+					// get the literal pixel index value from the bit stream
+					theNewPixelIndex = (0x000F & theBitStreamBuffer);
+					theBufferBitStripCount = 4;
+					// strip 4 bits from theBitStreamBuffer 
+					while (theBufferBitStripCount > 0)
+					{
+						theBitStreamBuffer = theBitStreamBuffer >> 1;
+						theBufferBitStripCount--;
+						theBufferBitCounter--;
+						if (theBufferBitCounter == 0)
+						{
+							// need to refill the theBitStreamBuffer high byte 
+							theBitStreamBuffer = theBitStreamBuffer + 
+								(0x100 * (data[theImageFileData+(theImageDataIndex++)]&0xff));
+							// re-initialise the bit stream buffer bit counter 
+							theBufferBitCounter = 8;
+						}
+					}
+				}
+
+				// shift the previous pixel into the high four bits of theNewPixel 
+				theNewPixel = (0xF0 & (theNewPixel << 4));
+				// add the index to the new pixel to theNewPixel 
+				theNewPixel = theNewPixel + theNewPixelIndex;
+				// extract the nex pixel from the table 
+				theNewPixel = data[42+theNewPixel]&0xff;
+				// store new pixel in the bitmap 
+				l9picture.bitmap[(l9picture.width*(y+yi))+(x+xi)] = (byte)(theNewPixel&0xf);
+			}
+		}
+
+		l9picture.npalette = 16;
+		for (i = 0; i < 16; i++)
+			l9picture.palette[i] = bitmap_pcst_colour(data[4+(i*2)]&0xff,data[5+(i*2)]&0xff);
+
+		return true;
+	}
 
 	/*--was--	BitmapType bitmap_pc_type(char* file)
 	{
@@ -877,6 +1008,7 @@ public class L9Bitmap {
 
 		return type;
 	}*/
+	//TODO: Проверить!
 	int bitmap_pc_type(Library lib, String file)
 	{
 		int type = PC2_BITMAPS;
@@ -923,6 +1055,7 @@ public class L9Bitmap {
 
 		sprintf(out,"%s%d",dir,num);
 	}*/
+	//TODO: Проверить!
 	String bitmap_noext_name(Library lib, int num)
 	{
 		if (num == 0)
@@ -938,6 +1071,8 @@ public class L9Bitmap {
 	{
 		return (int)(pow((double)col/15,1.0/0.8) * 0xff);
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*
 		Amiga palette colours are word length structures with the red, green and blue
@@ -952,6 +1087,8 @@ public class L9Bitmap {
 		col.blue = bitmap_amiga_intensity(i2&0xf);
 		return col;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*
 		The Amiga image file has the following format. It consists of a 44 byte
@@ -1032,6 +1169,8 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*--was--	BitmapType bitmap_noext_type(char* file)
 	{
@@ -1085,6 +1224,7 @@ public class L9Bitmap {
 
 		return NO_BITMAPS;
 	}*/
+	//TODO: Проверить!
 	int bitmap_noext_type(Library lib, String file)
 	{
 		byte data[]=lib.fileLoadRelativeToArray(file);
@@ -1214,6 +1354,8 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*
 		C64 Bitmaps, also related formats (BBC B, Amstrad CPC and Spectrum +3)
@@ -1255,6 +1397,7 @@ public class L9Bitmap {
 		else
 			sprintf(out,"%spic%d",dir,num);
 	}*/
+	//TODO: Проверить!
 	String bitmap_c64_name(int num)
 	{
 		if (num == 0)
@@ -1292,6 +1435,7 @@ public class L9Bitmap {
 			sprintf(out,"%spic%d",dir,num);
 		}
 	}*/
+	//TODO: Проверить!
 	String bitmap_bbc_name(Library lib, int num) {
 		if (num == 0)
 		{
@@ -1315,6 +1459,7 @@ public class L9Bitmap {
 		else
 			sprintf(out,"%sallpics.pic",dir);
 	}*/
+	//TODO: Проверить!
 	String bitmap_cpc_name(int num) {
 		if (num == 0)
 			return String.format("title.pic");
@@ -1342,6 +1487,7 @@ public class L9Bitmap {
 
 		return type;
 	}*/
+	//TODO: Проверить!
 	int bitmap_c64_type(Library lib, String file)
 	{
 		int type = C64_BITMAPS;
@@ -1566,6 +1712,8 @@ public class L9Bitmap {
 		free(data);
 		return TRUE;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*
 		The graphics files used by the BBC B are virtually identical
@@ -1702,6 +1850,8 @@ public class L9Bitmap {
 
 		return TRUE;
 	}*/
+	//TODO: Написать!
+	//TODO: Проверить!
 
 	/*--was--	BitmapType DetectBitmaps(char* dir)
 	{
@@ -1825,7 +1975,9 @@ public class L9Bitmap {
 
 		return NULL;
 	}*/
-	L9Picture DecodeBitmap(Library lib, int bitmaptype, int num, int x, int y)
+	//TODO: Написать!
+	//TODO: Проверить!
+	boolean DecodeBitmap(Library lib, int bitmaptype, int num, int x, int y)
 	{
 		String name;
 		switch (bitmaptype)
@@ -1833,13 +1985,10 @@ public class L9Bitmap {
 		case PC1_BITMAPS:
 			name=bitmap_pc_name(num);
 			return bitmap_pc1_decode(lib,name,x,y);
-			//break;
 
-		case PC2_BITMAPS:
+		case PC2_BITMAPS: //работает
 			name=bitmap_pc_name(num);
-	//		if (bitmap_pc2_decode(file,x,y))
-	//			return bitmap;
-			break;
+			return bitmap_pc2_decode(lib,name,x,y);
 
 		case AMIGA_BITMAPS:
 			name=bitmap_noext_name(lib,num);
@@ -1884,35 +2033,28 @@ public class L9Bitmap {
 			break;
 		}
 
-		return null;
+		return false;
 	}
 }
 	
 class L9Picture {
 	int width, height;
 	byte[] bitmap;
-	byte palette_red[];
-	byte palette_green[];
-	byte palette_blue[];
+	int palette[];
 	int npalette;
 	
 	L9Picture() {
-		palette_red=new byte[32];
-		palette_green=new byte[32];
-		palette_blue=new byte[32];
+		palette=new int[32];
 		bitmap=null;
+		width = 0;
+		height = 0;
+		npalette = 0;
 	}
 	L9Picture(int x, int y) {
-		palette_red=new byte[32];
-		palette_green=new byte[32];
-		palette_blue=new byte[32];
+		palette=new int[32];
 		bitmap=new byte[x*y];
+		width = x;
+		height = y;
+		npalette = 0;
 	}
 };
-
-class L9Colour {
-	int red;
-	int green;
-	int blue;
-}
-
