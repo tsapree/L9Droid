@@ -24,7 +24,7 @@
         </activity>
         <activity android:name="PrefActivity"></activity>
         <activity android:name="LibraryActivity"></activity>
-        <activity android:name="AboutActivity"></activity>
+        <activity android:name="AboutActivity" android:theme="@android:style/Theme.Dialog"></activity>
     </application>
 
 </manifest>
