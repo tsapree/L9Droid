@@ -23,6 +23,9 @@ public class Threads {
     Thread t,g;
     
     boolean needToQuit=false;
+    //boolean menuPicturesFound=false;
+    boolean menuPicturesEnabled=false;
+    boolean menuHashEnabled=false;
     
     Bitmap bm=null;
     L9implement l9;
@@ -56,10 +59,12 @@ public class Threads {
 				};
 		    	switch (msg.what) {
 		    	case MACT_L9WORKING:
+		    		menuHashEnabled=false;
 		    		activity.bCmd.setText("...");
 		    		activity.bCmd.setEnabled(false);
 		    		break;
 		    	case MACT_L9WAITFORCOMMAND:
+		    		menuHashEnabled=true;
 		    		activity.bCmd.setText("Do");
 		    		activity.bCmd.setEnabled(true);
 		    		break;
@@ -81,10 +86,12 @@ public class Threads {
 	    			l9.saveloaddone=true;
 	    			break;
 	    		case MACT_GFXOFF:
+		    		menuPicturesEnabled=false;
 	    			bm=null;
 	    			activity.ivScreen.setImageBitmap(bm);
 	    			break;
 	    		case MACT_GFXON:
+	    			menuPicturesEnabled=true;
 	    			activity.ivScreen.setImageBitmap(bm);
 	    			break;
 	    		case MACT_GFXUPDATE:

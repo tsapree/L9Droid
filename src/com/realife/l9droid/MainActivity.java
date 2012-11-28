@@ -121,6 +121,17 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         //mt=null;
     }
 
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // TODO Auto-generated method stub
+        // пункты меню с ID группы = 1 видны, если в CheckBox стоит галка
+
+        menu.setGroupVisible(1, mt.menuHashEnabled);
+        menu.setGroupVisible(2, mt.menuHashEnabled && mt.gfx_ready && (!mt.menuPicturesEnabled));
+        menu.setGroupVisible(3, mt.menuHashEnabled && mt.gfx_ready &&  mt.menuPicturesEnabled);
+        
+        return super.onPrepareOptionsMenu(menu);
+    }
+    
     //@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.main, menu);
@@ -130,9 +141,19 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	mi.setOnMenuItemClickListener(this);
         mi = menu.add(0, 2, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
-        mi = menu.add(0, 3, 0, "About");
+        mi = menu.add(0, 3, 1, "About");
         mi.setIntent(new Intent(this, AboutActivity.class));
-        
+        mi = menu.add(1, 4, 0,"save");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(1, 5, 0,"restore");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(2, 6, 0,"pictures");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(3, 7, 0,"words");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(1, 8, 0,"play script");
+    	mi.setOnMenuItemClickListener(this);
+    	
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -143,6 +164,21 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			Intent intent=new Intent(this, LibraryActivity.class);
 			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
 	        //mi.setIntent(intent);
+			break;
+		case 4:
+			postHashCommand("#save");
+			break;
+		case 5:
+			postHashCommand("#restore");
+			break;
+		case 6:
+			postHashCommand("pictures");
+			break;
+		case 7:
+			postHashCommand("words");
+			break;
+		case 8:
+			postHashCommand("#play");
 			break;
 		};
 		return false;
@@ -198,6 +234,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			etCmd.setText("");
 		};
 
+	};
+	
+	void postHashCommand(String cmd) {
+		etCmd.setText(cmd);
+		postCommand();
 	};
 
 	}
