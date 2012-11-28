@@ -26,6 +26,7 @@ public class Threads {
     Thread t,g;
     
     boolean needToQuit=false;
+    boolean activityPaused=false;
     //boolean menuPicturesFound=false;
     boolean menuPicturesEnabled=false;
     boolean menuHashEnabled=false;
@@ -183,7 +184,7 @@ public class Threads {
 							e.printStackTrace();
 						}
 		        		l9.InputCommand("");
-		        	} else l9.step();
+		        	} else if (!activityPaused) l9.step();
 		        };
 			}
 		});

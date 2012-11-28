@@ -111,7 +111,13 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	etCmd.setTypeface(tf);
     	etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
     	etCmd.setTextSize(fontSize);
+    	mt.activityPaused=false;
     	super.onResume();
+    }
+    
+    protected void onPause() {
+    	mt.activityPaused=true;
+    	super.onPause();
     }
     
     protected void onDestroy() {
