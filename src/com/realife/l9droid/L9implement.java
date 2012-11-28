@@ -437,4 +437,18 @@ public class L9implement extends L9 {
 		return NewName.substring(0, i)+String.valueOf(num)+NewName.substring(i+1, NewName.length());
 	};
 	
+	char os_readchar(int millis) {
+		if (millis!=0) {
+			mHandler.sendEmptyMessage(Threads.MACT_L9WAITFORCHAR);
+			try {
+				TimeUnit.MILLISECONDS.sleep(millis*100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			mHandler.sendEmptyMessage(Threads.MACT_L9WORKING);
+		};
+		return '\r';
+		}; 
+	
 }

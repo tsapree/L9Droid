@@ -18,6 +18,7 @@ public class Threads {
 	public final static int MACT_GFXUPDATE=7;
 	public final static int MACT_L9WAITBEFORESCRIPT=8;
 	public final static int MACT_TOAST=9;
+	public final static int MACT_L9WAITFORCHAR=10;
 	
 	MainActivity activity;
 	Library lib;
@@ -70,6 +71,11 @@ public class Threads {
 		    		activity.bCmd.setText("Do");
 		    		activity.bCmd.setEnabled(true);
 		    		break;
+		    	case MACT_L9WAITFORCHAR:
+		    		//menuHashEnabled=true;
+		    		activity.bCmd.setText("*");
+		    		activity.bCmd.setEnabled(true);
+		    		break;	
 		    	case MACT_L9WAITBEFORESCRIPT:
 		    		activity.bCmd.setText("<!>");
 		    		activity.bCmd.setEnabled(false);
