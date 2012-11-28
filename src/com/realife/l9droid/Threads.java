@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 public class Threads {
@@ -85,6 +86,7 @@ public class Threads {
 	    			char c=(char)msg.arg1;
 	    			if (c==0x0d) activity.etLog.append("\n");
 	    			else activity.etLog.append(String.valueOf(c));
+	    			activity.etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
 	    			break;
 	    		case MACT_SAVEGAMESTATE:
     				l9.saveok=lib.fileSave(l9.saveloadBuff);

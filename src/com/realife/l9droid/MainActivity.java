@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -30,8 +35,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	float fontSizeDefault=0;
 	
 	Button bCmd;
-	EditText etLog;
+	TextView etLog;
     EditText etCmd;
+    ScrollView etLogScroll;
     
     ImageView ivScreen;
     
@@ -45,7 +51,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         
         ivScreen=(ImageView) findViewById(R.id.imageView1);
@@ -53,12 +58,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
         
-        etLog = (EditText) findViewById(R.id.etLog);
+        etLog = (TextView) findViewById(R.id.etLog);
+        etLogScroll=(ScrollView) findViewById(R.id.scrollView1);
         etCmd = (EditText) findViewById(R.id.etCmd);
         etCmd.setOnEditorActionListener(this);
-
+        
         etCmd.setText("");
-        //etLog.setText("Welcome to Level9 emulator v0.001\n(c)2012 Paul Stakhov\n");
                 
         command=null;
         
@@ -111,17 +116,21 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     	etCmd.setTypeface(tf);
     	etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
     	etCmd.setTextSize(fontSize);
+    	
+    	etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
+    	
     	mt.activityPaused=false;
     	super.onResume();
     }
     
     protected void onPause() {
-    	mt.activityPaused=true;
     	super.onPause();
+    	mt.activityPaused=true;
     }
     
     protected void onDestroy() {
         super.onDestroy();
+    	mt.activityPaused=false;
         //Log.d("l9droid", "need to stop application");
         if (killThreadsOnDestroyActivity) mt.destroy();
         //mt=null;
@@ -235,7 +244,13 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	void postCommand() {
 		//TODO: как вариант - глотать команды, добавл€€ в command - но только в 3и4 верси€х
 		if (etCmd.length()>0 && mt.l9.L9State==mt.l9.L9StateWaitForCommand) {
-			etLog.append(etCmd.getText());
+			
+	        final SpannableStringBuilder text = new SpannableStringBuilder(etCmd.getText());
+	        final ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+	        text.setSpan(style, 0, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+	        etLog.append(text);
+			//etLog.append(etCmd.getText());
+			etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
 			command=etCmd.getText().toString();
 			etCmd.setText("");
 		};
