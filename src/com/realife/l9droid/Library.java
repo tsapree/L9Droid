@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.Toast;
 
 public class Library {
@@ -18,19 +20,19 @@ public class Library {
 	final String DIR_SD = "Worm In Paradise/Speccy";
 	final String FILE_SD="worm.sna";
 	
-	Activity parent_act;
+	Handler h;
 	String GameFullPathName;
 	String paths[];
 	int paths_num;
 	
 	Library() {
+		h=null;
 		paths=null;
 		paths_num=0;
 		GameFullPathName="";
 	};
 	
 	boolean prepareLibrary(Activity act) {
-		parent_act=act;
 		paths=null;
 		paths_num=0;
 		//getting sdcard path
@@ -123,8 +125,9 @@ public class Library {
 		    } catch (IOException e) {
 		      e.printStackTrace();
 		    }
-		    if (buff!=null) Toast.makeText(parent_act, "Loaded: "+absolutePath, Toast.LENGTH_LONG).show();
-		    else Toast.makeText(parent_act, "ERROR load: "+absolutePath, Toast.LENGTH_LONG).show();
+
+		    if (buff!=null) sendUserMessage("Loaded: "+absolutePath);
+		    else sendUserMessage("ERROR load: "+absolutePath);
 		    
 		};
 		return buff;
@@ -144,14 +147,14 @@ public class Library {
 				OutputStream out = new FileOutputStream(sdFile);
 				out.write(buff);
 				out.close();
-				Toast.makeText(parent_act, "Saved: "+path, Toast.LENGTH_LONG).show();
+				sendUserMessage("Saved: "+path);
 				return true;
 			} catch (FileNotFoundException e) {
 				//TODO: e.printStackTrace();
 			} catch (IOException e) {
 				//TODO: e.printStackTrace();
 			}
-			Toast.makeText(parent_act, "ERROR save: "+path, Toast.LENGTH_LONG).show();
+			sendUserMessage("ERROR save: "+path);
 		};
 		return false;
 	}
@@ -212,4 +215,10 @@ public class Library {
 		};
 		return path.substring(0, j-1)+'.'+newExtension;
 	};
+	
+	private void sendUserMessage(String txt) {
+		if (h==null) return;
+		Message msg=h.obtainMessage(Threads.MACT_TOAST, txt);
+		h.sendMessage(msg);
+	}
 }

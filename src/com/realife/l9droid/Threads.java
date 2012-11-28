@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.widget.Toast;
 
 public class Threads {
 	
@@ -16,6 +17,7 @@ public class Threads {
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
 	public final static int MACT_L9WAITBEFORESCRIPT=8;
+	public final static int MACT_TOAST=9;
 	
 	MainActivity activity;
 	Library lib;
@@ -102,10 +104,14 @@ public class Threads {
 	    			activity.ivScreen.invalidate();
 	    				
 	    			break;
+		    	case MACT_TOAST:
+		    		Toast.makeText(activity, (String)msg.obj, Toast.LENGTH_LONG).show();
+		    		break;
 		    	}
 		    };
 		};
 		h.sendEmptyMessage(MACT_L9WORKING);
+		lib.h=h;
 	};
 	
 	void startGame(String path) {
