@@ -1,26 +1,11 @@
-package com.realife.l9droid;
-
-//started: 01.09.2012
-
-//char		16 bit
-//byte		signed 8 bit	->	L9BYTE		unsigned 8 bit quantity
-//short 	signed 16 bit	->	L9UINT16	unsigned 16 bit quantity
-//int		signed 32 bit	->	L9UINT32	unsigned 32 bit quantity
-//boolean					->	L9BOOL		quantity capable of holding the values TRUE (1) and FALSE (0)
-//
-//0=false
-//1=true 
-//if (var) -> if(var!=0)
-//*getvar()->workspace.vartable[getvar()]&0xffff
-
 /***********************************************************************\
 *
 * Level 9 interpreter
-* Version 4.1
-* Copyright (c) 1996 Glen Summers
-* Copyright (c) 2002,2003 Glen Summers and David Kinder
-* Copyright (c) 2005,2007 Glen Summers, David Kinder, Alan Staniforth,
-* Simon Baldwin and Dieter Baron
+* Version 5.1
+* Copyright (c) 1996-2011 Glen Summers and contributors.
+* Contributions from David Kinder, Alan Staniforth, Simon Baldwin,
+* Dieter Baron and Andreas Scherrer.
+
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -51,6 +36,20 @@ package com.realife.l9droid;
 *
 \***********************************************************************/
 
+//java(android) version started: 01.09.2012
+
+package com.realife.l9droid;
+
+//char		16 bit
+//byte		signed 8 bit	->	L9BYTE		unsigned 8 bit quantity
+//short 	signed 16 bit	->	L9UINT16	unsigned 16 bit quantity
+//int		signed 32 bit	->	L9UINT32	unsigned 32 bit quantity
+//boolean					->	L9BOOL		quantity capable of holding the values TRUE (1) and FALSE (0)
+//
+//0=false
+//1=true 
+//if (var) -> if(var!=0)
+//*getvar()->workspace.vartable[getvar()]&0xffff
 
 public class L9 {
 	
