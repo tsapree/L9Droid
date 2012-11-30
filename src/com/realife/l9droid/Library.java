@@ -190,7 +190,8 @@ public class Library {
 	
 	Bitmap pictureLoadToBitmap(String path) {
 		Bitmap b=BitmapFactory.decodeFile(path);
-		if (b!=null) sendUserMessage("load: "+path);
+		if (b!=null) b=b.copy(Bitmap.Config.ARGB_8888,true); //i need mutable bitmap for draw on it
+		if (b!=null) sendUserMessage("Loaded: "+path);
 		else sendUserMessage("ERROR load: "+path);
 		return b;
 	}

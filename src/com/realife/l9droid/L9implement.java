@@ -189,7 +189,7 @@ public class L9implement extends L9 {
 		PicColorBuff=new int[PicWidth*PicHeight];
 		if (bm==null || bm.getHeight()!=PicHeight || bm.getWidth()!=PicWidth) {
 			bm=Bitmap.createBitmap(PicWidth, PicHeight, Bitmap.Config.ARGB_8888);
-			PicColorBuff=new int[PicWidth*PicHeight];
+			//PicColorBuff=new int[PicWidth*PicHeight];
 		};
 
 	}
