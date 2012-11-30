@@ -189,7 +189,10 @@ public class Library {
 	}
 	
 	Bitmap pictureLoadToBitmap(String path) {
-		return BitmapFactory.decodeFile(path);
+		Bitmap b=BitmapFactory.decodeFile(path);
+		if (b!=null) sendUserMessage("load: "+path);
+		else sendUserMessage("ERROR load: "+path);
+		return b;
 	}
 	
 	boolean deleteFile(String path) {

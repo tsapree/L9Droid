@@ -459,8 +459,10 @@ public class L9implement extends L9 {
 		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
-			bm=lib.pictureLoadToBitmap(path);
-			mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
+			
+			String name=lib.changeFileExtension(path, "png");
+			bm=lib.pictureLoadToBitmap(name);
+			if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
 			return true;
 		};
 		return false;
