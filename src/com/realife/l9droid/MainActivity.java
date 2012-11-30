@@ -220,6 +220,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		      if (mt.l9!=null) {
 		    	  Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
 		      } else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
+		      etCmd.setText("");
 	        break;
 	      }
 	    // если вернулось не ОК
