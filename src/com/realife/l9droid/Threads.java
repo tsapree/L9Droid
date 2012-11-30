@@ -135,14 +135,15 @@ public class Threads {
         	l9=null;
         	return;
         }
-        if (loadAutoSave) {
+        if (loadAutoSave) 
         	l9.restore_autosave(lib.getAbsolutePath("Saves/auto.sav"));
-        };
+        else
+        	h.sendEmptyMessage(MACT_GFXOFF); //убираю картинку от прошлой игры
         
 		gfx_ready=false;
+		
 		g = new Thread(new Runnable() {
 			public void run() {
-				//h.sendEmptyMessage(MACT_GFXOFF);
 				while(needToQuit!=true) {
 					//Log.d("l9droid", "thread g still working");
 					try {
