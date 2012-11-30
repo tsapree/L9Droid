@@ -197,8 +197,8 @@ public class L9implement extends L9 {
 	void os_cleargraphics() {
 		if (PicMode==0 || PicMode==2 || PicBuff==null /*|| iApV->iPicturesEnabled==EFalse*/) return;
 		//memclr(PicBuff,PicHeight*PicWidth);
-		for (int i=0;i<PicHeight*PicWidth;i++) PicBuff[i]=0;
 		L9_FillCount=0; //отменить закраску, если она выполнялась.
+		for (int i=0;i<PicHeight*PicWidth;i++) PicBuff[i]=0;
 		//TODO:iApV->DrawDeferred();
 		
 	};
