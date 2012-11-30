@@ -123,17 +123,20 @@ public class Threads {
 		lib.h=h;
 	};
 	
-	void startGame(String path) {
+	void startGame(String gamepath, boolean loadAutoSave) {
 		
-		destroy();
+		destroy(false);
 
 		l9=new L9implement(lib,h);
-        lib.setPath(path);
-        String picturefilename=l9.findPictureFile(path);
-        if (l9.LoadGame(path, picturefilename)!=true) {
+        lib.setPath(gamepath);
+        String picturefilename=l9.findPictureFile(gamepath);
+        if (l9.LoadGame(gamepath, picturefilename)!=true) {
         	l9=null;
         	return;
         }
+        if (loadAutoSave) {
+        	l9.restore_autosave(lib.getAbsolutePath("Saves/auto.sav"));
+        };
         
 		gfx_ready=false;
 		g = new Thread(new Runnable() {
@@ -193,10 +196,14 @@ public class Threads {
 		t.start();
 	}
 	
-	void destroy() {
+	void destroy(boolean needAutoSave) {
 		needToQuit=true;
 		//TODO: почистить очередь?
-		if (l9!=null) l9.StopGame();
+		if (l9!=null && needAutoSave) {
+			String name=lib.getAbsolutePath("Saves/auto.sav");
+			if (l9.L9State!=l9.L9StateStopped) l9.autosave(name);
+			l9.StopGame();
+		}
 		if (g!=null) while (g.isAlive());
 		if (t!=null) while (t.isAlive());
 		t=null;

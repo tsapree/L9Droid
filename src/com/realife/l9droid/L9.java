@@ -54,8 +54,8 @@ package com.realife.l9droid;
 public class L9 {
 	
 	//TODO: перенести LISTAREASIZE и STACKSIZE в какой-либо класс, а не таскать по всем.
-	private static final int LISTAREASIZE = 0x800;
-	private static final int STACKSIZE = 1024;
+	public static final int LISTAREASIZE = 0x800;
+	public static final int STACKSIZE = 1024;
 	
 	//#define IBUFFSIZE 500
 	private static final int IBUFFSIZE = 500; 
@@ -83,7 +83,7 @@ public class L9 {
 	
 	
 	//char LastGame[MAX_PATH];
-	String LastGame;
+	public String LastGame;
 	
 	//char FirstLine[FIRSTLINESIZE];
 	//int FirstLinePos=0;

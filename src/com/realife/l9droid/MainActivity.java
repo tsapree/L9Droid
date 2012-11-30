@@ -74,7 +74,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	        mt.create();
 	        SharedPreferences sPref=getPreferences(MODE_PRIVATE);
 	        String lastGame = sPref.getString("lastgame", "Worm In Paradise/Speccy/worm.sna");
-	        mt.startGame(lastGame);
+	        mt.startGame(lastGame,true);
 	        if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
 	        else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
 	        
@@ -129,10 +129,16 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     }
     
     protected void onDestroy() {
-        super.onDestroy();
-    	mt.activityPaused=false;
-        //Log.d("l9droid", "need to stop application");
-        if (killThreadsOnDestroyActivity) mt.destroy();
+		super.onDestroy();
+		mt.activityPaused=false;
+		//Log.d("l9droid", "need to stop application");
+		if (killThreadsOnDestroyActivity) {
+			SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+			Editor ed = sPref.edit();
+			ed.putString("lastgame", mt.l9.LastGame);
+			ed.commit();
+			mt.destroy(true);
+		}
         //mt=null;
     }
 
@@ -209,14 +215,10 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	      case 1:
 	    	  //Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
 	    	  String newGame=data.getStringExtra("opengame");
-		      mt.startGame(newGame);
+		      mt.startGame(newGame,false);
 	    	  etLog.setText(""); //TODO: поумнее очищать лог, есть вероятность потерять начало предложения.
 		      if (mt.l9!=null) {
 		    	  Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
-		    	  SharedPreferences sPref=getPreferences(MODE_PRIVATE);
-		    	  Editor ed = sPref.edit();
-		    	  ed.putString("lastgame", newGame);
-		    	  ed.commit();
 		      } else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
 	        break;
 	      }

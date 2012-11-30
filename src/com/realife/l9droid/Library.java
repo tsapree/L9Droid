@@ -107,6 +107,7 @@ public class Library {
 	}
 	
 	byte[] fileLoadToArray(String absolutePath) {
+		if (absolutePath==null) return null;
 		byte buff[]=null;
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {

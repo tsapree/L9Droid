@@ -449,6 +449,30 @@ public class L9implement extends L9 {
 			mHandler.sendEmptyMessage(Threads.MACT_L9WORKING);
 		};
 		return '\r';
-		}; 
+	};
+	
+	boolean restore_autosave(String path) {
+		if (path==null) return false;
+		byte buff[]=lib.fileLoadToArray(path);
+		GameState tempGS=new GameState();
+		if (buff!=null) {
+			if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
+				workspace=tempGS.clone();
+				codeptr=acodeptr+workspace.codeptr;
+				return true;
+			};
+		};
+		return false;
+	};
+	
+	boolean autosave(String path) {
+		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
+		workspace.listsize=LISTAREASIZE;
+		workspace.stacksize=STACKSIZE;
+		//TODO: обрезать полное имя с путем до имени файла.
+		workspace.filename=LastGame;
+		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
+		return (lib.fileSaveFromArray(path, buff)); 
+	};
 	
 }
