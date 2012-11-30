@@ -11,6 +11,7 @@ import java.io.OutputStream;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
@@ -184,6 +185,24 @@ public class Library {
 			}
 			sendUserMessage("ERROR save: "+path);
 		};
+		return false;
+	}
+	
+	Bitmap pictureLoadToBitmap(String path) {
+		return BitmapFactory.decodeFile(path);
+	}
+	
+	boolean deleteFile(String path) {
+		//TODO: проверить, что файл в моей библиотеке, иначе не совать нос и не удалять!
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdFile = new File(path);
+			if (sdFile.delete()) {
+				sendUserMessage("Deleted: "+path);
+				return true;
+			}
+		};
+		sendUserMessage("ERROR delete: "+path);
 		return false;
 	}
 	

@@ -455,12 +455,13 @@ public class L9implement extends L9 {
 		if (path==null) return false;
 		byte buff[]=lib.fileLoadToArray(path);
 		GameState tempGS=new GameState();
-		if (buff!=null) {
-			if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
-				workspace=tempGS.clone();
-				codeptr=acodeptr+workspace.codeptr;
-				return true;
-			};
+		if (buff==null) return false;
+		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
+			workspace=tempGS.clone();
+			codeptr=acodeptr+workspace.codeptr;
+			bm=lib.pictureLoadToBitmap(path);
+			mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
+			return true;
 		};
 		return false;
 	};
@@ -473,7 +474,8 @@ public class L9implement extends L9 {
 		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
 		if (!lib.fileSaveFromArray(path, buff)) return false;
 		String name=lib.changeFileExtension(path, "png");
-		if (!lib.pictureSaveFromBitmap(name, bm)) return false;
+		if (bm!=null) {if (!lib.pictureSaveFromBitmap(name, bm)) return false;}
+		else lib.deleteFile(name);
 		return true;
 	};
 	
