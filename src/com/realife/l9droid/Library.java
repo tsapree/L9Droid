@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
@@ -115,14 +116,13 @@ public class Library {
 			//File sdFile = new File(sdPath.getAbsolutePath() + LIBDIR_SD + path);
 			File sdFile = new File(absolutePath);
 		    try {
-		    	InputStream in = new FileInputStream(sdFile);
-		    	//TODO: tempbuff - lame! kill it!
-                byte[] tempbuff = new byte[80000];
-                int len=in.read(tempbuff);
-                in.close();
-                
-                buff=new byte[len];
-                for (int i=0;i<len;i++) buff[i]=tempbuff[i];
+		    	int size=(int)sdFile.length();
+		    	if (size>0) {
+		    		buff = new byte[size];
+			    	InputStream in = new FileInputStream(sdFile);
+	                int len=in.read(buff);
+	                in.close();
+		    	}
 		    } catch (IOException e) {
 		      e.printStackTrace();
 		    }
@@ -147,6 +147,33 @@ public class Library {
 				};
 				OutputStream out = new FileOutputStream(sdFile);
 				out.write(buff);
+				out.close();
+				sendUserMessage("Saved: "+path);
+				return true;
+			} catch (FileNotFoundException e) {
+				//TODO: e.printStackTrace();
+			} catch (IOException e) {
+				//TODO: e.printStackTrace();
+			}
+			sendUserMessage("ERROR save: "+path);
+		};
+		return false;
+	}
+	
+	boolean pictureSaveFromBitmap(String path, Bitmap bm) {
+		if (bm==null) return false;
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			try {
+				File sdFile = new File(path);
+				//folder exists?
+				File sdPath = new File(sdFile.getParent());
+				if (!sdPath.isDirectory()) {
+					//create folder
+					sdPath.mkdirs();
+				};
+				OutputStream out = new FileOutputStream(sdFile);
+				bm.compress(Bitmap.CompressFormat.PNG, 100, out);
 				out.close();
 				sendUserMessage("Saved: "+path);
 				return true;

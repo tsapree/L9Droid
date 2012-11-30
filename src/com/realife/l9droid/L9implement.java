@@ -465,14 +465,16 @@ public class L9implement extends L9 {
 		return false;
 	};
 	
-	boolean autosave(String path) {
+	boolean autosave(String path, String log) {
 		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
 		workspace.listsize=LISTAREASIZE;
 		workspace.stacksize=STACKSIZE;
-		//TODO: обрезать полное имя с путем до имени файла.
 		workspace.filename=LastGame;
 		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
-		return (lib.fileSaveFromArray(path, buff)); 
+		if (!lib.fileSaveFromArray(path, buff)) return false;
+		String name=lib.changeFileExtension(path, "png");
+		if (!lib.pictureSaveFromBitmap(name, bm)) return false;
+		return true;
 	};
 	
 }

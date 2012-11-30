@@ -106,7 +106,8 @@ public class Threads {
 	    			activity.ivScreen.setImageBitmap(bm);
 	    			break;
 	    		case MACT_GFXUPDATE:
-	    			if (bm!=l9.bm) {
+	    			
+	    			if ((l9!=null) && (bm!=l9.bm)) {
 	    				bm=l9.bm;
 	    				activity.ivScreen.setImageBitmap(bm);
 	    			}
@@ -201,7 +202,7 @@ public class Threads {
 		//TODO: почистить очередь?
 		if (l9!=null && needAutoSave) {
 			String name=lib.getAbsolutePath("Saves/auto.sav");
-			if (l9.L9State!=l9.L9StateStopped) l9.autosave(name);
+			if (l9.L9State!=l9.L9StateStopped) l9.autosave(name,activity.etLog.getText().toString());
 			l9.StopGame();
 		}
 		if (g!=null) while (g.isAlive());
