@@ -44,6 +44,10 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     EditText etCmd;
     ScrollView etLogScroll;
     
+    ListView lvMain;
+    List<String> loglist;
+    ArrayAdapter<String> lvAdapter;
+    
     ImageView ivScreen;
     
     String command;
@@ -52,7 +56,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     
     boolean killThreadsOnDestroyActivity=true;
     
-    List<String> loglist;
+
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,33 +76,31 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         
         etCmd.setText("");
         
-        
         loglist = new ArrayList<String>();
-        loglist.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
-        loglist.add("This is free software, and you are welcome to redistribute it under certain conditions.");
-        loglist.add("What now?");
         
         // находим список
-        ListView lvMain = (ListView) findViewById(R.id.lvLog);
+        lvMain = (ListView) findViewById(R.id.lvLog);
 
         // создаем адаптер
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-		R.layout.log_list_item, loglist);
-      
-		loglist.add("What now?");
-		loglist.add("What now?");
-		loglist.add("What now?");
-		loglist.add("What now?");
-		loglist.add("What now?");
-		loglist.add("What now?");
-		loglist.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
-        loglist.add("This is free software, and you are welcome to redistribute it under certain conditions.");
-        loglist.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
-        loglist.add("This is free software, and you are welcome to redistribute it under certain conditions.");
-        loglist.add("What now?");
+		lvAdapter = new ArrayAdapter<String>(this, R.layout.log_list_item, loglist);
+
+		lvAdapter.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
+		lvAdapter.add("This is free software, and you are welcome to redistribute it under certain conditions.");
+		lvAdapter.add("What now?");
+		lvAdapter.add("What now?");
+		lvAdapter.add("What now?");
+		lvAdapter.add("What now?");
+		lvAdapter.add("What now?");
+		lvAdapter.add("What now?");
+		lvAdapter.add("What now?");
+		lvAdapter.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
+		lvAdapter.add("This is free software, and you are welcome to redistribute it under certain conditions.");
+		lvAdapter.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
+		lvAdapter.add("This is free software, and you are welcome to redistribute it under certain conditions.");
+		lvAdapter.add("What now?");
 
         // присваиваем адаптер списку
-        lvMain.setAdapter(adapter);
+        lvMain.setAdapter(lvAdapter);
                 
         command=null;
         
@@ -270,6 +272,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
 			postCommand();
+			lvAdapter.add(">");
+			lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+			//loglist.add("What now?");
 			break;
 		}
 	}
@@ -320,3 +325,4 @@ class DebugStorage {
     	return str;
     }
 }
+

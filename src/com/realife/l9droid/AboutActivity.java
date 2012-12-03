@@ -14,7 +14,9 @@ public class AboutActivity extends Activity {
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.about);
+	    WebView wv=(WebView)findViewById(R.id.webView1);
 	    
+	    /*
 	    //TODO: абсолютный лэйм, у евга всего 4-5 строк...
 	    char[] c;
 	    try {
@@ -28,7 +30,13 @@ public class AboutActivity extends Activity {
 	      e.printStackTrace();
 	      return; //ошибка - заканчиваю с подготовкой библиотеки?
 	    }
-	    WebView wv=(WebView)findViewById(R.id.webView1);
+	    
+	    //интересный метод - с указанием базовой папки:
+//	    wv.loadDataWithBaseURL("file:///android_res/drawable/","<!Doctype html><html><head><meta charset=utf-8></head><body>"+cells+"</body></html>", "text/html","utf-8","");
 	    wv.loadData(String.valueOf(c), "text/html", null);
+	    
+	    */
+	    wv.loadUrl("file:///android_res/raw/about.html");
+
 	  }
 }
