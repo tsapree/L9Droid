@@ -7,7 +7,6 @@
         android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/etCmd"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/imageView1" >
@@ -20,7 +19,7 @@
         <TextView
             android:id="@+id/etLog"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/etCmd"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
@@ -60,5 +59,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
+
+    <ListView
+        android:id="@+id/lvLog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/etCmd"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/scrollView1"
+        android:stackFromBottom="true" >
+
+    </ListView>
 
 </RelativeLayout>

@@ -1,5 +1,8 @@
 package com.realife.l9droid;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,10 +21,12 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -46,7 +51,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     static Threads mt;
     
     boolean killThreadsOnDestroyActivity=true;
-
+    
+    List<String> loglist;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +71,34 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         etCmd.setOnEditorActionListener(this);
         
         etCmd.setText("");
+        
+        
+        loglist = new ArrayList<String>();
+        loglist.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
+        loglist.add("This is free software, and you are welcome to redistribute it under certain conditions.");
+        loglist.add("What now?");
+        
+        // находим список
+        ListView lvMain = (ListView) findViewById(R.id.lvLog);
+
+        // создаем адаптер
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+		R.layout.log_list_item, loglist);
+      
+		loglist.add("What now?");
+		loglist.add("What now?");
+		loglist.add("What now?");
+		loglist.add("What now?");
+		loglist.add("What now?");
+		loglist.add("What now?");
+		loglist.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
+        loglist.add("This is free software, and you are welcome to redistribute it under certain conditions.");
+        loglist.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
+        loglist.add("This is free software, and you are welcome to redistribute it under certain conditions.");
+        loglist.add("What now?");
+
+        // присваиваем адаптер списку
+        lvMain.setAdapter(adapter);
                 
         command=null;
         
