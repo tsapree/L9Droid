@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">L9Droid</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -26,9 +25,4 @@
 		<item>20. Very big</item>
 		<item>22. Huge</item>
 	</string-array>
-	<string-array name="lib_paths">
-    	<item>Worm In Paradise/Speccy/worm.sna</item>
-    	<item>Emerald Isle/Speccy/emerald.sna</item>
-	</string-array>
-        	
 </resources>
