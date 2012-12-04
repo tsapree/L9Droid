@@ -122,6 +122,7 @@ public class L9implement extends L9 {
 	};
 	
 	void os_flush() {
+		mHandler.sendEmptyMessage(Threads.MACT_FLUSH);
 		os_debug(ds.getstr());
 	}
 	

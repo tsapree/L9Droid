@@ -40,23 +40,21 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	float fontSizeDefault=0;
 	
 	Button bCmd;
-	TextView etLog;
-    EditText etCmd;
-    ScrollView etLogScroll;
-    
-    ListView lvMain;
-    List<String> loglist;
-    ArrayAdapter<String> lvAdapter;
-    
-    ImageView ivScreen;
-    
-    String command;
-    
-    static Threads mt;
-    
-    boolean killThreadsOnDestroyActivity=true;
-    
+	EditText etCmd;
 
+	ListView lvMain;
+    
+	ArrayAdapter<SpannableStringBuilder> lvAdapter;
+	SpannableStringBuilder logStringCapacitor=null;
+	int logStrId=-1;
+    
+	ImageView ivScreen;
+    
+	String command;
+    
+	static Threads mt;
+    
+	boolean killThreadsOnDestroyActivity=true;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,36 +67,15 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
         
-        etLog = (TextView) findViewById(R.id.etLog);
-        etLogScroll=(ScrollView) findViewById(R.id.scrollView1);
         etCmd = (EditText) findViewById(R.id.etCmd);
         etCmd.setOnEditorActionListener(this);
         
         etCmd.setText("");
         
-        loglist = new ArrayList<String>();
-        
         // находим список
         lvMain = (ListView) findViewById(R.id.lvLog);
-
         // создаем адаптер
-		lvAdapter = new ArrayAdapter<String>(this, R.layout.log_list_item, loglist);
-
-		lvAdapter.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
-		lvAdapter.add("This is free software, and you are welcome to redistribute it under certain conditions.");
-		lvAdapter.add("What now?");
-		lvAdapter.add("What now?");
-		lvAdapter.add("What now?");
-		lvAdapter.add("What now?");
-		lvAdapter.add("What now?");
-		lvAdapter.add("What now?");
-		lvAdapter.add("What now?");
-		lvAdapter.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
-		lvAdapter.add("This is free software, and you are welcome to redistribute it under certain conditions.");
-		lvAdapter.add("L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.");
-		lvAdapter.add("This is free software, and you are welcome to redistribute it under certain conditions.");
-		lvAdapter.add("What now?");
-
+		lvAdapter = new ArrayAdapter<SpannableStringBuilder>(this, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
         // присваиваем адаптер списку
         lvMain.setAdapter(lvAdapter);
                 
@@ -149,12 +126,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     		tf=tfDefault;
     		fontSize=fontSizeDefault;
     	};
-    	etLog.setTypeface(tf);
+    	//etLog.setTypeface(tf);
     	etCmd.setTypeface(tf);
-    	etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
+    	//etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
     	etCmd.setTextSize(fontSize);
     	
-    	etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
+    	//etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
     	
     	mt.activityPaused=false;
     	super.onResume();
@@ -243,28 +220,31 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	}
 	
 	@Override
-	  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    // запишем в лог значения requestCode и resultCode
-	    Log.d("myLogs", "requestCode = " + requestCode + ", resultCode = " + resultCode);
-	    // если пришло ОК
-	    if (resultCode == RESULT_OK) {
-	      switch (requestCode) {
-	      case 1:
-	    	  //Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
-	    	  String newGame=data.getStringExtra("opengame");
-		      mt.startGame(newGame,false);
-	    	  etLog.setText(""); //TODO: поумнее очищать лог, есть вероятность потерять начало предложения.
-		      if (mt.l9!=null) {
-		    	  Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
-		      } else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
-		      etCmd.setText("");
-	        break;
-	      }
-	    // если вернулось не ОК
-	    } else {
-	      Toast.makeText(this, "Wrong result", Toast.LENGTH_SHORT).show();
-	    }
-	  }
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// запишем в лог значения requestCode и resultCode
+		Log.d("myLogs", "requestCode = " + requestCode + ", resultCode = " + resultCode);
+		// если пришло ОК
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+			case 1:
+				//Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
+				String newGame=data.getStringExtra("opengame");
+				mt.startGame(newGame,false);
+				//TODO: поумнее очищать лог, есть вероятность потерять начало предложения.
+				logStringCapacitor=null;
+				logStrId=-1;
+				lvAdapter.clear();
+				if (mt.l9!=null) {
+					Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
+				} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
+				etCmd.setText("");
+				break;
+			}
+			// если вернулось не ОК
+		} else {
+			Toast.makeText(this, "Wrong result", Toast.LENGTH_SHORT).show();
+		}
+	}
     
     // some text
 	//@Override
@@ -272,9 +252,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
 			postCommand();
-			lvAdapter.add(">");
-			lvMain.setSelection(lvMain.getAdapter().getCount()-1);
-			//loglist.add("What now?");
 			break;
 		}
 	}
@@ -283,17 +260,50 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		postCommand();
 		return true;
 	}
-
+	
+	void outCharToLog(char c) {
+		if (logStringCapacitor==null) logStringCapacitor=new SpannableStringBuilder();
+		 
+		//every enter starts new paragraph
+		if (c=='\n') outLogFlush(true);
+		else logStringCapacitor.append(c);
+		
+		//no unnecessary line breaks
+		//if (c=='\n') {
+		//	if (logStringCapacitor.length()>0 && logStringCapacitor.charAt(logStringCapacitor.length()-1)!='\n') logStringCapacitor.append(c);
+		//} else 
+		//	logStringCapacitor.append(c);
+	};
+	
+	void outUserInputToLog(String str) {
+		SpannableStringBuilder text = new SpannableStringBuilder(str);
+        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+        text.setSpan(style, 0, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        if (logStringCapacitor==null) logStringCapacitor=new SpannableStringBuilder();
+        logStringCapacitor.append(text);
+        outLogFlush(true);
+	};
+	
+	void outLogFlush(boolean finishThisString) {
+		if (logStringCapacitor!=null && logStringCapacitor.length()>0) {
+			if ((logStrId>=0) && (logStrId<lvMain.getAdapter().getCount())) {
+				lvAdapter.getItem(logStrId).append(logStringCapacitor);
+			} else {
+				lvAdapter.add(logStringCapacitor);
+			}
+			logStringCapacitor=null;
+			if (finishThisString) logStrId=-1;
+			else logStrId=lvMain.getAdapter().getCount()-1;
+		};
+		lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+	}
+	
 	void postCommand() {
 		//TODO: как вариант - глотать команды, добавляя в command - но только в 3и4 версиях
 		if (etCmd.length()>0 && mt.l9.L9State==mt.l9.L9StateWaitForCommand) {
+			outUserInputToLog(etCmd.getText().toString());
+    
 			
-	        final SpannableStringBuilder text = new SpannableStringBuilder(etCmd.getText());
-	        final ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
-	        text.setSpan(style, 0, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-	        etLog.append(text);
-			//etLog.append(etCmd.getText());
-			etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
 			command=etCmd.getText().toString();
 			etCmd.setText("");
 		};

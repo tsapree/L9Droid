@@ -20,6 +20,7 @@ public class Threads {
 	public final static int MACT_L9WAITBEFORESCRIPT=8;
 	public final static int MACT_TOAST=9;
 	public final static int MACT_L9WAITFORCHAR=10;
+	public final static int MACT_FLUSH=11;
 	
 	MainActivity activity;
 	Library lib;
@@ -84,9 +85,11 @@ public class Threads {
 		    		break;
 	    		case MACT_PRINTCHAR:
 	    			char c=(char)msg.arg1;
-	    			if (c==0x0d) activity.etLog.append("\n");
-	    			else activity.etLog.append(String.valueOf(c));
-	    			activity.etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
+	    			if (c==0x0d) activity.outCharToLog('\n');
+	    			else activity.outCharToLog(c);
+	    			break;
+	    		case MACT_FLUSH:
+	    			activity.outLogFlush(false);
 	    			break;
 	    		case MACT_SAVEGAMESTATE:
     				l9.saveok=lib.fileSave(l9.saveloadBuff);
@@ -203,7 +206,7 @@ public class Threads {
 		//TODO: почистить очередь?
 		if (l9!=null && needAutoSave) {
 			String name=lib.getAbsolutePath("Saves/auto.sav");
-			if (l9.L9State!=l9.L9StateStopped) l9.autosave(name,activity.etLog.getText().toString());
+			if (l9.L9State!=l9.L9StateStopped) l9.autosave(name,null/*activity.etLog.getText().toString()*/);
 			l9.StopGame();
 		}
 		if (g!=null) while (g.isAlive());
