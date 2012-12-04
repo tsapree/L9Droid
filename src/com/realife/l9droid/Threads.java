@@ -1,10 +1,12 @@
 package com.realife.l9droid;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.widget.ScrollView;
+import android.text.SpannableStringBuilder;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 public class Threads {
@@ -39,6 +41,10 @@ public class Threads {
     
     boolean saveload_flag=false;
     static boolean gfx_ready=false;
+    
+	ArrayAdapter<SpannableStringBuilder> lvAdapter;
+	SpannableStringBuilder logStringCapacitor=null;
+	int logStrId=-1;
 
     void link(MainActivity m) {
     	activity=m;
@@ -52,6 +58,10 @@ public class Threads {
 	void create() {
 		lib=new Library();
 	    lib.prepareLibrary(activity);
+	    
+		lvAdapter = new ArrayAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
+        // присваиваем адаптер списку
+
 		
 		needToQuit=false;
 		h = new Handler() {

@@ -1,8 +1,5 @@
 package com.realife.l9droid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,13 +18,11 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -43,11 +38,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	EditText etCmd;
 
 	ListView lvMain;
-    
-	ArrayAdapter<SpannableStringBuilder> lvAdapter;
-	SpannableStringBuilder logStringCapacitor=null;
-	int logStrId=-1;
-    
+   
 	ImageView ivScreen;
     
 	String command;
@@ -74,10 +65,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         
         // находим список
         lvMain = (ListView) findViewById(R.id.lvLog);
-        // создаем адаптер
-		lvAdapter = new ArrayAdapter<SpannableStringBuilder>(this, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
-        // присваиваем адаптер списку
-        lvMain.setAdapter(lvAdapter);
                 
         command=null;
         
@@ -93,6 +80,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	        else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
 	        
 	    } else mt.link(this);
+        lvMain.setAdapter(mt.lvAdapter);
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
     
@@ -231,9 +219,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 				String newGame=data.getStringExtra("opengame");
 				mt.startGame(newGame,false);
 				//TODO: поумнее очищать лог, есть вероятность потерять начало предложения.
-				logStringCapacitor=null;
-				logStrId=-1;
-				lvAdapter.clear();
+				mt.logStringCapacitor=null;
+				mt.logStrId=-1;
+				mt.lvAdapter.clear();
 				if (mt.l9!=null) {
 					Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
 				} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
@@ -262,11 +250,11 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	}
 	
 	void outCharToLog(char c) {
-		if (logStringCapacitor==null) logStringCapacitor=new SpannableStringBuilder();
+		if (mt.logStringCapacitor==null) mt.logStringCapacitor=new SpannableStringBuilder();
 		 
 		//every enter starts new paragraph
 		if (c=='\n') outLogFlush(true);
-		else logStringCapacitor.append(c);
+		else mt.logStringCapacitor.append(c);
 		
 		//no unnecessary line breaks
 		//if (c=='\n') {
@@ -279,21 +267,21 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		SpannableStringBuilder text = new SpannableStringBuilder(str);
         ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
         text.setSpan(style, 0, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        if (logStringCapacitor==null) logStringCapacitor=new SpannableStringBuilder();
-        logStringCapacitor.append(text);
+        if (mt.logStringCapacitor==null) mt.logStringCapacitor=new SpannableStringBuilder();
+        mt.logStringCapacitor.append(text);
         outLogFlush(true);
 	};
 	
 	void outLogFlush(boolean finishThisString) {
-		if (logStringCapacitor!=null && logStringCapacitor.length()>0) {
-			if ((logStrId>=0) && (logStrId<lvMain.getAdapter().getCount())) {
-				lvAdapter.getItem(logStrId).append(logStringCapacitor);
+		if (mt.logStringCapacitor!=null && mt.logStringCapacitor.length()>0) {
+			if ((mt.logStrId>=0) && (mt.logStrId<lvMain.getAdapter().getCount())) {
+				mt.lvAdapter.getItem(mt.logStrId).append(mt.logStringCapacitor);
 			} else {
-				lvAdapter.add(logStringCapacitor);
+				mt.lvAdapter.add(mt.logStringCapacitor);
 			}
-			logStringCapacitor=null;
-			if (finishThisString) logStrId=-1;
-			else logStrId=lvMain.getAdapter().getCount()-1;
+			mt.logStringCapacitor=null;
+			if (finishThisString) mt.logStrId=-1;
+			else mt.logStrId=lvMain.getAdapter().getCount()-1;
 		};
 		lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 	}
