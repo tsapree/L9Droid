@@ -272,4 +272,53 @@ public class Library {
 		Message msg=h.obtainMessage(Threads.MACT_TOAST, txt);
 		h.sendMessage(msg);
 	}
+	
+	public boolean importFile(String fileName, String folderName) {
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			File newFolder;
+			int index=0;
+			do {
+				newFolder = new File(sdPath.getAbsolutePath() + LIBDIR_SD+folderName);
+				//TODO: сделать изменение папки, если она уже существует
+				index++;
+			} while (newFolder.exists());
+			File source=new File(fileName);
+			if (source.isDirectory()) return copy(fileName,newFolder.toString());
+			else if (source.isFile()) {
+				newFolder.mkdirs();
+				copy(fileName,newFolder.toString()+"/"+source.getName());
+			};
+		};
+		return false; 
+	};
+
+	public static boolean copy(String from, String to) {
+		try {      
+			File fFrom = new File(from);
+			if (fFrom.isDirectory()) { // Если директория, копируем все ее содержимое
+				File f1 = new File(to); //Создаем файловую переменную
+                if (!f1.exists()) f1.mkdirs();
+				String[] FilesList = fFrom.list();
+				for (int i = 0; i < FilesList.length; i++)
+					if (!copy(from + "/" + FilesList[i], to + "/" + FilesList[i]))
+						return false; // Если при копировании произошла ошибка
+			} else if (fFrom.isFile()) { // Если файл просто копируем его
+			    File fTo = new File(to);
+			    InputStream in = new FileInputStream(fFrom); // Создаем потоки
+			    OutputStream out = new FileOutputStream(fTo);
+			    byte[] buf = new byte[1024];
+			    int len;
+			    while ((len = in.read(buf)) > 0) {
+			        out.write(buf, 0, len);
+			    }
+			    in.close(); // Закрываем потоки
+			    out.close();
+			}
+		} catch (FileNotFoundException ex) { // Обработка ошибок
+		} catch (IOException e) { // Обработка ошибок
+		}
+		return true; // При удачной операции возвращаем true
+	}
 }

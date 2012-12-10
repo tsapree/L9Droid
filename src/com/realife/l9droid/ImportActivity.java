@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -58,15 +59,23 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 		String selFile=lvAdapter.getItem(position);
 		File sdpath=new File(selFile);
 		if (sdpath.isDirectory()) getFolderContent(selFile);
-		else finish();
+		else SelectFolder(selFile);
 	}
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 		String selFile=lvAdapter.getItem(position);
-		File sdpath=new File(selFile);
-		finish();
+		//File sdpath=new File(selFile);
+		//TODO: убрать возможность долгого клика по отцовской папке
+		SelectFolder(selFile);
 		return true;
+	}
+	
+	void SelectFolder(String filename) {
+		Intent intent = new Intent(this, ImportSelectFolderName.class);
+		intent.putExtra("importname", filename );
+	    startActivity(intent);
+	    //finish();
 	}
 
 }

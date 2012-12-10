@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -23,7 +22,29 @@ public class LibraryActivity extends Activity implements OnMenuItemClickListener
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.library);
-	    
+	  }
+	
+    //@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	MenuItem mi;
+    	mi = menu.add(0,1,0,"Import");
+    	mi.setOnMenuItemClickListener(this);
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    public boolean onMenuItemClick(MenuItem arg0) {
+		switch (arg0.getItemId()) {
+		case 1: //library TODO: переделать в id, возможно перенести меню в ресурсы
+			Intent intent=new Intent(this, ImportActivity.class);
+			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
+			//mi.setIntent(intent);
+			break;
+		};
+		return false;
+	}
+    
+    protected void onResume() {
+    	super.onResume();
 	    lib=new Library();
 	    lib.prepareLibrary(this);
 	    
@@ -42,35 +63,12 @@ public class LibraryActivity extends Activity implements OnMenuItemClickListener
 		      public void onItemClick(AdapterView<?> parent, View view,
 		          int position, long id) {
 		    	  Intent intent = new Intent();
-		        //Log.d(LOG_TAG, "itemClick: position = " + position + ", id = "
-		        //    + id);
-		    	  //Toast.makeText(this, view.toString(), Toast.LENGTH_LONG).show();
 		    	  intent.putExtra("opengame",/*view.toString()*/ paths[position]);
-		    	  
 		    	  setResult(RESULT_OK,intent);
 		    	  finish();
 		      }
 		    });
 	    };
-	    
-	  }
-	
-    //@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuItem mi;
-    	mi = menu.add(0,1,0,"Import");
-    	mi.setOnMenuItemClickListener(this);
-        return super.onCreateOptionsMenu(menu);
     }
     
-    public boolean onMenuItemClick(MenuItem arg0) {
-		switch (arg0.getItemId()) {
-		case 1: //library TODO: переделать в id, возможно перенести меню в ресурсы
-			Intent intent=new Intent(this, ImportActivity.class);
-			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
-	        //mi.setIntent(intent);
-			break;
-		};
-		return false;
-	}
 }
