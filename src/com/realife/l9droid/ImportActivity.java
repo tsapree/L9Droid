@@ -54,7 +54,7 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 	};
 
 
-	@Override
+	//@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		String selFile=lvAdapter.getItem(position);
 		File sdpath=new File(selFile);
@@ -62,7 +62,7 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 		else SelectFolder(selFile);
 	}
 
-	@Override
+	//@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 		String selFile=lvAdapter.getItem(position);
 		//File sdpath=new File(selFile);

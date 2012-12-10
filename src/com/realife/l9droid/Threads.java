@@ -80,6 +80,7 @@ public class Threads {
 		    		activity.bCmd.setEnabled(false);
 		    		break;
 		    	case MACT_L9WAITFORCOMMAND:
+		    		activity.outLogFlush(false);
 		    		menuHashEnabled=true;
 		    		activity.bCmd.setText("Do");
 		    		activity.bCmd.setEnabled(true);
