@@ -65,6 +65,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         
         // находим список
         lvMain = (ListView) findViewById(R.id.lvLog);
+        lvMain.setDividerHeight(0);
                 
         command=null;
         
