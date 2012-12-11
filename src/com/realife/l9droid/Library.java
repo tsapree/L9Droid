@@ -1,13 +1,18 @@
 package com.realife.l9droid;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -159,6 +164,58 @@ public class Library {
 			sendUserMessage("ERROR save: "+path);
 		};
 		return false;
+	}
+	
+	ArrayList<String> fileLoadToStringArray(String absolutePath) {
+		if (absolutePath==null) return null;
+		ArrayList<String> buff=new ArrayList<String>();
+
+		try {
+			File sdFile = new File(absolutePath);
+			InputStream in = new FileInputStream(sdFile);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String str = "";
+			while ((str = br.readLine()) != null) {
+				buff.add(str);
+			};
+			br.close();
+			
+		} catch (FileNotFoundException e) {
+			//TODO: e.printStackTrace();
+		} catch (IOException e) {
+			//TODO: e.printStackTrace();
+		}
+	    if (buff!=null) sendUserMessage("Loaded strings: "+absolutePath);
+	    else sendUserMessage("ERROR load strings: "+absolutePath);
+	    return buff;
+	};
+	
+	boolean fileSaveFromStringArray(String absolutePath, ArrayList<String> buff) {
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			try {
+				
+				File sdFile = new File(absolutePath);
+				//folder exists?
+				File sdPath = new File(sdFile.getParent());
+				if (!sdPath.isDirectory()) sdPath.mkdirs();
+				OutputStream out = new FileOutputStream(sdFile);
+				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
+				
+				for (int i=0;i<buff.size();i++)
+					bw.write(buff.get(i)+"\n");
+				bw.close();
+				
+				sendUserMessage("Saved strings: "+absolutePath);
+				return true;
+			} catch (FileNotFoundException e) {
+				//TODO: e.printStackTrace();
+			} catch (IOException e) {
+				//TODO: e.printStackTrace();
+			}
+			sendUserMessage("ERROR save strings: "+absolutePath);
+		};
+		return false;		
 	}
 	
 	boolean pictureSaveFromBitmap(String path, Bitmap bm) {

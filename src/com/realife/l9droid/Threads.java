@@ -149,9 +149,14 @@ public class Threads {
         	l9=null;
         	return;
         }
-        if (loadAutoSave) 
+        if (loadAutoSave) {
         	l9.restore_autosave(lib.getAbsolutePath("Saves/auto.sav"));
-        else
+        	ArrayList<String> log=l9.restore_autosave_log(lib.getAbsolutePath("Saves/auto.log"));
+        	lvAdapter.clear();
+        	if (log!=null) 
+        		for (int i=0; i<log.size();i++)
+        			lvAdapter.add(new SpannableStringBuilder(log.get(i)));
+        } else
         	h.sendEmptyMessage(MACT_GFXOFF); //убираю картинку от прошлой игры
         
 		gfx_ready=false;
@@ -217,7 +222,15 @@ public class Threads {
 		//TODO: почистить очередь?
 		if (l9!=null && needAutoSave) {
 			String name=lib.getAbsolutePath("Saves/auto.sav");
-			if (l9.L9State!=l9.L9StateStopped) l9.autosave(name,null/*activity.etLog.getText().toString()*/);
+			if (l9.L9State!=l9.L9StateStopped) {
+				
+	        	ArrayList<String> log=new ArrayList<String>();
+	        	if (lvAdapter!=null) 
+	        		for (int i=0; i<lvAdapter.getCount();i++)
+	        			log.add((lvAdapter.getItem(i).toString()));
+				
+				l9.autosave(name,log/*activity.etLog.getText().toString()*/);
+			};
 			l9.StopGame();
 		}
 		if (g!=null) while (g.isAlive());

@@ -1,5 +1,6 @@
 package com.realife.l9droid;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
@@ -453,6 +454,7 @@ public class L9implement extends L9 {
 	};
 	
 	boolean restore_autosave(String path) {
+		String name;
 		if (path==null) return false;
 		byte buff[]=lib.fileLoadToArray(path);
 		GameState tempGS=new GameState();
@@ -461,7 +463,7 @@ public class L9implement extends L9 {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
 			
-			String name=lib.changeFileExtension(path, "png");
+			name=lib.changeFileExtension(path, "png");
 			bm=lib.pictureLoadToBitmap(name);
 			if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
 			return true;
@@ -469,14 +471,23 @@ public class L9implement extends L9 {
 		return false;
 	};
 	
-	boolean autosave(String path, String log) {
+	ArrayList<String> restore_autosave_log(String path) {
+		return lib.fileLoadToStringArray(path);
+	};
+	
+	boolean autosave(String path, ArrayList<String> log) {
+		String name;
 		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
 		workspace.listsize=LISTAREASIZE;
 		workspace.stacksize=STACKSIZE;
 		workspace.filename=LastGame;
 		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
 		if (!lib.fileSaveFromArray(path, buff)) return false;
-		String name=lib.changeFileExtension(path, "png");
+		
+		name=lib.changeFileExtension(path, "log");
+		if (!lib.fileSaveFromStringArray(name, log)) return false;
+		
+		name=lib.changeFileExtension(path, "png");
 		if (bm!=null) {if (!lib.pictureSaveFromBitmap(name, bm)) return false;}
 		else lib.deleteFile(name);
 		return true;
