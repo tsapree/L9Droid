@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 public class L9implement extends L9 {
@@ -16,10 +21,12 @@ public class L9implement extends L9 {
     Handler mHandler;
     Message msg;
     Library lib;
-    byte saveloadBuff[];
-    String saveloadFileName;
-    boolean saveloaddone;
-    boolean saveok;
+    Threads th;
+    ArrayAdapter<SpannableStringBuilder> lvTempAdapter;
+    //byte saveloadBuff[];
+    //String saveloadFileName;
+    //boolean saveloaddone;
+    //boolean saveok;
 	
 	EditText et;
 	byte gamedata[];
@@ -79,12 +86,15 @@ public class L9implement extends L9 {
 	int L9_FillColour1;
 	int L9_FillColour2;
 	
-	L9implement(/*EditText et1,*/ Library l, Handler h) {
+	L9implement( Library l, Handler h, Threads t) {
 		lib=l;
 		gamedata=null;
 		cmdStr=null;
 		ds=new DebugStorage();
 		mHandler=h;
+		th=t;
+		
+		lvTempAdapter=null;
 		
 		L9_FillStack=new int[L9Fill_StackSize];
 		SelectedPalette=new int[32];
@@ -132,33 +142,22 @@ public class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		saveloadBuff=buff;
-		saveloaddone=false;
-		saveok=false;
-		mHandler.sendEmptyMessage(Threads.MACT_SAVEGAMESTATE);
-		while (saveloaddone==false) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			};
-		};
-		return saveok;
+		String path="Saves/1.sav";
+		path=lib.getAbsolutePath(path);
+		save_piclog(path);
+		return lib.fileSaveFromArray(path,buff);
 	};
 	
 	byte[] os_load_file() {
-		saveloadBuff=null;
-		saveloaddone=false;
-		mHandler.sendEmptyMessage(Threads.MACT_LOADGAMESTATE);
-		while (saveloaddone==false) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			};
-		};
-		return saveloadBuff; //TODO:mAct.fileLoad();
+		String path="Saves/1.sav";
+		path=lib.getAbsolutePath(path);
+		//TODO: import log
+		load_piclog(path,lvTempAdapter);
+		//load_piclog(path,th.lvAdapter);
+		return lib.fileLoadToArray(path);
 	};
+	
+	
 
 	byte[] os_open_script_file() {
 		byte script[] = {'u','n','f','a','s',' ','p','a','r','a','\r',
@@ -454,7 +453,7 @@ public class L9implement extends L9 {
 	};
 	
 	boolean restore_autosave(String path) {
-		String name;
+
 		if (path==null) return false;
 		byte buff[]=lib.fileLoadToArray(path);
 		GameState tempGS=new GameState();
@@ -462,35 +461,95 @@ public class L9implement extends L9 {
 		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
-			
-			name=lib.changeFileExtension(path, "png");
-			bm=lib.pictureLoadToBitmap(name);
-			if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
+
+			load_piclog(path,th.lvAdapter);			
 			return true;
 		};
 		return false;
 	};
 	
-	ArrayList<String> restore_autosave_log(String path) {
-		return lib.fileLoadToStringArray(path);
-	};
-	
-	boolean autosave(String path, ArrayList<String> log) {
-		String name;
+	boolean autosave(String path) {
 		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
 		workspace.listsize=LISTAREASIZE;
 		workspace.stacksize=STACKSIZE;
 		workspace.filename=LastGame;
+		save_piclog(path);
 		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
 		if (!lib.fileSaveFromArray(path, buff)) return false;
-		
-		name=lib.changeFileExtension(path, "log");
-		if (!lib.fileSaveFromStringArray(name, log)) return false;
-		
-		name=lib.changeFileExtension(path, "png");
-		if (bm!=null) {if (!lib.pictureSaveFromBitmap(name, bm)) return false;}
-		else lib.deleteFile(name);
-		return true;
+		else return true;
 	};
 	
+	void save_piclog(String path) {
+		String name;
+		
+		ArrayList<String> log=new ArrayList<String>();
+    	if (th.lvAdapter!=null) 
+    		for (int i=0; i<th.lvAdapter.getCount();i++) {
+    			log.add((wrapSpans(th.lvAdapter.getItem(i))));
+    		};
+		
+		name=lib.changeFileExtension(path, "log");
+		lib.fileSaveFromStringArray(name, log);
+		
+		name=lib.changeFileExtension(path, "png");
+		if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
+		else lib.deleteFile(name);
+	}
+
+	void load_piclog(String path, ArrayAdapter<SpannableStringBuilder> adp) {
+		String name;
+		name=lib.changeFileExtension(path, "png");
+		bm=lib.pictureLoadToBitmap(name);
+		if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
+		
+		name=lib.changeFileExtension(path, "log");
+		ArrayList<String> log=lib.fileLoadToStringArray(name);
+		adp.clear();
+		if (log!=null) 
+			for (int i=0; i<log.size();i++)
+				adp.add(unwrapSpans(log.get(i)));
+	};
+
+	
+	//завернуть spans в тэги {}
+	private String wrapSpans(SpannableStringBuilder spannedString) {
+		//ForegroundColorSpan a[]=spannedString.getSpans(0, 1, ForegroundColorSpan.class);
+		String result=new String();
+		int size=spannedString.length();
+		int i=spannedString.getSpans(0, size, ForegroundColorSpan.class).length;
+		if (i>0) {
+			//TODO: пока только одна подсвеченная команда в строке будет заключена в фигурные скобки 
+			//TODO: раскомментировать .replace("{", "{/").replace("}", "}}") для маскировки этих символов
+			int begin=0;
+			int beginSpan=-1;
+			int endSpan=0;
+			beginSpan=spannedString.nextSpanTransition(begin, size-1, ForegroundColorSpan.class);
+			if (beginSpan>=0) {
+				endSpan=spannedString.nextSpanTransition(beginSpan, size-1, ForegroundColorSpan.class);
+				result+=spannedString.subSequence(begin, beginSpan).toString()/*.replace("{", "{{").replace("}", "}}")*/
+						+"{"
+						+spannedString.subSequence(beginSpan, endSpan+1).toString()/*.replace("{", "{{").replace("}", "}}")*/
+						+"}";
+				begin=endSpan+1;
+			};
+			if (begin<size) result+=spannedString.subSequence(begin, size-1).toString();
+		} else result=spannedString.toString()/*.replace("{", "{{").replace("}", "}}")*/;
+		return result;//spannedString.toString();
+	}
+	
+	//развернуть spans из тэгов {}
+	private SpannableStringBuilder unwrapSpans(String wrappedString) {
+		
+		int size=wrappedString.length();
+		int i=wrappedString.indexOf('{', 0);
+		int j=wrappedString.indexOf('}', 0);
+		if (i>=0 && j>i) {
+			SpannableStringBuilder text = new SpannableStringBuilder(wrappedString.subSequence(0, i).toString()
+					+wrappedString.subSequence(i+1, j).toString()
+					+wrappedString.subSequence(j+1, size).toString());
+	        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+	        text.setSpan(style, i, j-1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+	        return text; 
+		} else return new SpannableStringBuilder(wrappedString);
+	}
 }
