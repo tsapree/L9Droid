@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Handler;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -155,7 +158,7 @@ public class Threads {
         	lvAdapter.clear();
         	if (log!=null) 
         		for (int i=0; i<log.size();i++)
-        			lvAdapter.add(new SpannableStringBuilder(log.get(i)));
+        			lvAdapter.add(unwrapSpans(log.get(i)));
         } else
         	h.sendEmptyMessage(MACT_GFXOFF); //убираю картинку от прошлой игры
         
@@ -223,11 +226,12 @@ public class Threads {
 		if (l9!=null && needAutoSave) {
 			String name=lib.getAbsolutePath("Saves/auto.sav");
 			if (l9.L9State!=l9.L9StateStopped) {
-				
+				//SpannableStringBuilder()
 	        	ArrayList<String> log=new ArrayList<String>();
 	        	if (lvAdapter!=null) 
-	        		for (int i=0; i<lvAdapter.getCount();i++)
-	        			log.add((lvAdapter.getItem(i).toString()));
+	        		for (int i=0; i<lvAdapter.getCount();i++) {
+	        			log.add((wrapSpans(lvAdapter.getItem(i))));
+	        		};
 				
 				l9.autosave(name,log/*activity.etLog.getText().toString()*/);
 			};
@@ -240,6 +244,48 @@ public class Threads {
 		l9=null;
 		needToQuit=false;
 	};
+	
+	//завернуть spans в тэги {}
+	private String wrapSpans(SpannableStringBuilder spannedString) {
+		//ForegroundColorSpan a[]=spannedString.getSpans(0, 1, ForegroundColorSpan.class);
+		String result=new String();
+		int size=spannedString.length();
+		int i=spannedString.getSpans(0, size, ForegroundColorSpan.class).length;
+		if (i>0) {
+			//TODO: пока только одна подсвеченная команда в строке будет заключена в фигурные скобки 
+			//TODO: раскомментировать .replace("{", "{/").replace("}", "}}") для маскировки этих символов
+			int begin=0;
+			int beginSpan=-1;
+			int endSpan=0;
+			beginSpan=spannedString.nextSpanTransition(begin, size-1, ForegroundColorSpan.class);
+			if (beginSpan>=0) {
+				endSpan=spannedString.nextSpanTransition(beginSpan, size-1, ForegroundColorSpan.class);
+				result+=spannedString.subSequence(begin, beginSpan).toString()/*.replace("{", "{{").replace("}", "}}")*/
+						+"{"
+						+spannedString.subSequence(beginSpan, endSpan+1).toString()/*.replace("{", "{{").replace("}", "}}")*/
+						+"}";
+				begin=endSpan+1;
+			};
+			if (begin<size) result+=spannedString.subSequence(begin, size-1).toString();
+		} else result=spannedString.toString()/*.replace("{", "{{").replace("}", "}}")*/;
+		return result;//spannedString.toString();
+	}
+	
+	//развернуть spans из тэгов {}
+	private SpannableStringBuilder unwrapSpans(String wrappedString) {
+		
+		int size=wrappedString.length();
+		int i=wrappedString.indexOf('{', 0);
+		int j=wrappedString.indexOf('}', 0);
+		if (i>=0 && j>i) {
+			SpannableStringBuilder text = new SpannableStringBuilder(wrappedString.subSequence(0, i).toString()
+					+wrappedString.subSequence(i+1, j).toString()
+					+wrappedString.subSequence(j+1, size).toString());
+	        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+	        text.setSpan(style, i, j-1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+	        return text; 
+		} else return new SpannableStringBuilder(wrappedString);
+	}
 	
 }
 

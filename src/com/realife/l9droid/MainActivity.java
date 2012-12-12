@@ -82,6 +82,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	        
 	    } else mt.link(this);
         lvMain.setAdapter(mt.lvAdapter);
+        lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
     
