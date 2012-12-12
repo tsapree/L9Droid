@@ -224,16 +224,14 @@ public class Threads {
 		needToQuit=true;
 		//TODO: почистить очередь?
 		if (l9!=null && needAutoSave) {
-			String name=lib.getAbsolutePath("Saves/auto.sav");
 			if (l9.L9State!=l9.L9StateStopped) {
-				//SpannableStringBuilder()
+				String name=lib.getAbsolutePath("Saves/auto.sav");
 	        	ArrayList<String> log=new ArrayList<String>();
 	        	if (lvAdapter!=null) 
 	        		for (int i=0; i<lvAdapter.getCount();i++) {
 	        			log.add((wrapSpans(lvAdapter.getItem(i))));
 	        		};
-				
-				l9.autosave(name,log/*activity.etLog.getText().toString()*/);
+				l9.autosave(name,log);
 			};
 			l9.StopGame();
 		}

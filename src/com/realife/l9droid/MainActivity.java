@@ -136,7 +136,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		super.onDestroy();
 		mt.activityPaused=false;
 		//Log.d("l9droid", "need to stop application");
-		if (killThreadsOnDestroyActivity) {
+		if (killThreadsOnDestroyActivity && mt.l9!=null) {
 			SharedPreferences sPref=getPreferences(MODE_PRIVATE);
 			Editor ed = sPref.edit();
 			ed.putString("lastgame", mt.l9.LastGame);

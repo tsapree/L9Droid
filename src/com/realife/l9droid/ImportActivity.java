@@ -41,14 +41,17 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 		lvAdapter.clear();
 		//lvAdapter.add(path);
 
-		File sdpath=new File(path);
-		if (!(path.equalsIgnoreCase(rootElement))) {
-			String parent=sdpath.getParent();
-			if (parent!=null) lvAdapter.add(sdpath.getParent());
-		}
-		String [] FileList=sdpath.list();
-		for (int i=0; i<FileList.length;i++) {
-			lvAdapter.add(path+"/"+FileList[i]);
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdpath=new File(path);
+			if (!(path.equalsIgnoreCase(rootElement))) {
+				String parent=sdpath.getParent();
+				if (parent!=null) lvAdapter.add(sdpath.getParent());
+			}
+			String [] FileList=sdpath.list();
+			for (int i=0; i<FileList.length;i++) {
+				lvAdapter.add(path+"/"+FileList[i]);
+			};
 		};
 		
 	};
