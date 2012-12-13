@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.SpannableStringBuilder;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -14,8 +15,6 @@ public class Threads {
 	public final static int MACT_L9WORKING = 0;
 	public final static int MACT_L9WAITFORCOMMAND = 1;
 	public final static int MACT_PRINTCHAR = 2;
-	//public final static int MACT_SAVEGAMESTATE = 3;
-	//public final static int MACT_LOADGAMESTATE=4;
 	public final static int MACT_GFXON=5;
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
@@ -32,7 +31,6 @@ public class Threads {
     
     boolean needToQuit=false;
     boolean activityPaused=false;
-    //boolean menuPicturesFound=false;
     boolean menuPicturesEnabled=false;
     boolean menuHashEnabled=false;
     
@@ -40,12 +38,13 @@ public class Threads {
     L9implement l9;
     byte gamedata[];
     
-    boolean saveload_flag=false;
     static boolean gfx_ready=false;
     
 	ArrayAdapter<SpannableStringBuilder> lvAdapter;
 	SpannableStringBuilder logStringCapacitor=null;
 	int logStrId=-1;
+	
+	char keyPressed=0;
 
     void link(MainActivity m) {
     	activity=m;
@@ -82,14 +81,22 @@ public class Threads {
 		    		break;
 		    	case MACT_L9WAITFORCOMMAND:
 		    		activity.outLogFlush(false);
+		    		activity.etCmd.setFocusable(true);
+		    		activity.etCmd.requestFocus();
 		    		menuHashEnabled=true;
 		    		activity.bCmd.setText("Do");
 		    		activity.bCmd.setEnabled(true);
+		    		activity.bSpace.setVisibility(View.INVISIBLE);
+		    		activity.bEnter.setVisibility(View.INVISIBLE);
+		    		activity.bCmd.setVisibility(View.VISIBLE);
+		    		activity.etCmd.setVisibility(View.VISIBLE);
 		    		break;
 		    	case MACT_L9WAITFORCHAR:
-		    		//menuHashEnabled=true;
-		    		activity.bCmd.setText("*");
-		    		activity.bCmd.setEnabled(true);
+		    		activity.bSpace.setVisibility(View.VISIBLE);
+		    		activity.bEnter.setVisibility(View.VISIBLE);
+		    		activity.bCmd.setVisibility(View.INVISIBLE);
+		    		activity.etCmd.setVisibility(View.INVISIBLE);
+		    		keyPressed=0;
 		    		break;	
 		    	case MACT_L9WAITBEFORESCRIPT:
 		    		activity.bCmd.setText("<!>");

@@ -36,6 +36,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	
 	Button bCmd;
 	EditText etCmd;
+	Button bSpace;
+	Button bEnter;
 
 	ListView lvMain;
    
@@ -59,7 +61,14 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
         
+        bSpace = (Button) findViewById(R.id.bSpace);
+        bSpace.setOnClickListener(this);
+    	bEnter = (Button) findViewById(R.id.bEnter);
+    	bEnter.setOnClickListener(this);
+        
         etCmd = (EditText) findViewById(R.id.etCmd);
+        etCmd.setHint("Enter your command");
+
         etCmd.setOnEditorActionListener(this);
         
         etCmd.setText("");
@@ -248,6 +257,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			if (mt!=null && mt.l9!=null) 
 				mt.l9.waitPictureToDraw(); 
 			break;
+		case R.id.bSpace:
+			mt.keyPressed=' ';
+			break;
+		case R.id.bEnter:
+			mt.keyPressed='\r';
+			break;
 		}
 	}
 
@@ -289,8 +304,8 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			mt.logStringCapacitor=null;
 			if (finishThisString) mt.logStrId=-1;
 			else mt.logStrId=lvMain.getAdapter().getCount()-1;
+			lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 		};
-		lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 	}
 	
 	void postCommand() {

@@ -435,17 +435,25 @@ public class L9implement extends L9 {
 	};
 	
 	char os_readchar(int millis) {
+		char key=0;
 		if (millis!=0) {
 			mHandler.sendEmptyMessage(Threads.MACT_L9WAITFORCHAR);
 			try {
-				TimeUnit.MILLISECONDS.sleep(millis*100);
+				for (int i=0;i<millis;i++) {
+					TimeUnit.MILLISECONDS.sleep(100);
+					if (th.keyPressed!=0) {
+						key=th.keyPressed;
+						break;
+					}
+				};
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			mHandler.sendEmptyMessage(Threads.MACT_L9WORKING);
 		};
-		return '\r';
+		//os_printchar('\r');
+		return key;
 	};
 	
 	boolean restore_autosave(String path) {
