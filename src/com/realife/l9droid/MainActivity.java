@@ -54,6 +54,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         
         ivScreen=(ImageView) findViewById(R.id.imageView1);
+        ivScreen.setOnClickListener(this);
                        
         bCmd = (Button) findViewById(R.id.bCmd);
         bCmd.setOnClickListener(this);
@@ -242,6 +243,10 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
 			postCommand();
+			break;
+		case R.id.imageView1:
+			if (mt!=null && mt.l9!=null) 
+				mt.l9.waitPictureToDraw(); 
 			break;
 		}
 	}

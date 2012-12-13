@@ -502,7 +502,7 @@ public class L9implement extends L9 {
 	};
 
 	void waitPictureToDraw() {
-		if (PicMode!=0) {
+		if (PicMode==1) {
 			while (th.gfx_ready && !picDrawed) {
 				fastShowPic=true;
 				try {
