@@ -106,8 +106,9 @@ public class Threads {
 	    		case MACT_REPLACE_LOG:
 	    			logStringCapacitor=null;
 	    			lvAdapter.clear();
-	    			if (l9.tempLog!=null) 
+	    			if (l9.tempLog!=null) {
 		    			for (int i=0;i<l9.tempLog.size();i++) lvAdapter.add(l9.tempLog.get(i));
+	    			};
 	    			break;
 	    		case MACT_GFXOFF:
 		    		menuPicturesEnabled=false;
@@ -150,7 +151,6 @@ public class Threads {
         }
         if (loadAutoSave) {
         	l9.restore_autosave(lib.getAbsolutePath("Saves/auto.sav"));
-
         } else
         	h.sendEmptyMessage(MACT_GFXOFF); //убираю картинку от прошлой игры
         

@@ -460,6 +460,8 @@ public class L9implement extends L9 {
 			load_piclog(path);
 			th.lvAdapter.clear();
 			for (int i=0; i<tempLog.size();i++) th.lvAdapter.add(tempLog.get(i));
+			th.logStrId=th.lvAdapter.getCount()-1;
+			th.logStringCapacitor=null;
 			return true;
 		};
 		return false;
