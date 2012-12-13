@@ -4,29 +4,21 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 public class L9implement extends L9 {
-    String cmdStr;
-    DebugStorage ds;
-    String vStr;
-    Handler mHandler;
-    Message msg;
-    Library lib;
-    Threads th;
-    ArrayAdapter<SpannableStringBuilder> lvTempAdapter;
-    //byte saveloadBuff[];
-    //String saveloadFileName;
-    //boolean saveloaddone;
-    //boolean saveok;
+	String cmdStr;
+	DebugStorage ds;
+	String vStr;
+	Handler mHandler;
+	Message msg;
+	Library lib;
+	Threads th;
+	ArrayList<SpannableStringBuilder> tempLog;
 	
 	EditText et;
 	byte gamedata[];
@@ -94,8 +86,6 @@ public class L9implement extends L9 {
 		mHandler=h;
 		th=t;
 		
-		lvTempAdapter=null;
-		
 		L9_FillStack=new int[L9Fill_StackSize];
 		SelectedPalette=new int[32];
 	};
@@ -151,9 +141,8 @@ public class L9implement extends L9 {
 	byte[] os_load_file() {
 		String path="Saves/1.sav";
 		path=lib.getAbsolutePath(path);
-		//TODO: import log
-		load_piclog(path,lvTempAdapter);
-		//load_piclog(path,th.lvAdapter);
+		load_piclog(path);
+		mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);
 		return lib.fileLoadToArray(path);
 	};
 	
@@ -461,8 +450,9 @@ public class L9implement extends L9 {
 		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
-
-			load_piclog(path,th.lvAdapter);			
+			load_piclog(path);
+			th.lvAdapter.clear();
+			for (int i=0; i<tempLog.size();i++) th.lvAdapter.add(tempLog.get(i));
 			return true;
 		};
 		return false;
@@ -482,74 +472,24 @@ public class L9implement extends L9 {
 	void save_piclog(String path) {
 		String name;
 		
-		ArrayList<String> log=new ArrayList<String>();
-    	if (th.lvAdapter!=null) 
-    		for (int i=0; i<th.lvAdapter.getCount();i++) {
-    			log.add((wrapSpans(th.lvAdapter.getItem(i))));
-    		};
-		
 		name=lib.changeFileExtension(path, "log");
-		lib.fileSaveFromStringArray(name, log);
+		lib.SaveLogFromSpannableArrayAdapter(name, th.lvAdapter);
 		
 		name=lib.changeFileExtension(path, "png");
 		if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
 		else lib.deleteFile(name);
 	}
 
-	void load_piclog(String path, ArrayAdapter<SpannableStringBuilder> adp) {
+	void load_piclog(String path) {
 		String name;
 		name=lib.changeFileExtension(path, "png");
 		bm=lib.pictureLoadToBitmap(name);
 		if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
 		
 		name=lib.changeFileExtension(path, "log");
-		ArrayList<String> log=lib.fileLoadToStringArray(name);
-		adp.clear();
-		if (log!=null) 
-			for (int i=0; i<log.size();i++)
-				adp.add(unwrapSpans(log.get(i)));
+		tempLog=lib.LoadLogToSpannableArrayList(name);
 	};
 
 	
-	//завернуть spans в тэги {}
-	private String wrapSpans(SpannableStringBuilder spannedString) {
-		//ForegroundColorSpan a[]=spannedString.getSpans(0, 1, ForegroundColorSpan.class);
-		String result=new String();
-		int size=spannedString.length();
-		int i=spannedString.getSpans(0, size, ForegroundColorSpan.class).length;
-		if (i>0) {
-			//TODO: пока только одна подсвеченная команда в строке будет заключена в фигурные скобки 
-			//TODO: раскомментировать .replace("{", "{/").replace("}", "}}") для маскировки этих символов
-			int begin=0;
-			int beginSpan=-1;
-			int endSpan=0;
-			beginSpan=spannedString.nextSpanTransition(begin, size-1, ForegroundColorSpan.class);
-			if (beginSpan>=0) {
-				endSpan=spannedString.nextSpanTransition(beginSpan, size-1, ForegroundColorSpan.class);
-				result+=spannedString.subSequence(begin, beginSpan).toString()/*.replace("{", "{{").replace("}", "}}")*/
-						+"{"
-						+spannedString.subSequence(beginSpan, endSpan+1).toString()/*.replace("{", "{{").replace("}", "}}")*/
-						+"}";
-				begin=endSpan+1;
-			};
-			if (begin<size) result+=spannedString.subSequence(begin, size-1).toString();
-		} else result=spannedString.toString()/*.replace("{", "{{").replace("}", "}}")*/;
-		return result;//spannedString.toString();
-	}
-	
-	//развернуть spans из тэгов {}
-	private SpannableStringBuilder unwrapSpans(String wrappedString) {
-		
-		int size=wrappedString.length();
-		int i=wrappedString.indexOf('{', 0);
-		int j=wrappedString.indexOf('}', 0);
-		if (i>=0 && j>i) {
-			SpannableStringBuilder text = new SpannableStringBuilder(wrappedString.subSequence(0, i).toString()
-					+wrappedString.subSequence(i+1, j).toString()
-					+wrappedString.subSequence(j+1, size).toString());
-	        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
-	        text.setSpan(style, i, j-1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-	        return text; 
-		} else return new SpannableStringBuilder(wrappedString);
-	}
+
 }

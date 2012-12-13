@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Handler;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -17,8 +14,8 @@ public class Threads {
 	public final static int MACT_L9WORKING = 0;
 	public final static int MACT_L9WAITFORCOMMAND = 1;
 	public final static int MACT_PRINTCHAR = 2;
-	public final static int MACT_SAVEGAMESTATE = 3;
-	public final static int MACT_LOADGAMESTATE=4;
+	//public final static int MACT_SAVEGAMESTATE = 3;
+	//public final static int MACT_LOADGAMESTATE=4;
 	public final static int MACT_GFXON=5;
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
@@ -26,6 +23,7 @@ public class Threads {
 	public final static int MACT_TOAST=9;
 	public final static int MACT_L9WAITFORCHAR=10;
 	public final static int MACT_FLUSH=11;
+	public final static int MACT_REPLACE_LOG=12;
 	
 	MainActivity activity;
 	Library lib;
@@ -105,14 +103,12 @@ public class Threads {
 	    		case MACT_FLUSH:
 	    			activity.outLogFlush(false);
 	    			break;
-	    		/*case MACT_SAVEGAMESTATE:
-    				l9.saveok=lib.fileSave(l9.saveloadBuff);
-    				l9.saveloaddone=true;
+	    		case MACT_REPLACE_LOG:
+	    			logStringCapacitor=null;
+	    			lvAdapter.clear();
+	    			if (l9.tempLog!=null) 
+		    			for (int i=0;i<l9.tempLog.size();i++) lvAdapter.add(l9.tempLog.get(i));
 	    			break;
-	    		case MACT_LOADGAMESTATE:
-	    			l9.saveloadBuff=lib.fileLoad();
-	    			l9.saveloaddone=true;
-	    			break;*/
 	    		case MACT_GFXOFF:
 		    		menuPicturesEnabled=false;
 	    			bm=null;

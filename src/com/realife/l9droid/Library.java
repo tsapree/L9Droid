@@ -17,8 +17,13 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 public class Library {
@@ -55,13 +60,6 @@ public class Library {
 			    try {
 			    	
 			        byte buff[]=new byte[49179];	        
-	//				try {
-	//					//InputStream is=getResources().openRawResource(R.raw.timev2);
-	//					InputStream is=activity.getResources().openRawResource(R.raw.wormv3);
-	//					is.read(gamedata);            
-	//				} catch (IOException e) {
-	//					e.printStackTrace();
-	//				}
 					InputStream is=act.getResources().openRawResource(R.raw.wormv3);
 					is.read(buff);            
 			    	OutputStream out = new FileOutputStream(sdFile);
@@ -266,19 +264,7 @@ public class Library {
 		sendUserMessage("ERROR delete: "+path);
 		return false;
 	}
-	
-	public boolean fileSave(byte buff[]) {
-		String path="Saves/1.sav";
-		path=getAbsolutePath(path);
-		return fileSaveFromArray(path,buff);
-	}
-	
-	public byte[] fileLoad() {
-		String path="Saves/1.sav";
-		path=getAbsolutePath(path);
-		return fileLoadToArray(path);
-	}
-	
+
 	//returns:
 	//	if (relativePath='/****') absolute path = relativePath
 	//	else if (relativePath='.****') absolute path = gamePath-gameName
@@ -363,19 +349,80 @@ public class Library {
 						return false; // Если при копировании произошла ошибка
 			} else if (fFrom.isFile()) { // Если файл просто копируем его
 			    File fTo = new File(to);
-			    InputStream in = new FileInputStream(fFrom); // Создаем потоки
+			    InputStream in = new FileInputStream(fFrom);
 			    OutputStream out = new FileOutputStream(fTo);
 			    byte[] buf = new byte[1024];
 			    int len;
 			    while ((len = in.read(buf)) > 0) {
 			        out.write(buf, 0, len);
 			    }
-			    in.close(); // Закрываем потоки
+			    in.close();
 			    out.close();
 			}
 		} catch (FileNotFoundException ex) { // Обработка ошибок
 		} catch (IOException e) { // Обработка ошибок
 		}
-		return true; // При удачной операции возвращаем true
+		return true;
 	}
+	
+	//завернуть spans в тэги {}
+	private String wrapSpans(SpannableStringBuilder spannedString) {
+		//ForegroundColorSpan a[]=spannedString.getSpans(0, 1, ForegroundColorSpan.class);
+		String result=new String();
+		int size=spannedString.length();
+		int i=spannedString.getSpans(0, size, ForegroundColorSpan.class).length;
+		if (i>0) {
+			//TODO: пока только одна подсвеченная команда в строке будет заключена в фигурные скобки 
+			//TODO: раскомментировать .replace("{", "{/").replace("}", "}}") для маскировки этих символов
+			int begin=0;
+			int beginSpan=-1;
+			int endSpan=0;
+			beginSpan=spannedString.nextSpanTransition(begin, size-1, ForegroundColorSpan.class);
+			if (beginSpan>=0) {
+				endSpan=spannedString.nextSpanTransition(beginSpan, size-1, ForegroundColorSpan.class);
+				result+=spannedString.subSequence(begin, beginSpan).toString()/*.replace("{", "{/").replace("}", "}/")*/
+						+"{"
+						+spannedString.subSequence(beginSpan, endSpan+1).toString()/*.replace("{", "{/").replace("}", "}/")*/
+						+"}";
+				begin=endSpan+1;
+			};
+			if (begin<size) result+=spannedString.subSequence(begin, size-1).toString();
+		} else result=spannedString.toString()/*.replace("{", "{/").replace("}", "}/")*/;
+		return result;
+	}
+	
+	//развернуть spans из тэгов {}
+	private SpannableStringBuilder unwrapSpans(String wrappedString) {
+		
+		int size=wrappedString.length();
+		int i=wrappedString.indexOf('{', 0);
+		int j=wrappedString.indexOf('}', 0);
+		if (i>=0 && j>i) {
+			SpannableStringBuilder text = new SpannableStringBuilder(wrappedString.subSequence(0, i).toString()
+					+wrappedString.subSequence(i+1, j).toString()
+					+wrappedString.subSequence(j+1, size).toString());
+	        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+	        text.setSpan(style, i, j-1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+	        return text; 
+		} else return new SpannableStringBuilder(wrappedString);
+	}
+	
+	public boolean SaveLogFromSpannableArrayAdapter(String path, ArrayAdapter<SpannableStringBuilder> adapter) {
+		ArrayList<String> log=new ArrayList<String>();
+    	if (adapter!=null) 
+    		for (int i=0; i<adapter.getCount();i++) {
+    			log.add((wrapSpans(adapter.getItem(i))));
+    		};
+		return fileSaveFromStringArray(path, log);
+	}
+	
+	public ArrayList<SpannableStringBuilder> LoadLogToSpannableArrayList(String path) {
+		ArrayList<String> log=fileLoadToStringArray(path);
+		ArrayList<SpannableStringBuilder> array=new ArrayList<SpannableStringBuilder>();
+		if (log!=null) 
+			for (int i=0; i<log.size();i++)
+				array.add(unwrapSpans(log.get(i)));
+		return array;
+	}
+	
 }
