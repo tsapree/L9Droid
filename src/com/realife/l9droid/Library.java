@@ -366,18 +366,22 @@ public class Library {
 	}
 	
 	//завернуть spans в тэги {}
-	private String wrapSpans(SpannableStringBuilder spannedString) {
+	private String wrapSpans(SpannableStringBuilder spannedStr) {
 		//ForegroundColorSpan a[]=spannedString.getSpans(0, 1, ForegroundColorSpan.class);
 		String result=new String();
+		SpannableStringBuilder spannedString=new SpannableStringBuilder(" ");
+		spannedString.append(spannedStr);//исправление особенности nextSpanTransition, который не видит 
 		int size=spannedString.length();
 		int i=spannedString.getSpans(0, size, ForegroundColorSpan.class).length;
 		if (i>0) {
+			
 			//TODO: пока только одна подсвеченная команда в строке будет заключена в фигурные скобки 
 			//TODO: раскомментировать .replace("{", "{/").replace("}", "}}") для маскировки этих символов
 			int begin=0;
 			int beginSpan=-1;
 			int endSpan=0;
 			beginSpan=spannedString.nextSpanTransition(begin, size-1, ForegroundColorSpan.class);
+			begin=1; //Пропустить вставленный мною пробел
 			if (beginSpan>=0) {
 				endSpan=spannedString.nextSpanTransition(beginSpan, size-1, ForegroundColorSpan.class);
 				result+=spannedString.subSequence(begin, beginSpan).toString()/*.replace("{", "{/").replace("}", "}/")*/
@@ -387,7 +391,8 @@ public class Library {
 				begin=endSpan+1;
 			};
 			if (begin<size) result+=spannedString.subSequence(begin, size-1).toString();
-		} else result=spannedString.toString()/*.replace("{", "{/").replace("}", "}/")*/;
+			
+		} else result=spannedStr.toString()/*.replace("{", "{/").replace("}", "}/")*/;
 		return result;
 	}
 	
