@@ -213,7 +213,6 @@ public class Threads {
 	}
 	
 	void destroy(boolean needAutoSave) {
-		needToQuit=true;
 		//TODO: почистить очередь?
 		if (l9!=null && needAutoSave) {
 			if (l9.L9State!=l9.L9StateStopped) {
@@ -221,7 +220,8 @@ public class Threads {
 				l9.autosave(name);
 			};
 			l9.StopGame();
-		}
+		};
+		needToQuit=true;
 		if (g!=null) while (g.isAlive());
 		if (t!=null) while (t.isAlive());
 		t=null;

@@ -31,6 +31,8 @@ public class L9implement extends L9 {
     //L9Picture pic_bitmap=null;
     boolean flgNeedToRepaint=false;
     int lastpic=-1;
+    boolean picDrawed=true;
+    boolean fastShowPic=false;
     
 	int PicWidth=0;
 	int PicHeight=0;
@@ -375,10 +377,15 @@ public class L9implement extends L9 {
 		int j=0;
 		if (PicMode==0) return false;
 		else if (PicMode==1) {
-			//Красивая прорисовка Fill. 
-			for (int i=0; i<iPicturesSpeed; i++)
-				if (L9Fill_Step()>0) j++;
-				else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
+			if (fastShowPic) {
+				fastShowPic=false;
+				while ((L9Fill_Step()>0) || RunGraphics()) j++;
+			} else {
+				//Красивая прорисовка Fill. 
+				for (int i=0; i<iPicturesSpeed; i++)
+					if (L9Fill_Step()>0) j++;
+					else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
+			};
 		} else {
 			if (flgNeedToRepaint) j++;
 			flgNeedToRepaint=false;
@@ -394,7 +401,7 @@ public class L9implement extends L9 {
 				bm.setPixels(PicColorBuff, 0, PicWidth, 0, 0, PicWidth, PicHeight);
 			};
 		}
-		
+		picDrawed=(j==0);
 		return j!=0;
 	};
 	
@@ -475,14 +482,18 @@ public class L9implement extends L9 {
 		name=lib.changeFileExtension(path, "log");
 		lib.SaveLogFromSpannableArrayAdapter(name, th.lvAdapter);
 		
-		name=lib.changeFileExtension(path, "png");
-		if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
-		else lib.deleteFile(name);
+		if (PicMode!=0) {
+			waitPictureToDraw();
+			name=lib.changeFileExtension(path, "png");
+			if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
+			else lib.deleteFile(name);
+		};
 	}
 
 	void load_piclog(String path) {
 		String name;
 		name=lib.changeFileExtension(path, "png");
+		waitPictureToDraw();
 		bm=lib.pictureLoadToBitmap(name);
 		if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
 		
@@ -490,6 +501,18 @@ public class L9implement extends L9 {
 		tempLog=lib.LoadLogToSpannableArrayList(name);
 	};
 
-	
+	void waitPictureToDraw() {
+		if (PicMode!=0) {
+			while (th.gfx_ready && !picDrawed) {
+				fastShowPic=true;
+				try {
+					TimeUnit.MILLISECONDS.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+	}
 
 }
