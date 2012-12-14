@@ -26,7 +26,7 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/bg11"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
                 android:text="1. Colossal Adventure" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/bg12"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
                 android:text="2. Adventure Quest" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/bg13"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/button6"
+                android:id="@+id/bg21"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:text="1. Snowball" />
 
             <Button
-                android:id="@+id/button7"
+                android:id="@+id/bg22"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:text="2. Return to Eden" />
 
             <Button
-                android:id="@+id/button8"
+                android:id="@+id/bg23"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button10"
+                android:id="@+id/bg31"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                 android:text="1. Lords of Time" />
 
             <Button
-                android:id="@+id/button11"
+                android:id="@+id/bg32"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
                 android:text="2. Red Moon" />
 
             <Button
-                android:id="@+id/button12"
+                android:id="@+id/bg33"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button14"
+                android:id="@+id/bg41"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -143,7 +143,7 @@
                 android:text="1. Gnome Ranger" />
 
             <Button
-                android:id="@+id/button15"
+                android:id="@+id/bg42"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -163,7 +163,7 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button17"
+                android:id="@+id/bg51"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -171,7 +171,7 @@
                 android:text="1. The Secret Diary of Adrian Mole Aged 13 3div4" />
 
             <Button
-                android:id="@+id/button18"
+                android:id="@+id/bg52"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -191,7 +191,7 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button20"
+                android:id="@+id/bg61"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -199,7 +199,7 @@
                 android:text="1. Emerald Isle" />
 
             <Button
-                android:id="@+id/button21"
+                android:id="@+id/bg62"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -207,7 +207,7 @@
                 android:text="2. The Saga of Erik the Viking" />
 
             <Button
-                android:id="@+id/button22"
+                android:id="@+id/bg63"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -221,7 +221,7 @@
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button23"
+                android:id="@+id/bg64"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -229,7 +229,7 @@
                 android:text="4. Knight Orc" />
 
             <Button
-                android:id="@+id/button24"
+                android:id="@+id/bg65"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -237,7 +237,7 @@
                 android:text="5. Lancelot" />
 
             <Button
-                android:id="@+id/button25"
+                android:id="@+id/bg66"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

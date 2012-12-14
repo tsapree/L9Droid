@@ -25,4 +25,91 @@
 		<item>20. Very big</item>
 		<item>22. Huge</item>
 	</string-array>
+	<string name="game1_cat_name">THE MIDDLE-EARTH TRILOGY / JEWELS OF DARKNESS</string>
+	<string name="game11_name">Colossal Adventure</string>
+	<string name="game11_about"></string>
+	<string name="game11_author"></string>
+	
+	<string name="game12_name">Adventure Quest</string>
+	<string name="game12_about"></string>
+	<string name="game12_author"></string>
+	
+	<string name="game13_name">Dungeon Adventure</string>
+	<string name="game13_about"></string>
+	<string name="game13_author"></string>
+	
+	<string name="game2_cat_name">THE SILICON DREAMS TRILOGY</string>
+	<string name="game21_name">Snowball</string>
+	<string name="game21_about">Snowball is a big adventure game. It has over 7,000 locations and has taken 9 months to produce. It\'s probably unique among adventures in having a realistic, planned background and being set aboard a starship that could actually work.
+	\nYou play Kim Kimberley, secret agent extraordinary.
+	\nYour mission: to safeguard the interstar transport, Snowball 9, as a last resort following catastrophic accident or sabotage.
+	\nThus when your modified freezer-coffin wakes you with the Snowball still in transit, you know that something must be very wrong. You\'re weakened and disorientated from lengthy hibernation, but the fate of two million passengers is in your hands!</string>
+	<string name="game21_author">Written by: Pete, Mike and Nick Austin.\nAdditional expertise: Ian Buxton.</string>
+	
+	<string name="game22_name">Return to Eden</string>
+	<string name="game22_about"></string>
+	<string name="game22_author"></string>
+	
+	<string name="game23_name">Worm in Paradise</string>
+	<string name="game23_about"></string>
+	<string name="game23_author"></string>	
+	
+	<string name="game3_cat_name">THE TIME AND MAGIK TRILOGY</string>
+	<string name="game31_name">Lords of Time</string>
+	<string name="game31_about"></string>
+	<string name="game31_author"></string>
+	
+	<string name="game32_name">Red Moon</string>
+	<string name="game32_about"></string>
+	<string name="game32_author"></string>
+	
+	<string name="game33_name">The Price of Magik</string>
+	<string name="game33_about"></string>
+	<string name="game33_author"></string>
+	
+	<string name="game4_cat_name">THE GNOME RANGER SERIES</string>
+	<string name="game41_name">Gnome Ranger</string>
+	<string name="game41_about"></string>
+	<string name="game41_author"></string>
+	
+	<string name="game42_name">Gnome Ranger II Ingrid\'s Back</string>
+	<string name="game42_about"></string>
+	<string name="game42_author"></string>
+	
+	<string name="game5_cat_name">THE ADRIAN MOLE SERIES</string>
+	<string name="game51_name">The Secret Diary of Adrian Mole Aged 13 &#190;</string>
+	<string name="game51_about"></string>
+	<string name="game51_author"></string>
+	
+	<string name="game52_name">The Growing Pains of Adrian Mole</string>
+	<string name="game52_about"></string>
+	<string name="game52_author"></string>
+	
+	<string name="game6_cat_name">INDIVIDUAL GAMES</string>
+	<string name="game61_name">Emerald Isle</string>
+	<string name="game61_about">Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</string>
+	<string name="game61_author">Written by: Shaun D. Abbott\nPictures by: James Horsler</string>
+	
+	<string name="game62_name">The Saga of Erik the Viking</string>
+	<string name="game62_about"></string>
+	<string name="game62_author"></string>
+	
+	<string name="game63_name">The Archers</string>
+	<string name="game63_about"></string>
+	<string name="game63_author"></string>
+	
+	<string name="game64_name">Knight Orc</string>
+	<string name="game64_about"></string>
+	<string name="game64_author"></string>
+	
+	<string name="game65_name">Lancelot</string>
+	<string name="game65_about"></string>
+	<string name="game65_author"></string>
+	
+	<string name="game66_name">Scapeghost</string>
+	<string name="game66_about"></string>
+	<string name="game66_author"></string>
+	
+	
+	
 </resources>

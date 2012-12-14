@@ -27,7 +27,8 @@
         <activity android:name="AboutActivity" android:theme="@android:style/Theme.Dialog"></activity>
         <activity android:name="ImportActivity"></activity>
         <activity android:name="ImportSelectFolderName"></activity>
-        <activity android:name="com.realife.l9droid.LibraryGamesActivity"></activity>
+        <activity android:name="LibraryGamesActivity"></activity>
+        <activity android:name="LibraryGameInfo"></activity>
     </application>
 
 </manifest>
