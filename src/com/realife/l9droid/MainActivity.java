@@ -144,7 +144,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
     
     protected void onDestroy() {
 		super.onDestroy();
-		mt.activityPaused=false;
+		mt.activityPaused=true;
 		//Log.d("l9droid", "need to stop application");
 		if (killThreadsOnDestroyActivity && mt.l9!=null) {
 			SharedPreferences sPref=getPreferences(MODE_PRIVATE);
@@ -172,7 +172,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         //getMenuInflater().inflate(R.menu.main, menu);
         //return true;
     	MenuItem mi;
-    	mi = menu.add(0,1,0,"Library");
+    	mi = menu.add(0,1,0,"Library Files");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(0,9,0,"Library games");
     	mi.setOnMenuItemClickListener(this);
         mi = menu.add(0, 2, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
@@ -194,9 +196,15 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 
 	//@Override
 	public boolean onMenuItemClick(MenuItem arg0) {
+		Intent intent;
 		switch (arg0.getItemId()) {
 		case 1: //library TODO: переделать в id, возможно перенести меню в ресурсы
-			Intent intent=new Intent(this, LibraryActivity.class);
+			intent=new Intent(this, LibraryActivity.class);
+			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
+	        //mi.setIntent(intent);
+			break;
+		case 9: //library TODO: переделать в id, возможно перенести меню в ресурсы
+			intent=new Intent(this, LibraryGamesActivity.class);
 			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
 	        //mi.setIntent(intent);
 			break;
