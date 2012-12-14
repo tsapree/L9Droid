@@ -3,9 +3,10 @@ package com.realife.l9droid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.Toast;
 
 public class LibraryGamesActivity extends Activity implements OnClickListener {
 	
@@ -38,8 +39,21 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		Intent intent=new Intent(this, LibraryGameInfo.class);
 		intent.putExtra("selectedgame", v.getId());
-		startActivity(intent);
-		finish();
+		startActivityForResult(intent, 1);
+		//finish();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+			case 1:
+		  	  	setResult(RESULT_OK,data);
+		  	  	finish();
+				break;
+			}
+		} else {
+		}
 	}
 
 }

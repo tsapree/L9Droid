@@ -229,8 +229,6 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// запишем в лог значения requestCode и resultCode
-		Log.d("myLogs", "requestCode = " + requestCode + ", resultCode = " + resultCode);
 		// если пришло ОК
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {

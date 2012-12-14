@@ -1,16 +1,22 @@
 package com.realife.l9droid;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
-public class LibraryGameInfo extends Activity {
+public class LibraryGameInfo extends Activity implements OnClickListener {
 	
 	int selected_game_id;
 	TextView tvGameName;
 	TextView tvCategory;
 	TextView tvAbout;
 	TextView tvAuthors;
+	
+	Button bPlay;
 	
 	int gameinfo[][]={
 		{R.id.bg11, R.string.game1_cat_name, R.string.game11_name, R.string.game11_about, R.string.game11_author,},
@@ -46,6 +52,9 @@ public class LibraryGameInfo extends Activity {
 		tvAbout = (TextView)findViewById(R.id.tvAbout);
 		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
 		
+		bPlay = (Button) findViewById(R.id.bPlay);
+		bPlay.setOnClickListener(this);
+		
 		for (int i=0;i<gameinfo.length;i++) {
 			if (gameinfo[i][0]==selected_game_id) {
 				tvCategory.setText(gameinfo[i][1]);
@@ -56,5 +65,12 @@ public class LibraryGameInfo extends Activity {
 			};
 		};
 	    
+	}
+
+	public void onClick(View v) {
+		Intent intent = new Intent();
+  	  	intent.putExtra("opengame", "/mnt/sdcard/L9Droid/Emerald Isle Speccy/emerald.sna");
+  	  	setResult(RESULT_OK,intent);
+  	  	finish();
 	};
 }
