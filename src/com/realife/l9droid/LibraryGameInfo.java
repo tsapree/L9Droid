@@ -3,9 +3,11 @@ package com.realife.l9droid;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class LibraryGameInfo extends Activity implements OnClickListener {
@@ -52,8 +54,25 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 		tvAbout = (TextView)findViewById(R.id.tvAbout);
 		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
 		
-		bPlay = (Button) findViewById(R.id.bPlay);
+		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llInstalled);
+	    LayoutInflater ltInflater = getLayoutInflater();
+	    
+		View item = ltInflater.inflate(R.layout.library_game_info_item, linLayout, false);
+		TextView tvVersion = (TextView) item.findViewById(R.id.tvVersion);
+		tvVersion.setText("Speccy");
+		Button bProperties = (Button) item.findViewById(R.id.bProperties);
+		Button bPlay = (Button) item.findViewById(R.id.bPlay);
+		item.setTag("/mnt/sdcard/L9Droid/Snowball zx/v3_snowball.sna");
 		bPlay.setOnClickListener(this);
+		
+		//"/mnt/sdcard/L9Droid/Emerald Isle Speccy/emerald.sna"
+		
+//		item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
+//		item.setBackgroundColor(colors[i % 2]);
+		linLayout.addView(item);
+
+		//bPlay = (Button) findViewById(R.id.bPlay);
+		//bPlay.setOnClickListener(this);
 		
 		for (int i=0;i<gameinfo.length;i++) {
 			if (gameinfo[i][0]==selected_game_id) {
@@ -68,9 +87,13 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 	}
 
 	public void onClick(View v) {
-		Intent intent = new Intent();
-  	  	intent.putExtra("opengame", "/mnt/sdcard/L9Droid/Emerald Isle Speccy/emerald.sna");
-  	  	setResult(RESULT_OK,intent);
-  	  	finish();
+		View p=(View)v.getParent();
+		if ((p!=null) && (p.getTag()!=null)) {
+			Intent intent = new Intent();
+	  	  	intent.putExtra("opengame", (String)p.getTag());
+	  	  	setResult(RESULT_OK,intent);
+	  	  	finish();
+		};
+		
 	};
 }
