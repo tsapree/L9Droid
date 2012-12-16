@@ -3,16 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="#333333" >
 
         <TextView
             android:id="@+id/tvGameName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#333333"
+            android:layout_toLeftOf="@+id/button4"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
@@ -26,8 +27,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/tvGameName"
             android:layout_below="@+id/tvGameName"
-            android:background="#333333"
             android:padding="5dp"
             android:text="@string/game6_cat_name"
             android:textColor="#999999"
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="14dp"
+            android:layout_margin="5dp"
             android:text="Install" />
 
     </RelativeLayout>
