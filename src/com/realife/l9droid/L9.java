@@ -3718,7 +3718,10 @@ SaveStruct ramsavearea[];
 			printstring("\r");
 			while ((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))
 			{
-				error(" ",ibuffstr);
+				error("%s ",ibuffstr);
+				if ((CheatWord&0x1f)==0) {
+					error("\r");
+				}
 				if (os_stoplist() || L9StateRunning==L9StateStopped) break;
 			}
 			printstring("\r");
@@ -4407,13 +4410,9 @@ SaveStruct ramsavearea[];
 
 		if (d0!=0)
 		{
-	// clearg 
 			if (l9textmode!=0)
-	// gintclearg 
 				os_cleargraphics();
 		}
-	// cleart 
-	// oswrch(0x0c) 
 	}
 	
 	/*--was--	void function(void)
@@ -4783,9 +4782,7 @@ SaveStruct ramsavearea[];
 	}*/
 	boolean GetWordV3(int Word)
 	{
-		int i;
 		int subdict=0;
-		byte buff[];
 		// 26*4-1=103 
 
 		initunpack(startdata+L9WORD(dictdata));
@@ -4800,11 +4797,11 @@ SaveStruct ramsavearea[];
 				Word++; // force unpack again 
 			}
 		}
-		//TODO:проверить
-		//strcpy(buff,threechars);
-		buff=threechars.clone();
-		for (i=0;i<buff.length;i++) buff[i]&=0x7f;
-		ibuffstr=buff.toString();
+		ibuffstr="";
+		int i=0;
+		while (threechars[i]!=0 && i<34) {
+			ibuffstr+=(char)(threechars[i++]&0x7f);
+		};
 		return true;
 	};
 
@@ -4833,22 +4830,25 @@ SaveStruct ramsavearea[];
 	boolean GetWordV2(int Word)
 	{
 		int ptr=L9Pointers[1];
-		int x;
+		char x;
 		while (Word--!=0)
 		{
 			do
 			{
-				x=l9memory[ptr++]&0xff;
-			} while (x>0 && x<0x7f);
-			if (x==0) return false; // no more words 
+				x=(char)(l9memory[ptr++]&0xff);
+			//TODO: так - меньше мусора. Ќо прав ли €?
+			//} while (x>0 && x<0x7f);
+			//if (x==0) return false; // no more words
+			} while (x>31 && x<0x7f);
+			if (x<32) return false; // no more words
 			ptr++;
 		}
 		ibuffstr="";
 		do
 		{
-			x=l9memory[ptr++]&0xff;
-			ibuffstr+=x&0x7f;
-		} while (x>0 && x<0x7f);
+			x=(char)(l9memory[ptr++]&0xff);
+			ibuffstr+=(char)(x>32?(x&0x7f):' ');
+		} while (x>31 && x<0x7f);
 		return true;
 	}
 	
