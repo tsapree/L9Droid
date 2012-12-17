@@ -45,12 +45,14 @@ public class Library {
 	
 	String tags[][]={
 			{"Amiga","Amiga"},
-			{"Atari","Atari"},
-			{"BBC","BBC"},
-			{"CPC","CPC"},
+			{"Atari","Atari?"},
+			{"BBC","BBC?"},
+			{"CPC","CPC?"},
 			{"C64","Commodore 64"},
+			{"Speccy","Speccy"}, //TODO: убрать, оставить вместо S48
 			{"S48","Speccy 48k"},
 			{"S128","Speccy 128k"},
+			{"ST","ST?"},
 			{"PC","PC"},
 	};
 	
