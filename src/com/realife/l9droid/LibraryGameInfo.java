@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LibraryGameInfo extends Activity implements OnClickListener {
 	
@@ -63,6 +64,7 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 		Button bProperties = (Button) item.findViewById(R.id.bProperties);
 		Button bPlay = (Button) item.findViewById(R.id.bPlay);
 		item.setTag("/mnt/sdcard/L9Droid/Snowball zx/v3_snowball.sna");
+		bProperties.setOnClickListener(this);
 		bPlay.setOnClickListener(this);
 		
 		//"/mnt/sdcard/L9Droid/Emerald Isle Speccy/emerald.sna"
@@ -88,12 +90,23 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 		View p=(View)v.getParent();
-		if ((p!=null) && (p.getTag()!=null)) {
-			Intent intent = new Intent();
-	  	  	intent.putExtra("opengame", (String)p.getTag());
-	  	  	setResult(RESULT_OK,intent);
-	  	  	finish();
-		};
+		switch (v.getId()) {
+		case R.id.bPlay: // кнопка ввода команды
+			if ((p!=null) && (p.getTag()!=null)) {
+				Intent intent = new Intent();
+		  	  	intent.putExtra("opengame", (String)p.getTag());
+		  	  	setResult(RESULT_OK,intent);
+		  	  	finish();
+			};
+			break;
+		case R.id.bProperties:
+			if ((p!=null) && (p.getTag()!=null)) {
+				Toast.makeText(this, "Path: "+p.getTag(), Toast.LENGTH_SHORT).show();
+			};
+			break;
+		}
+
+		
 		
 	};
 }

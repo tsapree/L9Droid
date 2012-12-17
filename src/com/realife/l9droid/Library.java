@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -77,10 +78,12 @@ public class Library {
 			File[] pathdirs=sdPath.listFiles();
 			if (pathdirs!=null) {
 				for (int i=0; i<pathdirs.length; i++) {
-					File[] files=pathdirs[i].listFiles();
+					File[] files=pathdirs[i].listFiles(new GameFilter() );
 					if (files!=null) 
 						for (int j=0;j<files.length; j++)
-							if (files[j].isFile()) temppaths[paths_num++]=files[j].getAbsolutePath();
+							if (files[j].isFile()) {
+								temppaths[paths_num++]=files[j].getAbsolutePath();
+							}
 				};
 			};
 			//TODO: temppaths-lame! kill it!
@@ -92,6 +95,14 @@ public class Library {
 		} else return false;
 		return true;
 	}
+	
+    class GameFilter implements FilenameFilter {
+        public boolean accept(File dir, String name) {
+        	return (name.endsWith(".sna")
+        			|| (  name.endsWith(".dat") && !(name.endsWith("gamedat2.dat") || name.endsWith("gamedat3.dat"))));
+        }
+    }
+
 	
 	String[] getPaths() {
 		return paths;
@@ -429,5 +440,11 @@ public class Library {
 				array.add(unwrapSpans(log.get(i)));
 		return array;
 	}
+	
+	//вернуть список путей с именами запускаемых файлов, соответствующих игре gameName
+//	public ArrayList<String> getInstalledVersions(String gameName) {
+//		ArrayList<String> paths=new ArrayList<String>();
+//		
+//	}
 	
 }
