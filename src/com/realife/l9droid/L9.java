@@ -3698,12 +3698,12 @@ SaveStruct ramsavearea[];
 		}
 		else if (stricmp(ibuff,"#save"))
 		{
-			//TODO:save();
+			save();
 			return true;
 		}
 		else if (stricmp(ibuff,"#restore"))
 		{
-			//TODO:restore();
+			restore();
 			return true;
 		}
 		else if (stricmp(ibuff,"#quit"))
@@ -3719,9 +3719,7 @@ SaveStruct ramsavearea[];
 			while ((L9GameType==L9_V2) ? GetWordV2(CheatWord++) : GetWordV3(CheatWord++))
 			{
 				error("%s ",ibuffstr);
-				if ((CheatWord&0x1f)==0) {
-					error("\r");
-				}
+				if ((CheatWord&0x1f)==0) error("\r");
 				if (os_stoplist() || L9StateRunning==L9StateStopped) break;
 			}
 			printstring("\r");
@@ -3740,7 +3738,6 @@ SaveStruct ramsavearea[];
 			};
 			if (pic>=0)
 			{
-				error("pic=%d",pic);
 				if (L9GameType==L9_V4)
 					os_show_bitmap(pic,0,0);
 				else
@@ -4447,9 +4444,8 @@ SaveStruct ramsavearea[];
 		{
 			case 2: L9Random(); break;
 			case 1: calldriver(); break;
-			//TODO: case 3: save(); break;
-			//TODO: case 4: NormalRestore(); break;
-			case 3: case 4: break;
+			case 3: save(); break;
+			case 4: NormalRestore(); break;
 			case 5: clearworkspace(); break;
 			case 6: workspace.stackptr=0; break;
 			case 250:
@@ -4510,10 +4506,6 @@ SaveStruct ramsavearea[];
 			case 0x08: resettask(a6); break;
 			case 0x04: driverinputline(a6); break;
 			case 0x09: returntogem(a6); break;
-	/*
-			case 0x16: ramsave(a6); break;
-			case 0x17: ramload(a6); break;
-	*/
 			case 0x19: lensdisplay(a6); break;
 			case 0x1e: allocspace(a6); break;
 	/* v4 */
@@ -4601,6 +4593,181 @@ SaveStruct ramsavearea[];
 			l9memory[listarea+j]=ramsavearea[i].listarea[j];
 		for (j=0;j<ramsavearea[i].vartable.length;j++)
 			workspace.vartable[j]=ramsavearea[i].vartable[j];		
+	}
+	
+	/*--was--	void save(void)
+	{
+		L9UINT16 checksum;
+		int i;
+	#ifdef L9DEBUG
+		printf("function - save");
+	#endif
+	// does a full save, workpace, stack, codeptr, stackptr, game name, checksum
+
+		workspace.Id=L9_ID;
+		workspace.codeptr=codeptr-acodeptr;
+		workspace.listsize=LISTAREASIZE;
+		workspace.stacksize=STACKSIZE;
+		workspace.filenamesize=MAX_PATH;
+		workspace.checksum=0;
+		strcpy(workspace.filename,LastGame);
+
+		checksum=0;
+		for (i=0;i<sizeof(GameState);i++) checksum+=((L9BYTE*) &workspace)[i];
+		workspace.checksum=checksum;
+
+		if (os_save_file((L9BYTE*) &workspace,sizeof(workspace))) printstring("\rGame saved.\r");
+		else printstring("\rUnable to save game.\r");
+	}*/
+	void save() {
+		/*TODO:
+		L9UINT16 checksum;
+		int i;
+		L9DEBUG("function - save");
+	// does a full save, workpace, stack, codeptr, stackptr, game name, checksum 
+
+		workspace.Id=L9_ID;
+		workspace.codeptr=codeptr-acodeptr;
+		workspace.listsize=LISTAREASIZE;
+		workspace.stacksize=STACKSIZE;
+		workspace.filenamesize=MAX_PATH;
+		workspace.checksum=0;
+		strcpy(workspace.filename,LastGame);
+
+		checksum=0;
+		for (i=0;i<sizeof(GameState);i++) checksum+=((L9BYTE*) &workspace)[i];
+		workspace.checksum=checksum;
+
+		if (os_save_file((L9BYTE*) &workspace,sizeof(workspace))) printstring("\rGame saved.\r");
+		else printstring("\rUnable to save game.\r");
+		*/
+	};
+
+	/*--was--	void NormalRestore(void)
+	{
+		GameState temp;
+		int Bytes;
+	#ifdef L9DEBUG
+		printf("function - restore");
+	#endif
+		if (Cheating)
+		{
+			// not really an error 
+			Cheating=FALSE;
+			error("\rWord is: %s\r",ibuff);
+		}
+
+		if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
+		{
+			if (Bytes==V1FILESIZE)
+			{
+				printstring("\rGame restored.\r");
+				memset(workspace.listarea,0,LISTAREASIZE);
+				memmove(workspace.vartable,&temp,V1FILESIZE);
+			}
+			else if (CheckFile(&temp))
+			{
+				printstring("\rGame restored.\r");
+				// only copy in workspace 
+				memmove(workspace.vartable,temp.vartable,sizeof(SaveStruct));
+			}
+			else
+			{
+				printstring("\rSorry, unrecognised format. Unable to restore\r");
+			}
+		}
+		else printstring("\rUnable to restore game.\r");
+	}*/
+	void NormalRestore()
+	{
+		GameState temp;
+		int Bytes;
+		L9DEBUG("function - restore");
+		if (Cheating)
+		{
+			// not really an error
+			Cheating=false;
+			error("\rWord is: %s\r",ibuffstr);
+		}
+
+		/*TODO:
+		if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
+		{
+			if (Bytes==V1FILESIZE)
+			{
+				printstring("\rGame restored.\r");
+				memset(workspace.listarea,0,LISTAREASIZE);
+				memmove(workspace.vartable,&temp,V1FILESIZE);
+			}
+			else if (CheckFile(&temp))
+			{
+				printstring("\rGame restored.\r");
+				// only copy in workspace 
+				memmove(workspace.vartable,temp.vartable,sizeof(SaveStruct));
+			}
+			else
+			{
+				printstring("\rSorry, unrecognised format. Unable to restore\r");
+			}
+		}
+		else printstring("\rUnable to restore game.\r");
+		*/
+	}
+
+	/*--was--	void restore(void)
+	{
+		int Bytes;
+		GameState temp;
+		if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
+		{
+			if (Bytes==V1FILESIZE)
+			{
+				printstring("\rGame restored.\r");
+				// only copy in workspace 
+				memset(workspace.listarea,0,LISTAREASIZE);
+				memmove(workspace.vartable,&temp,V1FILESIZE);
+			}
+			else if (CheckFile(&temp))
+			{
+				printstring("\rGame restored.\r");
+				// full restore 
+				memmove(&workspace,&temp,sizeof(GameState));
+				codeptr=acodeptr+workspace.codeptr;
+			}
+			else
+			{
+				printstring("\rSorry, unrecognised format. Unable to restore\r");
+			}
+		}
+		else printstring("\rUnable to restore game.\r");
+	}*/
+	void restore() {
+		/*TODO:
+		int Bytes;
+		GameState temp;
+		if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
+		{
+			if (Bytes==V1FILESIZE)
+			{
+				printstring("\rGame restored.\r");
+				// only copy in workspace 
+				memset(workspace.listarea,0,LISTAREASIZE);
+				memmove(workspace.vartable,&temp,V1FILESIZE);
+			}
+			else if (CheckFile(&temp))
+			{
+				printstring("\rGame restored.\r");
+				// full restore 
+				memmove(&workspace,&temp,sizeof(GameState));
+				codeptr=acodeptr+workspace.codeptr;
+			}
+			else
+			{
+				printstring("\rSorry, unrecognised format. Unable to restore\r");
+			}
+		}
+		else printstring("\rUnable to restore game.\r");
+		*/
 	}
 
 	/*--was--	void calldriver(void)
