@@ -36,18 +36,26 @@ public class Library {
 	Handler h;
 	String GameFullPathName;
 	String paths[];
-	int paths_num;
-	
+
 	Library() {
 		h=null;
 		paths=null;
-		paths_num=0;
 		GameFullPathName="";
+	};
+	
+	String tags[][]={
+			{"Amiga","Amiga"},
+			{"Atari","Atari"},
+			{"BBC","BBC"},
+			{"CPC","CPC"},
+			{"C64","Commodore 64"},
+			{"S48","Speccy 48k"},
+			{"S128","Speccy 128k"},
+			{"PC","PC"},
 	};
 	
 	boolean prepareLibrary(Activity act) {
 		paths=null;
-		paths_num=0;
 		//getting sdcard path
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
@@ -71,30 +79,34 @@ public class Library {
 			      return false; //ошибка - заканчиваю с подготовкой библиотеки?
 			    }
 			};
-			
-			String[] temppaths=new String[100];
-			sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD);
-			File[] pathdirs=sdPath.listFiles();
-			if (pathdirs!=null) {
-				for (int i=0; i<pathdirs.length; i++) {
-					File[] files=pathdirs[i].listFiles(new GameFilter() );
-					if (files!=null) 
-						for (int j=0;j<files.length; j++)
-							if (files[j].isFile()) {
-								temppaths[paths_num++]=files[j].getAbsolutePath();
-							}
-				};
-			};
-			//TODO: temppaths-lame! kill it!
-			if (paths_num>0) {
-				paths=new String[paths_num];
-				for (int i=0; i<paths_num; i++) paths[i]=temppaths[i];
-			};
+			requestPaths();
 			
 		} else return false;
 		return true;
 	}
+	
+	public void requestPaths() {
+		int paths_num=0;
+		String[] temppaths=new String[100];
+		File sdPath = android.os.Environment.getExternalStorageDirectory();
+		sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD);
+		File[] pathdirs=sdPath.listFiles();
+		if (pathdirs!=null) {
+			for (int i=0; i<pathdirs.length; i++) {
+				File[] files=pathdirs[i].listFiles(new GameFilter() );
+				if (files!=null) 
+					for (int j=0;j<files.length; j++)
+						if (files[j].isFile()) {
+							temppaths[paths_num++]=files[j].getAbsolutePath();
+						}
+			};
+		};
+		//TODO: temppaths-lame! kill it!
+		if (paths_num>0) {
+			paths=new String[paths_num];
+			for (int i=0; i<paths_num; i++) paths[i]=temppaths[i];
+		};
+	};
 	
     class GameFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
@@ -442,9 +454,28 @@ public class Library {
 	}
 	
 	//вернуть список путей с именами запускаемых файлов, соответствующих игре gameName
-//	public ArrayList<String> getInstalledVersions(String gameName) {
-//		ArrayList<String> paths=new ArrayList<String>();
-//		
-//	}
+	public ArrayList<String> getInstalledVersions(String gameName) {
+		if (paths==null) requestPaths();
+		ArrayList<String> p=new ArrayList<String>();
+		for (int i=0;i<paths.length;i++) {
+			if (paths[i].contains(gameName)) {
+				p.add(paths[i]);
+			};
+		};
+		return p;
+	}
+	
+	public String getTags(String pathFilename) {
+		File f = new File(pathFilename);
+		String s=f.getParentFile().getName();
+		String r="";
+		for (int i=0;i<tags.length;i++) {
+			if (s.contains(tags[i][0])) {
+				if (r.length()>0) r+="/";
+				r+=tags[i][1];
+			};
+		}
+		return r;
+	}
 	
 }

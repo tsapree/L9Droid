@@ -1,5 +1,7 @@
 package com.realife.l9droid;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 	TextView tvCategory;
 	TextView tvAbout;
 	TextView tvAuthors;
+	
+	Library lib;
 	
 	Button bPlay;
 	
@@ -47,6 +51,10 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
+	    lib = new Library();
+	    
+	    ArrayList<String> versions = lib.getInstalledVersions("Emerald Isle");
+	    
 	    selected_game_id = getIntent().getIntExtra("selectedgame", R.id.bg61);
 	    setContentView(R.layout.library_game_info);
 	    
@@ -58,24 +66,21 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llInstalled);
 	    LayoutInflater ltInflater = getLayoutInflater();
 	    
-		View item = ltInflater.inflate(R.layout.library_game_info_item, linLayout, false);
-		TextView tvVersion = (TextView) item.findViewById(R.id.tvVersion);
-		tvVersion.setText("Speccy");
-		Button bProperties = (Button) item.findViewById(R.id.bProperties);
-		Button bPlay = (Button) item.findViewById(R.id.bPlay);
-		item.setTag("/mnt/sdcard/L9Droid/Snowball zx/v3_snowball.sna");
-		bProperties.setOnClickListener(this);
-		bPlay.setOnClickListener(this);
+	    for (int i=0;i<versions.size();i++) {
+			View item = ltInflater.inflate(R.layout.library_game_info_item, linLayout, false);
+			TextView tvVersion = (TextView) item.findViewById(R.id.tvVersion);
+			//fills info about this version, based on tags from parent dir
+			tvVersion.setText(lib.getTags(versions.get(i)));
+			Button bProperties = (Button) item.findViewById(R.id.bProperties);
+			Button bPlay = (Button) item.findViewById(R.id.bPlay);
+			//item.setTag("/mnt/sdcard/L9Droid/Snowball zx/v3_snowball.sna");
+			item.setTag(versions.get(i));
+			bProperties.setOnClickListener(this);
+			bPlay.setOnClickListener(this);
+			linLayout.addView(item);
+	    };
 		
-		//"/mnt/sdcard/L9Droid/Emerald Isle Speccy/emerald.sna"
-		
-//		item.getLayoutParams().width = LayoutParams.MATCH_PARENT;
-//		item.setBackgroundColor(colors[i % 2]);
-		linLayout.addView(item);
-
-		//bPlay = (Button) findViewById(R.id.bPlay);
-		//bPlay.setOnClickListener(this);
-		
+	    //находим нужную информацию, пока - ид строк.
 		for (int i=0;i<gameinfo.length;i++) {
 			if (gameinfo[i][0]==selected_game_id) {
 				tvCategory.setText(gameinfo[i][1]);
