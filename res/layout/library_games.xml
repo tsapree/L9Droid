@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-
+        
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
@@ -15,6 +15,13 @@
             android:text="L9Droid Games Library"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
+        <ExpandableListView
+            android:id="@+id/elGames"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+		</ExpandableListView>
+        
         <Button
             android:id="@+id/button1"
             android:layout_width="match_parent"
