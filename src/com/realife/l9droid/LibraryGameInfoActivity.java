@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LibraryGameInfo extends Activity implements OnClickListener {
+public class LibraryGameInfoActivity extends Activity implements OnClickListener {
 	
 	int selected_game_id;
 	TextView tvGameName;

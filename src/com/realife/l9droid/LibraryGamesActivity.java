@@ -37,7 +37,7 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 	};
 	
 	public void onClick(View v) {
-		Intent intent=new Intent(this, LibraryGameInfo.class);
+		Intent intent=new Intent(this, LibraryGameInfoActivity.class);
 		//intent.putExtra("selectedgame", v.getId());
 		intent.putExtra("selectedgame", (String)v.getTag());
 		startActivityForResult(intent, 1);
