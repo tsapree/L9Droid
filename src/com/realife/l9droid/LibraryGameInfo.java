@@ -38,9 +38,9 @@ public class LibraryGameInfo extends Activity implements OnClickListener {
 		tvAbout = (TextView)findViewById(R.id.tvAbout);
 		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
 
-	    ArrayList<String> versions = lib.getInstalledVersions("Emerald Isle");
-	    String game=getIntent().getStringExtra("selectedgame");
-
+		String game=getIntent().getStringExtra("selectedgame");
+	    ArrayList<String> versions = lib.getInstalledVersions(game);
+		
 	    //Заполняю информацию о инсталлированных версиях
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llInstalled);
 	    LayoutInflater ltInflater = getLayoutInflater();
