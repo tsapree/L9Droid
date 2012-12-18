@@ -484,16 +484,68 @@ public class Library {
 		return r;
 	}
 	
+	//получить список игр, с указанием короткого имени, названия игры и категории
+	public ArrayList<GameInfo> getGameList(Activity act) {
+		ArrayList<GameInfo> rez = new ArrayList<GameInfo>();
+		String currentCategory="";
+
+		try {
+			XmlPullParser parser = act.getResources().getXml(R.xml.games);
+
+			while (parser.next() != XmlPullParser.END_DOCUMENT) {
+				if (parser.getEventType() != XmlPullParser.START_TAG) {
+					continue;
+			    }
+				String name = parser.getName();
+			    // Starts by looking for the entry tag
+			    if (name.equals("game")) {
+					GameInfo gi=new GameInfo();
+
+					for (int i=0;i<parser.getAttributeCount();i++) {
+						if (parser.getAttributeName(i).equals("name")) gi.setId(parser.getAttributeValue(i));
+					};
+					while (parser.next() != XmlPullParser.END_TAG) {
+						if (parser.getEventType() != XmlPullParser.START_TAG) {
+							continue;
+						}
+						String n = parser.getName();
+						if (n.equals("title"))	gi.setTitle(readTag(parser,"title"));
+						else {
+							skip(parser);
+						}
+					}
+					gi.setCategory(currentCategory);
+					rez.add(gi);
+					//break;
+
+			    } else if (name.equals("category")) {
+			    	for (int i=0;i<parser.getAttributeCount();i++) {
+			    		if (parser.getAttributeName(i).equals("name")) currentCategory=parser.getAttributeValue(i);
+			    	};
+			    }
+			};
+
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return rez;
+	}
+	
 	public GameInfo getGameInfo(Activity act, String gameName) {
 		GameInfo gi=new GameInfo();
-		gi.setCategory("category");
-		gi.setId("Emerald Isle");
-		gi.setTitle("Emerald Isle Title");
-		gi.setAbout("About");
-		gi.setAuthors("Me");
 		
 		String currentCategory="";
 		String currentGame="";
+		
+		//TODO: убрать, когда корректно наполню библиотеку
+		gi.setCategory("!category!");
+		gi.setId("!id!");
+		gi.setTitle("!title!");
+		gi.setAbout("!About!");
+		gi.setAuthors("!authors!");
 		
 	    try {
 	        XmlPullParser parser = act.getResources().getXml(R.xml.games);
@@ -542,6 +594,7 @@ public class Library {
 		return gi;
 	}
 	
+	//from http://developer.android.com/intl/ru/training/basics/network-ops/xml.html#read
 	private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
 	    if (parser.getEventType() != XmlPullParser.START_TAG) {
 	        throw new IllegalStateException();
@@ -559,6 +612,7 @@ public class Library {
 	    }
 	}
 	
+	//from http://developer.android.com/intl/ru/training/basics/network-ops/xml.html#read
 	// Processes title tags in the feed.
 	private String readTag(XmlPullParser parser, String tag) throws IOException, XmlPullParserException {
 	    parser.require(XmlPullParser.START_TAG, null, tag);
@@ -567,6 +621,7 @@ public class Library {
 	    return title;
 	}
 	
+	//from http://developer.android.com/intl/ru/training/basics/network-ops/xml.html#read
 	// For the tags title and summary, extracts their text values.
 	private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
 	    String result = "";

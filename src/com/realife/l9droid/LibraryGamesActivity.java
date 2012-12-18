@@ -9,35 +9,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.SimpleExpandableListAdapter;
 
 public class LibraryGamesActivity extends Activity implements OnClickListener {
 
-	// названия компаний (групп)
-	String[] groups = new String[] {"1.The Middle Earth - Jewels of Darkness - Trilogy",
-			"2.The Silicon Dreams Trilogy", "6.Individual games"};
-	
-	// названия телефонов (элементов)
-	String[] grp1 = new String[] {"1. Colossal Adventure", "2. Adventure Quest", "3. Dungeon Adventure"};
-	String[] grp2 = new String[] {"1. Snowball", "2. Return to Eden", "3. Worm in Paradise"};
-	String[] grp3 = new String[] {"1. Emerald Isle", "2. The Saga of Erik the Viking"};
-	
-	// коллекция для групп
-	ArrayList<Map<String, String>> groupData;
-	
-	// коллекция для элементов одной группы
-	ArrayList<Map<String, String>> childDataItem;
-	
+	// коллекция для категорий
+	ArrayList<Map<String, String>> categories;
+	// коллекция для элементов одной группы игр
+	ArrayList<Map<String, String>> gameItems;
 	// общая коллекция для коллекций элементов
-	ArrayList<ArrayList<Map<String, String>>> childData;
-	// в итоге получится childData = ArrayList<childDataItem>
-	
+	ArrayList<ArrayList<Map<String, String>>> games;
 	// список аттрибутов группы или элемента
 	Map<String, String> m;
-	
 	ExpandableListView elGames;
-
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,71 +52,57 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 		findViewById(R.id.bg65).setOnClickListener(this);
 		findViewById(R.id.bg66).setOnClickListener(this);
 		
-		// заполняем коллекцию групп из массива с названиями групп
-		groupData = new ArrayList<Map<String, String>>();
-		for (String group : groups) {
-			// заполняем список аттрибутов для каждой группы
-			m = new HashMap<String, String>();
-			m.put("groupName", group); // имя компании
-			groupData.add(m);
-		}
+		Library lib=new Library();
 		
-		// список аттрибутов групп для чтения
-		String groupFrom[] = new String[] {"groupName"};
-		// список ID view-элементов, в которые будет помещены аттрибуты групп
-		int groupTo[] = new int[] {android.R.id.text1};
-  
+		categories = new ArrayList<Map<String, String>>();
 		// создаем коллекцию для коллекций элементов 
-		childData = new ArrayList<ArrayList<Map<String, String>>>(); 
-  
-		// создаем коллекцию элементов для первой группы
-		childDataItem = new ArrayList<Map<String, String>>();
-		// заполняем список аттрибутов для каждого элемента
-		for (String phone : grp1) {
-			m = new HashMap<String, String>();
-			m.put("phoneName", phone); // название телефона
-			childDataItem.add(m);  
-		}
-		// добавляем в коллекцию коллекций
-		childData.add(childDataItem);
+		games = new ArrayList<ArrayList<Map<String, String>>>(); 
+		
+		ArrayList<GameInfo> gameList=lib.getGameList(this);
+		String prevCategory=null;
+		
+		String categoryFrom[] = new String[] {"category"};
+		int categoryTo[] = new int[] {android.R.id.text1};
 
-		// создаем коллекцию элементов для второй группы        
-		childDataItem = new ArrayList<Map<String, String>>();
-		for (String phone : grp2) {
+		String gameFrom[] = new String[] {"game"};
+		int gameTo[] = new int[] {android.R.id.text1};
+		
+		for (GameInfo gi: gameList) {
+			if (!gi.getCategory().equals(prevCategory)) {
+				if (prevCategory!=null) games.add(gameItems);
+				prevCategory=gi.getCategory();
+				//добавить категорию в список
+				m = new HashMap<String, String>();
+				m.put("category", prevCategory);
+				categories.add(m);
+				gameItems = new ArrayList<Map<String, String>>();
+			};
 			m = new HashMap<String, String>();
-			m.put("phoneName", phone);
-			childDataItem.add(m);  
-		}
-		childData.add(childDataItem);
-
-		// создаем коллекцию элементов для третьей группы        
-		childDataItem = new ArrayList<Map<String, String>>();
-		for (String phone : grp3) {
-			m = new HashMap<String, String>();
-			m.put("phoneName", phone);
-			childDataItem.add(m);  
-		}
-		childData.add(childDataItem);
-
-		// список аттрибутов элементов для чтения
-		String childFrom[] = new String[] {"phoneName"};
-		// список ID view-элементов, в которые будет помещены аттрибуты элементов
-		int childTo[] = new int[] {android.R.id.text1};
-  
+			m.put("game", gi.getTitle());
+			gameItems.add(m);
+		};
+		if (prevCategory!=null) games.add(gameItems);
+	
 		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
-			this,
-			groupData,
-			android.R.layout.simple_expandable_list_item_1,
-			groupFrom,
-			groupTo,
-			childData,
-			android.R.layout.simple_list_item_1,
-			childFrom,
-			childTo);
+				this,
+				categories,
+				android.R.layout.simple_expandable_list_item_1,
+				categoryFrom,
+				categoryTo,
+				games,
+				android.R.layout.simple_list_item_1,
+				gameFrom,
+				gameTo);
       
 		elGames = (ExpandableListView) findViewById(R.id.elGames);
 		elGames.setAdapter(adapter);
-        
+		elGames.setOnChildClickListener(new OnChildClickListener() {
+			public boolean onChildClick(ExpandableListView parent, View view,
+		          int groupPosition, int childPosition, long id) {
+				return true;
+				//TODO: доделать обработку нажатия
+			}
+		});
         
 	};
 	
