@@ -33,11 +33,6 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    
 	    setContentView(R.layout.library_game_info);
 	    
-		tvGameName = (TextView)findViewById(R.id.tvGameName);
-		tvCategory = (TextView)findViewById(R.id.tvCategory);
-		tvAbout = (TextView)findViewById(R.id.tvAbout);
-		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
-
 		String game=getIntent().getStringExtra("selectedgame");
 	    ArrayList<String> versions = lib.getInstalledVersions(game);
 		
@@ -57,14 +52,20 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			linLayout.addView(item);
 	    };
 
-	    int info[]={0,0,0,0};
-	    lib.getGameInfo(game,info);
+	    //int info[]={0,0,0,0};
+	    //lib.getGameInfo(game,info);
 	    
-		tvCategory.setText(info[0]);
-		tvGameName.setText(info[1]);
-		tvAbout.setText(info[2]);
-		tvAuthors.setText(info[3]);
+	    GameInfo gi=lib.getGameInfo(this,game);
 	    
+		tvGameName = (TextView)findViewById(R.id.tvGameName);
+		tvCategory = (TextView)findViewById(R.id.tvCategory);
+		tvAbout = (TextView)findViewById(R.id.tvAbout);
+		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
+		
+	    tvCategory.setText(gi.getCategory());
+		tvGameName.setText(gi.getTitle());
+		tvAbout.setText(gi.getAbout());
+		tvAuthors.setText(gi.getAuthors());
 	}
 
 	public void onClick(View v) {

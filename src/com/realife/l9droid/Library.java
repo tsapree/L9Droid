@@ -15,6 +15,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +26,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -505,7 +509,7 @@ public class Library {
 		if (paths==null) requestPaths();
 		ArrayList<String> p=new ArrayList<String>();
 		for (int i=0;i<paths.length;i++) {
-			if (paths[i].contains(gameName)) {
+			if (paths[i].toLowerCase().contains(gameName.toLowerCase())) {
 				p.add(paths[i]);
 			};
 		};
@@ -537,4 +541,96 @@ public class Library {
 		};
 	}
 	
+	public GameInfo getGameInfo(Activity act, String gameName) {
+		GameInfo gi=new GameInfo();
+		gi.setCategory("category");
+		gi.setId("Emerald Isle");
+		gi.setTitle("Emerald Isle Title");
+		gi.setAbout("About");
+		gi.setAuthors("Me");
+		
+		String currentCategory="";
+		String currentGame="";
+		
+	    try {
+	        XmlPullParser parser = act.getResources().getXml(R.xml.games);
+
+	        while (parser.next() != XmlPullParser.END_DOCUMENT) {
+	        	if (parser.getEventType() != XmlPullParser.START_TAG) {
+	                continue;
+	            }
+	        	String name = parser.getName();
+	            // Starts by looking for the entry tag
+	            if (name.equals("game")) {
+	            	for (int i=0;i<parser.getAttributeCount();i++) {
+	            		if (parser.getAttributeName(i).equals("name")) currentGame=parser.getAttributeValue(i);
+	            	};
+	            	if (!currentGame.equalsIgnoreCase(gameName)) continue;
+	            	while (parser.next() != XmlPullParser.END_TAG) {
+	                    if (parser.getEventType() != XmlPullParser.START_TAG) {
+	                        continue;
+	                    }
+	                    String n = parser.getName();
+	                    if (n.equals("title"))			gi.setTitle(readTag(parser,"title"));
+	                    else if (n.equals("about"))		gi.setAbout(readTag(parser,"about"));
+	                    else if (n.equals("authors"))	gi.setAuthors(readTag(parser,"authors"));
+	                    else {
+	                        skip(parser);
+	                    }
+	                }
+	            	gi.setCategory(currentCategory);
+	            	gi.setId(currentGame);
+	            	break;
+	
+	            } else if (name.equals("category")) {
+	            	for (int i=0;i<parser.getAttributeCount();i++) {
+	            		if (parser.getAttributeName(i).equals("name")) currentCategory=parser.getAttributeValue(i);
+	            	};
+	            }
+	            
+	        };
+
+	      } catch (XmlPullParserException e) {
+	        e.printStackTrace();
+	      } catch (IOException e) {
+	        e.printStackTrace();
+	      }
+	    
+		return gi;
+	}
+	
+	private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+	    if (parser.getEventType() != XmlPullParser.START_TAG) {
+	        throw new IllegalStateException();
+	    }
+	    int depth = 1;
+	    while (depth != 0) {
+	        switch (parser.next()) {
+	        case XmlPullParser.END_TAG:
+	            depth--;
+	            break;
+	        case XmlPullParser.START_TAG:
+	            depth++;
+	            break;
+	        }
+	    }
+	}
+	
+	// Processes title tags in the feed.
+	private String readTag(XmlPullParser parser, String tag) throws IOException, XmlPullParserException {
+	    parser.require(XmlPullParser.START_TAG, null, tag);
+	    String title = readText(parser);
+	    parser.require(XmlPullParser.END_TAG, null, tag);
+	    return title;
+	}
+	
+	// For the tags title and summary, extracts their text values.
+	private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
+	    String result = "";
+	    if (parser.next() == XmlPullParser.TEXT) {
+	        result = parser.getText();
+	        parser.nextTag();
+	    }
+	    return result;
+	}
 }
