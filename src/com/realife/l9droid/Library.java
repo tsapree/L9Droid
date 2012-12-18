@@ -60,51 +60,6 @@ public class Library {
 			{"PC","PC"},
 	};
 	
-	int gameinfo[][]={
-			{R.string.game1_cat_name, R.string.game11_name, R.string.game11_about, R.string.game11_author,},
-			{R.string.game1_cat_name, R.string.game12_name, R.string.game12_about, R.string.game12_author,},
-			{R.string.game1_cat_name, R.string.game13_name, R.string.game13_about, R.string.game13_author,},
-			{R.string.game2_cat_name, R.string.game21_name, R.string.game21_about, R.string.game21_author,},
-			{R.string.game2_cat_name, R.string.game22_name, R.string.game22_about, R.string.game22_author,},
-			{R.string.game2_cat_name, R.string.game23_name, R.string.game23_about, R.string.game23_author,},
-			{R.string.game3_cat_name, R.string.game31_name, R.string.game31_about, R.string.game31_author,},
-			{R.string.game3_cat_name, R.string.game32_name, R.string.game32_about, R.string.game32_author,},
-			{R.string.game3_cat_name, R.string.game33_name, R.string.game33_about, R.string.game33_author,},
-			{R.string.game4_cat_name, R.string.game41_name, R.string.game41_about, R.string.game41_author,},
-			{R.string.game4_cat_name, R.string.game42_name, R.string.game42_about, R.string.game42_author,},
-			{R.string.game5_cat_name, R.string.game51_name, R.string.game51_about, R.string.game51_author,},
-			{R.string.game5_cat_name, R.string.game52_name, R.string.game52_about, R.string.game52_author,},
-			{R.string.game6_cat_name, R.string.game61_name, R.string.game61_about, R.string.game61_author,},
-			{R.string.game6_cat_name, R.string.game62_name, R.string.game62_about, R.string.game62_author,},
-			{R.string.game6_cat_name, R.string.game63_name, R.string.game63_about, R.string.game63_author,},
-			{R.string.game6_cat_name, R.string.game64_name, R.string.game64_about, R.string.game64_author,},
-			{R.string.game6_cat_name, R.string.game65_name, R.string.game65_about, R.string.game65_author,},
-			{R.string.game6_cat_name, R.string.game66_name, R.string.game66_about, R.string.game66_author,},
-		};
-	
-	String[] shortGameName={
-			"Colossal Adventure",
-			"Adventure Quest",
-			"Dungeon Adventure",
-			"Snowball",
-			"Return to Eden",
-			"Worm in Paradise",
-			"Lords of Time",
-			"Red Moon",
-			"Price of Magik",
-			"Gnome Ranger",
-			"Ingrids Back",
-			"Adrian Mole 1",
-			"Adrian Mole 2",
-			"Emerald Isle",
-			"Erik the Viking",
-			"The Archers",
-			"Knight Orc",
-			"Lancelot",
-			"Scapeghost",
-			//Champion of the Raj
-	};
-	
 	boolean prepareLibrary(Activity act) {
 		paths=null;
 		//getting sdcard path
@@ -527,18 +482,6 @@ public class Library {
 			};
 		}
 		return r;
-	}
-	
-	public void getGameInfo(String gameName, int[] arrayForInfo) {
-		for (int i=0;i<shortGameName.length;i++) {
-			if (shortGameName[i].equalsIgnoreCase(gameName)) {
-				arrayForInfo[0]=gameinfo[i][0];
-				arrayForInfo[1]=gameinfo[i][1];
-				arrayForInfo[2]=gameinfo[i][2];
-				arrayForInfo[3]=gameinfo[i][3];
-				return;
-				};
-		};
 	}
 	
 	public GameInfo getGameInfo(Activity act, String gameName) {
