@@ -31,6 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Colossal Adventure"
                 android:text="1. Colossal Adventure" />
 
             <Button
@@ -39,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Adventure Quest"
                 android:text="2. Adventure Quest" />
 
             <Button
@@ -47,6 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Dungeon Adventure"
                 android:text="3. Dungeon Adventure" />
 
         </LinearLayout>
@@ -68,6 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Snowball"
                 android:text="1. Snowball" />
 
             <Button
@@ -76,6 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Return to Eden"
                 android:text="2. Return to Eden" />
 
             <Button
@@ -84,6 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Worm in Paradise" 
                 android:text="3. Worm in Paradise" />
 
         </LinearLayout>
@@ -104,6 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Lords of Time"
                 android:text="1. Lords of Time" />
 
             <Button
@@ -112,6 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Red Moon"
                 android:text="2. Red Moon" />
 
             <Button
@@ -120,6 +128,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Price of Magik"
                 android:text="3. The Price of Magik" />
 
         </LinearLayout>
@@ -140,6 +149,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Gnome Ranger"
                 android:text="1. Gnome Ranger" />
 
             <Button
@@ -148,6 +158,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Ingrids Back"
                 android:text="2. Gnome Ranger II Ingrid&apos;s Back" />
 
         </LinearLayout>
@@ -168,6 +179,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Adrian Mole 1"
                 android:text="1. The Secret Diary of Adrian Mole Aged 13 3div4" />
 
             <Button
@@ -176,6 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Adrian Mole 2"
                 android:text="2. The Growing Pains of Adrian Mole" />
 
         </LinearLayout>
@@ -196,6 +209,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Emerald Isle"
                 android:text="1. Emerald Isle" />
 
             <Button
@@ -204,6 +218,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Erik the Viking"
                 android:text="2. The Saga of Erik the Viking" />
 
             <Button
@@ -212,6 +227,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="The Archers"
                 android:text="3. The Archers" />
 
         </LinearLayout>
@@ -226,6 +242,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Knight Orc"
                 android:text="4. Knight Orc" />
 
             <Button
@@ -234,6 +251,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Lancelot"
                 android:text="5. Lancelot" />
 
             <Button
@@ -242,6 +260,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:tag="Scapeghost"
                 android:text="6. Scapeghost" />
 
         </LinearLayout>
