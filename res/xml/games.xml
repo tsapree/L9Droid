@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <games>
-	<category name="THE MIDDLE-EARTH TRILOGY / JEWELS OF DARKNESS">
+	<category name="The Middle-Earth Trilogy / Jewels Of Darkness">
 	    <game name="Colossal Adventure">
 			<title>Colossal Adventure</title>
 			<about></about>
@@ -17,7 +17,7 @@
 			<authors></authors>        
 	    </game>
 	</category>
-	<category name="THE SILICON DREAMS TRILOGY">
+	<category name="The Silicon Dreams Trilogy">
 	    <game name="Snowball">
 			<title>Snowball</title>
 			<about>Snowball is a big adventure game. It has over 7,000 locations and has taken 9 months to produce. It\'s probably unique among adventures in having a realistic, planned background and being set aboard a starship that could actually work.
@@ -38,7 +38,7 @@ Additional expertise: Ian Buxton.</authors>
 			<authors></authors>        
 	    </game>
 	</category>
-	<category name="THE TIME AND MAGIK TRILOGY">
+	<category name="The Time And Magik Trilogy">
 	    <game name="Lords of Time">
 			<title>Lords of Time</title>
 			<about></about>
@@ -55,7 +55,7 @@ Additional expertise: Ian Buxton.</authors>
 			<authors></authors>        
 	    </game>
 	</category>
-	<category name="THE GNOME RANGER SERIES">
+	<category name="The Gnome Ranger Series">
 	    <game name="Gnome Ranger">
 			<title>Gnome Ranger</title>
 			<about></about>
@@ -67,7 +67,7 @@ Additional expertise: Ian Buxton.</authors>
 			<authors></authors>        
 	    </game>
 	</category>
-	<category name="THE ADRIAN MOLE SERIES">
+	<category name="The Adrian Mole Series">
 	    <game name="Adrian Mole 1">
 			<title>The Secret Diary of Adrian Mole Aged 13 &#190;</title>
 			<about></about>
@@ -79,7 +79,7 @@ Additional expertise: Ian Buxton.</authors>
 			<authors></authors>        
 	    </game>
 	</category>
-	<category name="INDIVIDUAL GAMES">
+	<category name="Individual Games">
 		<game name="Emerald Isle">
 			<title>Emerald Isle</title>
 			<about>Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</about>

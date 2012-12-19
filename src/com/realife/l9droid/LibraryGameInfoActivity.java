@@ -62,7 +62,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		tvAbout = (TextView)findViewById(R.id.tvAbout);
 		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
 		
-	    tvCategory.setText(gi.getCategory());
+	    tvCategory.setText(gi.getCategory().toUpperCase());
 		tvGameName.setText(gi.getTitle());
 		tvAbout.setText(gi.getAbout());
 		tvAuthors.setText(gi.getAuthors());

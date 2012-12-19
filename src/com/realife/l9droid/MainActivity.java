@@ -171,24 +171,25 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         //getMenuInflater().inflate(R.menu.main, menu);
         //return true;
     	MenuItem mi;
-    	mi = menu.add(0,1,0,"Library Files");
+    	mi = menu.add(0, 9,0,"Library");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(0,9,0,"Library games");
+        mi = menu.add(1, 4, 0,"Save State");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(1, 5, 0,"Restore State");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(2, 6, 0,"Pictures");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(3, 7, 0,"Words");
     	mi.setOnMenuItemClickListener(this);
         mi = menu.add(0, 2, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
+    	mi = menu.add(1, 8, 0,"Play Script");
+    	mi.setOnMenuItemClickListener(this);
         mi = menu.add(0, 3, 1, "About");
         mi.setIntent(new Intent(this, AboutActivity.class));
-        mi = menu.add(1, 4, 0,"save");
+    	mi = menu.add(0, 1, 2, "Library Files");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(1, 5, 0,"restore");
-    	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(2, 6, 0,"pictures");
-    	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(3, 7, 0,"words");
-    	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(1, 8, 0,"play script");
-    	mi.setOnMenuItemClickListener(this);
+
     	
         return super.onCreateOptionsMenu(menu);
     }

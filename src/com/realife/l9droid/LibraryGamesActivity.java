@@ -9,13 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.SimpleExpandableListAdapter;
 
-public class LibraryGamesActivity extends Activity implements OnClickListener {
+public class LibraryGamesActivity extends Activity implements OnChildClickListener {
 
 	// коллекция для категорий
 	ArrayList<Map<String, String>> categories;
@@ -32,26 +30,6 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.library_games);
 		
-		findViewById(R.id.bg11).setOnClickListener(this);
-		findViewById(R.id.bg12).setOnClickListener(this);
-		findViewById(R.id.bg13).setOnClickListener(this);
-		findViewById(R.id.bg21).setOnClickListener(this);
-		findViewById(R.id.bg22).setOnClickListener(this);
-		findViewById(R.id.bg23).setOnClickListener(this);
-		findViewById(R.id.bg31).setOnClickListener(this);
-		findViewById(R.id.bg32).setOnClickListener(this);
-		findViewById(R.id.bg33).setOnClickListener(this);
-		findViewById(R.id.bg41).setOnClickListener(this);
-		findViewById(R.id.bg42).setOnClickListener(this);
-		findViewById(R.id.bg51).setOnClickListener(this);
-		findViewById(R.id.bg52).setOnClickListener(this);
-		findViewById(R.id.bg61).setOnClickListener(this);
-		findViewById(R.id.bg62).setOnClickListener(this);
-		findViewById(R.id.bg63).setOnClickListener(this);
-		findViewById(R.id.bg64).setOnClickListener(this);
-		findViewById(R.id.bg65).setOnClickListener(this);
-		findViewById(R.id.bg66).setOnClickListener(this);
-		
 		Library lib=new Library();
 		
 		categories = new ArrayList<Map<String, String>>();
@@ -62,10 +40,10 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 		String prevCategory=null;
 		
 		String categoryFrom[] = new String[] {"category"};
-		int categoryTo[] = new int[] {android.R.id.text1};
+		int categoryTo[] = new int[] {R.id.text1/*android.R.id.text1*/};
 
 		String gameFrom[] = new String[] {"game"};
-		int gameTo[] = new int[] {android.R.id.text1};
+		int gameTo[] = new int[] {R.id.text1/*android.R.id.text1*/};
 		
 		for (GameInfo gi: gameList) {
 			if (!gi.getCategory().equals(prevCategory)) {
@@ -79,6 +57,7 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 			};
 			m = new HashMap<String, String>();
 			m.put("game", gi.getTitle());
+			m.put("id", gi.getId());
 			gameItems.add(m);
 		};
 		if (prevCategory!=null) games.add(gameItems);
@@ -86,33 +65,34 @@ public class LibraryGamesActivity extends Activity implements OnClickListener {
 		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
 				this,
 				categories,
-				android.R.layout.simple_expandable_list_item_1,
+				R.layout.library_games_category_item,
+				//android.R.layout.simple_expandable_list_item_1,
 				categoryFrom,
 				categoryTo,
 				games,
-				android.R.layout.simple_list_item_1,
+				R.layout.library_games_game_item,
+				//android.R.layout.simple_list_item_1,
 				gameFrom,
 				gameTo);
       
 		elGames = (ExpandableListView) findViewById(R.id.elGames);
 		elGames.setAdapter(adapter);
-		elGames.setOnChildClickListener(new OnChildClickListener() {
-			public boolean onChildClick(ExpandableListView parent, View view,
-		          int groupPosition, int childPosition, long id) {
-				return true;
-				//TODO: доделать обработку нажатия
-			}
-		});
-        
+		elGames.setOnChildClickListener(this);
 	};
 	
-	public void onClick(View v) {
-		Intent intent=new Intent(this, LibraryGameInfoActivity.class);
-		//intent.putExtra("selectedgame", v.getId());
-		intent.putExtra("selectedgame", (String)v.getTag());
-		startActivityForResult(intent, 1);
-		//finish();
-	}
+	public boolean onChildClick(ExpandableListView parent,
+			View view, int groupPosition,
+			int childPosition, long id) {
+		
+			@SuppressWarnings("unchecked")
+			String selectedGame=((Map<String,String>)(parent.getExpandableListAdapter().getChild(groupPosition, childPosition))).get("id");
+			
+			Intent intent=new Intent(this, LibraryGameInfoActivity.class);
+			intent.putExtra("selectedgame", selectedGame);
+			startActivityForResult(intent, 1);
+
+			return true;
+		}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
