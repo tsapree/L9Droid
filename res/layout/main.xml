@@ -3,61 +3,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <EditText
-        android:id="@+id/etCmd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/bCmd"
-        android:ems="10"
-        android:imeOptions="normal"
-        android:inputType="textNoSuggestions" >
-
-        <requestFocus />
-    </EditText>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_launcher" />
+    
+    <RelativeLayout
+        android:id="@+id/lmain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageView1"
+        android:layout_toLeftOf="@+id/lvHistory" >
+	
+	    <ListView
+	        android:id="@+id/lvLog"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/etCmd"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true" >
+	
+	    </ListView>
+
+		<EditText
+	        android:id="@+id/etCmd"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentLeft="true"
+	        android:layout_toLeftOf="@+id/bCmd"
+	        android:ems="10"
+	        android:imeOptions="normal"
+	        android:inputType="textNoSuggestions" >
+	
+	        <requestFocus />
+	    </EditText>
+	    	
+	    <Button
+	        android:id="@+id/bEnter"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentRight="true"
+	        android:text="Enter"
+	        android:visibility="invisible" />
+	
+	    <Button
+	        android:id="@+id/bSpace"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_toLeftOf="@+id/bEnter"
+	        android:text="Space"
+	        android:visibility="invisible" />
+	
+	    <Button
+	        android:id="@+id/bCmd"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_alignParentRight="true"
+	        android:text="Do" />
+    </RelativeLayout>
 
     <ListView
-        android:id="@+id/lvLog"
-        android:layout_width="match_parent"
+        android:id="@+id/lvHistory"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/etCmd"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/imageView1" >
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/imageView1"
+        android:paddingLeft="5dp"
+        android:visibility="visible" >
 
     </ListView>
-
-    <Button
-        android:id="@+id/bEnter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Enter"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/bSpace"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/bEnter"
-        android:text="Space"
-        android:visibility="invisible" />
-
-    <Button
-        android:id="@+id/bCmd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Do" />
-
+    
 </RelativeLayout>

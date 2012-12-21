@@ -39,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	Button bEnter;
 
 	ListView lvMain;
+	ListView lvHistory;
    
 	ImageView ivScreen;
     
@@ -75,7 +76,10 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         // находим список
         lvMain = (ListView) findViewById(R.id.lvLog);
         lvMain.setDividerHeight(0);
-                
+        
+        lvHistory = (ListView) findViewById(R.id.lvHistory);
+        lvHistory.setVisibility(ListView.VISIBLE);
+                 
         command=null;
         
         mt = (Threads) getLastNonConfigurationInstance();
@@ -92,6 +96,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	    } else mt.link(this);
         lvMain.setAdapter(mt.lvAdapter);
         lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+        
+        lvHistory.setAdapter(mt.lvHistoryAdapter);
+        
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
     
@@ -319,6 +326,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		if (etCmd.length()>0 && mt.l9.L9State==mt.l9.L9StateWaitForCommand) {
 			outUserInputToLog(etCmd.getText().toString());
     
+			mt.lvHistoryAdapter.add(etCmd.getText().toString());
 			
 			command=etCmd.getText().toString();
 			etCmd.setText("");
