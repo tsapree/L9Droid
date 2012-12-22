@@ -583,6 +583,14 @@ public class Library {
 	                    if (n.equals("title"))			gi.setTitle(readTag(parser,"title"));
 	                    else if (n.equals("about"))		gi.setAbout(readTag(parser,"about"));
 	                    else if (n.equals("authors"))	gi.setAuthors(readTag(parser,"authors"));
+	                    else if (n.equals("path"))		{
+	                    	for (int i=0;i<parser.getAttributeCount();i++) {
+	                    		String atr=parser.getAttributeName(i);
+	    	            		if (atr.equals("tags")) gi.addTags(parser.getAttributeValue(i));
+	    	            		else if (atr.equals("files")) gi.addFiles(parser.getAttributeValue(i));
+	    	            	};
+	                    	gi.addPath(readTag(parser,"path"));
+	                    }
 	                    else {
 	                        skip(parser);
 	                    }

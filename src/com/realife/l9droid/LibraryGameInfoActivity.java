@@ -32,6 +32,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	Button bInstall;
 	
 	String game;
+	GameInfo gi;
 	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    //int info[]={0,0,0,0};
 	    //lib.getGameInfo(game,info);
 	    
-	    GameInfo gi=lib.getGameInfo(this,game);
+	    gi=lib.getGameInfo(this,game);
 	    
 		tvGameName = (TextView)findViewById(R.id.tvGameName);
 		tvCategory = (TextView)findViewById(R.id.tvCategory);
@@ -80,17 +81,21 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			};
 			break;
 		case R.id.bInstall:
-			String downloadedPath = lib.downloadFileToCache("http://ifarchive.org/if-archive/games/spectrum/level9.zip");
-			if (downloadedPath!=null) {
-				Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
-				if (lib.unzipFile(downloadedPath, "SNA/V3/WORM.SNA", "Worm In Paradise V3 S48")) {
-				//if (lib.unzipFile(downloadedPath, "SNA/V3/", "Return to Eden V3 S48")) { //check ability to extract all files in directory
-					Toast.makeText(this, "UnZipped well!", Toast.LENGTH_SHORT).show();
-					fillInfo();
-				} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();
-			}
-			else Toast.makeText(this, "Download error!", Toast.LENGTH_SHORT).show();
-			break;
+			for (int n=0;n<gi.getNumberOfPaths();n++) {
+				gi.getPath(n);
+				gi.getTags(n);
+				gi.getFiles(n);
+				String downloadedPath = lib.downloadFileToCache(gi.getPath(n));
+				if (downloadedPath!=null) {
+					Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
+					if (lib.unzipFile(downloadedPath, gi.getFiles(n), gi.getId()+" "+gi.getTags(n))) {
+					//if (lib.unzipFile(downloadedPath, "SNA/V3/", "Return to Eden V3 S48")) { //check ability to extract all files in directory
+						Toast.makeText(this, "UnZipped well!", Toast.LENGTH_SHORT).show();
+						fillInfo();
+					} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();
+				}
+				else Toast.makeText(this, "Download error!", Toast.LENGTH_SHORT).show();
+			};
 		}
 	};
 	

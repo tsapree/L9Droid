@@ -4,17 +4,20 @@
 	    <game name="Colossal Adventure">
 			<title>Colossal Adventure</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V3 S48" files="sna/v3/colossal.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adventure Quest">
 			<title>Adventure Quest</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V3 S48" files="sna/v3/advquest.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 		</game>
 		<game name="Dungeon Adventure">
 			<title>Dungeon Adventure</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V3 S48" files="sna/v3/dungeon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Silicon Dreams Trilogy">
@@ -25,34 +28,44 @@ You play Kim Kimberley, secret agent extraordinary.
 Your mission: to safeguard the interstar transport, Snowball 9, as a last resort following catastrophic accident or sabotage.
 Thus when your modified freezer-coffin wakes you with the Snowball still in transit, you know that something must be very wrong. You\'re weakened and disorientated from lengthy hibernation, but the fate of two million passengers is in your hands!</about>
 			<authors>Written by: Pete, Mike and Nick Austin.
-Additional expertise: Ian Buxton.</authors>        
+Additional expertise: Ian Buxton.</authors>
+			<path tags="V3 S48" files="sna/v3/snowball.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Return to Eden">
 			<title>Return to Eden</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V2 S48" files="sna/v2/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V3 S48" files="sna/v3/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Worm in Paradise">
 			<title>Worm in Paradise</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V3 S48" files="sna/v3/worm.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Time And Magik Trilogy">
 	    <game name="Lords of Time">
 			<title>Lords of Time</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V1 S48" files="sna/v1/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V2 S48" files="sna/v2/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V4 S48" files="sna/v4/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Red Moon">
 			<title>Red Moon</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V2 S48" files="sna/v2/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V4 S48" files="sna/v4/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Price of Magik">
 			<title>The Price of Magik</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V3 S48" files="sna/v3/price.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Gnome Ranger Series">
@@ -71,7 +84,8 @@ Additional expertise: Ian Buxton.</authors>
 	    <game name="Adrian Mole 1">
 			<title>The Secret Diary of Adrian Mole Aged 13 &#190;</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V3 S48" files="sna/v3/mole2.sna,sna/v3/mole3.sna,sna/v3/mole1.sna,sna/v3/mole4.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adrian Mole 2">
 			<title>The Growing Pains of Adrian Mole</title>
@@ -84,11 +98,13 @@ Additional expertise: Ian Buxton.</authors>
 			<title>Emerald Isle</title>
 			<about>Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</about>
 			<authors>Written by: Shaun D. Abbott\nPictures by: James Horsler</authors>
+			<path tags="V2 S48" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 		</game>
 		<game name="Erik the Viking">
 			<title>The Saga of Erik the Viking</title>
 			<about></about>
-			<authors></authors>        
+			<authors></authors>
+			<path tags="V2 S48" files="sna/v2/erik.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>        
 	    </game>
 	    <game name="The Archers">
 			<title>The Archers</title>
