@@ -12,6 +12,8 @@
 			<about></about>
 			<authors></authors>
 			<path tags="V3 S48" files="sna/v3/advquest.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			
+<!-- dont work, why?		<path tags="BBC" files="qdata">http://bbc.nvg.org/sw/Level9/AdventureQuest.zip</path> -->
 		</game>
 		<game name="Dungeon Adventure">
 			<title>Dungeon Adventure</title>

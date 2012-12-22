@@ -55,10 +55,9 @@ public class Library {
 	String tags[][]={
 			{"Amiga","Amiga"},
 			{"Atari","Atari?"},
-			{"BBC","BBC?"},
+			{"BBC","BBC"},
 			{"CPC","CPC?"},
 			{"C64","Commodore 64"},
-			{"Speccy","Speccy?"}, //TODO: убрать, оставить вместо S48
 			{"S48","Speccy 48k"},
 			{"S128","Speccy 128k"},
 			{"ST","ST?"},
@@ -122,8 +121,11 @@ public class Library {
     class GameFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
         	String lowCaseName=name.toLowerCase();
+        	long size=(new File(dir.getPath()+"/"+name)).length();
+        	if (size<13491) return false;
         	return (lowCaseName.endsWith(".sna")
-        			|| (  lowCaseName.endsWith(".dat") && !(lowCaseName.endsWith("gamedat2.dat") || lowCaseName.endsWith("gamedat3.dat"))));
+        			|| (  lowCaseName.endsWith(".dat") && !(lowCaseName.endsWith("gamedat2.dat") || lowCaseName.endsWith("gamedat3.dat")))
+        			|| lowCaseName.indexOf('.')<0);
         }
     }
 
@@ -668,8 +670,6 @@ public class Library {
 	};
 	
 	public String downloadFileToCache(String src) {
-		//String src="http://ifarchive.org/if-archive/games/spectrum/level9.zip";
-		//String dst="/mnt/sdcard/l9droid/_cache/testfolder/level9.zip";
 		String dst=null;
 		
 		try {

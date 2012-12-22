@@ -82,9 +82,6 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			break;
 		case R.id.bInstall:
 			for (int n=0;n<gi.getNumberOfPaths();n++) {
-				gi.getPath(n);
-				gi.getTags(n);
-				gi.getFiles(n);
 				String downloadedPath = lib.downloadFileToCache(gi.getPath(n));
 				if (downloadedPath!=null) {
 					Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
