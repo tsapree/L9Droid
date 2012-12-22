@@ -1,5 +1,10 @@
 package com.realife.l9droid;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -21,9 +26,15 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	TextView tvAbout;
 	TextView tvAuthors;
 	
+	//http://ifarchive.org/if-archive/games/spectrum/level9.zip
+	//level9.zip/SNA/V3/COLOSSAL.SNA
+	//Colossal Adventure S48/COLOSSAL.SNA
+	//L9DROID/CACHE/LKFBFHH/level9.zip
+	
 	Library lib;
 	
 	Button bPlay;
+	Button bInstall;
 	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +43,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    lib = new Library();
 	    
 	    setContentView(R.layout.library_game_info);
+	    
+	    bInstall=(Button) findViewById(R.id.bInstall);
+	    bInstall.setOnClickListener(this);
 	    
 		String game=getIntent().getStringExtra("selectedgame");
 	    ArrayList<String> versions = lib.getInstalledVersions(game);
@@ -84,9 +98,18 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 				Toast.makeText(this, "Path: "+p.getTag(), Toast.LENGTH_SHORT).show();
 			};
 			break;
+		case R.id.bInstall:
+			String downloadedPath = lib.downloadFileToCache("http://ifarchive.org/if-archive/games/spectrum/level9.zip");
+			if (downloadedPath!=null) {
+				Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
+				if (lib.unzipFile(downloadedPath, "SNA/V3/COLOSSAL.SNA", "Colossal Adventure V3 S48")) {
+					Toast.makeText(this, "UnZipped well!", Toast.LENGTH_SHORT).show();
+				} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();;
+			}
+			else Toast.makeText(this, "Download error!", Toast.LENGTH_SHORT).show();
+			break;
 		}
-
-		
-		
 	};
+	
+	
 }

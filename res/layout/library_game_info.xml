@@ -14,7 +14,7 @@
             android:id="@+id/tvGameName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/button4"
+            android:layout_toLeftOf="@+id/bInstall"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
@@ -34,7 +34,7 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/bInstall"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

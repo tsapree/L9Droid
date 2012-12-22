@@ -13,7 +13,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -26,7 +32,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -93,7 +98,7 @@ public class Library {
 	
 	public void requestPaths() {
 		int paths_num=0;
-		String[] temppaths=new String[100];
+		String[] temppaths=new String[300];
 		File sdPath = android.os.Environment.getExternalStorageDirectory();
 		sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD);
 		File[] pathdirs=sdPath.listFiles();
@@ -116,8 +121,9 @@ public class Library {
 	
     class GameFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
-        	return (name.endsWith(".sna")
-        			|| (  name.endsWith(".dat") && !(name.endsWith("gamedat2.dat") || name.endsWith("gamedat3.dat"))));
+        	String lowCaseName=name.toLowerCase();
+        	return (lowCaseName.endsWith(".sna")
+        			|| (  lowCaseName.endsWith(".dat") && !(lowCaseName.endsWith("gamedat2.dat") || lowCaseName.endsWith("gamedat3.dat"))));
         }
     }
 
@@ -639,4 +645,112 @@ public class Library {
 	    }
 	    return result;
 	}
+	
+	
+	
+	
+	public String downloadFileToCache(String src) {
+		//String src="http://ifarchive.org/if-archive/games/spectrum/level9.zip";
+		//String dst="/mnt/sdcard/l9droid/_cache/testfolder/level9.zip";
+		String dst=null;
+		
+		try {
+			String filename=getFileName(src);
+			String folder=src.replace('/', '_').replace(":", "_");
+			
+			String sdState = android.os.Environment.getExternalStorageState();
+			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+				File sdPath = android.os.Environment.getExternalStorageDirectory();
+				dst=sdPath.getAbsolutePath() + LIBDIR_SD + "_cache/" + folder + "/" + filename;
+				
+				File fdst=new File(dst);
+				File dir=fdst.getParentFile();
+				if (!dir.isDirectory()) dir.mkdirs();
+				
+				if (fdst.exists()) return dst; //если уже файл скачан ранее, просто вернуть путь
+				
+				URL url = new URL(src);
+				URLConnection connection = url.openConnection();
+				InputStream in = connection.getInputStream();
+				OutputStream out = new FileOutputStream(fdst);
+			    byte[] buf = new byte[1024];
+			    int len;
+			    while ((len = in.read(buf)) > 0) {
+			        out.write(buf, 0, len);
+			    }
+			    in.close();
+			    out.close();
+			    
+			};
+
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return dst;
+		
+	}
+	
+	String getFileName(String src) {
+		return src.substring(src.lastIndexOf('/')+1);
+	};
+	
+	public boolean unzipFile(String zipPath, String fileToExtract, String folderTo) {
+		ZipFile z;
+		ZipEntry ze;
+		String absFolderTo;
+		try {
+			
+			String sdState = android.os.Environment.getExternalStorageState();
+			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+				File sdPath = android.os.Environment.getExternalStorageDirectory();
+				absFolderTo=sdPath.getAbsolutePath() + LIBDIR_SD + folderTo;
+			
+				z=new ZipFile(zipPath);
+				
+				/*
+				Enumeration<? extends ZipEntry> e=z.entries();
+				while (e.hasMoreElements())
+				{
+					ze=e.nextElement();
+					String name=ze.getName();
+					name=name+" ";
+				};*/
+				
+				ze = z.getEntry(fileToExtract);
+				if (ze==null) {
+					z.close();
+					return false;
+				};
+				if (!ze.isDirectory()) {
+					InputStream in = z.getInputStream(ze);
+					File path=new File(absFolderTo);
+					if (!path.isDirectory()) path.mkdirs();
+					
+					File fdst=new File(absFolderTo+"/"+getFileName(ze.getName()));
+					OutputStream out = new FileOutputStream(fdst);
+					byte[] buf = new byte[1024];
+				    int len;
+				    while ((len = in.read(buf)) > 0) {
+				        out.write(buf, 0, len);
+				    }
+				    in.close();
+				    out.close();
+				    z.close();
+				};
+				
+			} else return false;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	};
 }
