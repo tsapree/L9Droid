@@ -95,12 +95,15 @@ public class Threads {
 		    		activity.bEnter.setVisibility(View.INVISIBLE);
 		    		activity.bCmd.setVisibility(View.VISIBLE);
 		    		activity.etCmd.setVisibility(View.VISIBLE);
+		    		activity.etCmd.requestFocus();
 		    		break;
 		    	case MACT_L9WAITFORCHAR:
 		    		activity.bSpace.setVisibility(View.VISIBLE);
 		    		activity.bEnter.setVisibility(View.VISIBLE);
 		    		activity.bCmd.setVisibility(View.INVISIBLE);
 		    		activity.etCmd.setVisibility(View.INVISIBLE);
+		    		if (!activity.bEnter.isFocused())
+		    			activity.bSpace.requestFocusFromTouch();
 		    		keyPressed=0;
 		    		break;	
 		    	case MACT_L9WAITBEFORESCRIPT:
@@ -148,6 +151,10 @@ public class Threads {
 		};
 		h.sendEmptyMessage(MACT_L9WORKING);
 		lib.h=h;
+	};
+	
+	void stopGame() {
+		destroy(false);
 	};
 	
 	void startGame(String gamepath, boolean loadAutoSave) {

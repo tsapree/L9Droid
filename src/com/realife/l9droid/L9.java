@@ -78,7 +78,6 @@ public class L9 {
 	public static final int L9StateRunning=1;
 	public static final int L9StateWaitForCommand=2;
 	public static final int L9StateCommandReady = 3;	//TODO: Переназвать, глупо как-то звучит
-	public static final int L9StateWaitForKey=4;
 	public static final int L9StateWaitBeforeScriptCommand=5; //включить паузу перед скриптовой командой
 	
 	

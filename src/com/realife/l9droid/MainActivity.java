@@ -29,7 +29,12 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener, OnMenuItemClickListener, OnItemClickListener, OnItemLongClickListener {
+public class MainActivity extends Activity implements OnClickListener,
+		OnEditorActionListener,
+
+		OnMenuItemClickListener,
+		OnItemClickListener,
+		OnItemLongClickListener {
 	
 	SharedPreferences sp;
 	Typeface tf;
@@ -105,7 +110,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         lvHistory.setOnItemClickListener(this);
         lvHistory.setOnItemLongClickListener(this);
         
-        
+
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
     
@@ -249,11 +254,12 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			case 1:
 				//Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
 				String newGame=data.getStringExtra("opengame");
-				mt.startGame(newGame,false);
-				//TODO: поумнее очищать лог, есть вероятность потерять начало предложения.
+				mt.stopGame();
 				mt.logStringCapacitor=null;
 				mt.logStrId=-1;
 				mt.lvAdapter.clear();
+				mt.lvHistoryAdapter.clear();
+				mt.startGame(newGame,false);
 				if (mt.l9!=null) {
 					Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
 				} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
@@ -299,6 +305,22 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
 		postCommand();
 		return true;
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (bSpace.getVisibility()==View.VISIBLE) {
+			if (keyCode==KeyEvent.KEYCODE_SPACE) {
+			//if (keyCode==KeyEvent.KEYCODE_1) {
+				mt.keyPressed=' ';
+				return true;
+			}
+			else if (keyCode==KeyEvent.KEYCODE_ENTER) {				
+			//else if (keyCode==KeyEvent.KEYCODE_2) {
+				mt.keyPressed='\r';
+				return true;
+			}
+		};
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	void outCharToLog(char c) {
