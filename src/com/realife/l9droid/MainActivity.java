@@ -175,9 +175,6 @@ public class MainActivity extends Activity implements OnClickListener,
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // TODO Auto-generated method stub
-        // пункты меню с ID группы = 1 видны, если в CheckBox стоит галка
-
         menu.setGroupVisible(1, mt.menuHashEnabled);
         menu.setGroupVisible(2, mt.menuHashEnabled && mt.gfx_ready && (!mt.menuPicturesEnabled));
         menu.setGroupVisible(3, mt.menuHashEnabled && mt.gfx_ready &&  mt.menuPicturesEnabled);
@@ -208,6 +205,11 @@ public class MainActivity extends Activity implements OnClickListener,
         mi.setIntent(new Intent(this, AboutActivity.class));
     	mi = menu.add(0, 1, 2, "Library Files");
     	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(0, 10, 3, "Show history");
+    	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(0, 11, 4, "Hide history");
+    	mi.setOnMenuItemClickListener(this);
+    	
 
     	
         return super.onCreateOptionsMenu(menu);
@@ -242,7 +244,14 @@ public class MainActivity extends Activity implements OnClickListener,
 		case 8:
 			postHashCommand("#play");
 			break;
+		case 10:
+			lvHistory.setVisibility(View.VISIBLE);
+			break;
+		case 11:
+			lvHistory.setVisibility(View.GONE);
+			break;
 		};
+
 		return false;
 	}
 	
