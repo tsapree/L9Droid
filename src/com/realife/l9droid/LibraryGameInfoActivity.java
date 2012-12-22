@@ -1,10 +1,5 @@
 package com.realife.l9droid;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -36,6 +31,8 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	Button bPlay;
 	Button bInstall;
 	
+	String game;
+	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -46,25 +43,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    
 	    bInstall=(Button) findViewById(R.id.bInstall);
 	    bInstall.setOnClickListener(this);
-	    
-		String game=getIntent().getStringExtra("selectedgame");
-	    ArrayList<String> versions = lib.getInstalledVersions(game);
-		
-	    //Заполняю информацию о инсталлированных версиях
-		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llInstalled);
-	    LayoutInflater ltInflater = getLayoutInflater();
-	    for (int i=0;i<versions.size();i++) {
-			View item = ltInflater.inflate(R.layout.library_game_info_item, linLayout, false);
-			TextView tvVersion = (TextView) item.findViewById(R.id.tvVersion);
-			//fills info about this version, based on tags from parent dir
-			tvVersion.setText(lib.getTags(versions.get(i)));
-			Button bProperties = (Button) item.findViewById(R.id.bProperties);
-			Button bPlay = (Button) item.findViewById(R.id.bPlay);
-			item.setTag(versions.get(i));
-			bProperties.setOnClickListener(this);
-			bPlay.setOnClickListener(this);
-			linLayout.addView(item);
-	    };
+
+		game=getIntent().getStringExtra("selectedgame");
+		fillInfo();
 
 	    //int info[]={0,0,0,0};
 	    //lib.getGameInfo(game,info);
@@ -102,13 +83,36 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			String downloadedPath = lib.downloadFileToCache("http://ifarchive.org/if-archive/games/spectrum/level9.zip");
 			if (downloadedPath!=null) {
 				Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
-				if (lib.unzipFile(downloadedPath, "SNA/V3/COLOSSAL.SNA", "Colossal Adventure V3 S48")) {
+				if (lib.unzipFile(downloadedPath, "SNA/V3/WORM.SNA", "Worm In Paradise V3 S48")) {
 					Toast.makeText(this, "UnZipped well!", Toast.LENGTH_SHORT).show();
-				} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();;
+					fillInfo();
+				} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();
 			}
 			else Toast.makeText(this, "Download error!", Toast.LENGTH_SHORT).show();
 			break;
 		}
+	};
+	
+	private void fillInfo() {
+		lib.requestPaths();
+	    ArrayList<String> versions = lib.getInstalledVersions(game);
+		
+	    //Заполняю информацию о инсталлированных версиях
+		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llInstalled);
+		linLayout.removeAllViews();
+	    LayoutInflater ltInflater = getLayoutInflater();
+	    for (int i=0;i<versions.size();i++) {
+			View item = ltInflater.inflate(R.layout.library_game_info_item, linLayout, false);
+			TextView tvVersion = (TextView) item.findViewById(R.id.tvVersion);
+			//fills info about this version, based on tags from parent dir
+			tvVersion.setText(lib.getTags(versions.get(i)));
+			Button bProperties = (Button) item.findViewById(R.id.bProperties);
+			Button bPlay = (Button) item.findViewById(R.id.bPlay);
+			item.setTag(versions.get(i));
+			bProperties.setOnClickListener(this);
+			bPlay.setOnClickListener(this);
+			linLayout.addView(item);
+	    };
 	};
 	
 	

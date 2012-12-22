@@ -647,7 +647,17 @@ public class Library {
 	}
 	
 	
-	
+	String unifyFolder(String folder) {
+		String uF;
+		File f;
+		int i=0;
+		do {
+			uF=(i==0)?folder:String.format("%s %d", folder, i);
+			i++;
+			f = new File(uF);
+		} while (f.isDirectory());
+		return uF;
+	};
 	
 	public String downloadFileToCache(String src) {
 		//String src="http://ifarchive.org/if-archive/games/spectrum/level9.zip";
@@ -709,7 +719,7 @@ public class Library {
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 				File sdPath = android.os.Environment.getExternalStorageDirectory();
-				absFolderTo=sdPath.getAbsolutePath() + LIBDIR_SD + folderTo;
+				absFolderTo=unifyFolder(sdPath.getAbsolutePath() + LIBDIR_SD + folderTo);
 			
 				z=new ZipFile(zipPath);
 				
