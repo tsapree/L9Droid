@@ -44,6 +44,7 @@ public class Threads {
 	SpannableStringBuilder logStringCapacitor=null;
 	int logStrId=-1;
 	
+	History history;
 	ArrayAdapter<String> lvHistoryAdapter;
 	
 	char keyPressed=0;
@@ -62,9 +63,10 @@ public class Threads {
 	    lib.prepareLibrary(activity);
 	    
 		lvAdapter = new ArrayAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
-        // присваиваем адаптер списку
-		lvHistoryAdapter = new ArrayAdapter<String>(activity, R.layout.log_list_item, new ArrayList<String>());
-		lvHistoryAdapter.add("unfas para");
+		history=new History();
+		lvHistoryAdapter = new ArrayAdapter<String>(activity, R.layout.history_list_item, history.getHistory());
+
+		//lvHistoryAdapter.add("unfas para");
 		
 		needToQuit=false;
 		h = new Handler() {

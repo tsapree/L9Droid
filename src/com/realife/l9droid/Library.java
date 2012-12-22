@@ -425,6 +425,14 @@ public class Library {
 		return result;
 	}
 	
+	public String getSpannedString(SpannableStringBuilder ssb) {
+		String wrapped=wrapSpans(ssb);
+		int begin=wrapped.indexOf('{');
+		int end=wrapped.lastIndexOf('}');
+		if (begin+1<end && begin>0) return wrapped.substring(begin+1, end);
+		else return null;
+	}
+	
 	//развернуть spans из тэгов {}
 	private SpannableStringBuilder unwrapSpans(String wrappedString) {
 		

@@ -75,6 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/imageView1"
+        android:background="#eeeeee"
         android:paddingLeft="5dp"
         android:visibility="visible" >
 

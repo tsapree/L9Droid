@@ -143,7 +143,7 @@ public class L9implement extends L9 {
 	byte[] os_load_file() {
 		String path="Saves/1.sav";
 		path=lib.getAbsolutePath(path);
-		load_piclog(path);
+		load_piclog(path,th.history);
 		mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);
 		return lib.fileLoadToArray(path);
 	};
@@ -465,7 +465,7 @@ public class L9implement extends L9 {
 		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
-			load_piclog(path);
+			load_piclog(path,th.history);
 			th.lvAdapter.clear();
 			for (int i=0; i<tempLog.size();i++) th.lvAdapter.add(tempLog.get(i));
 			th.logStrId=th.lvAdapter.getCount()-1;
@@ -500,7 +500,7 @@ public class L9implement extends L9 {
 		};
 	}
 
-	void load_piclog(String path) {
+	void load_piclog(String path, History h) {
 		String name;
 		name=lib.changeFileExtension(path, "png");
 		waitPictureToDraw();
@@ -509,6 +509,11 @@ public class L9implement extends L9 {
 		
 		name=lib.changeFileExtension(path, "log");
 		tempLog=lib.LoadLogToSpannableArrayList(name);
+		h.clear();
+		for (SpannableStringBuilder logStr:tempLog) {
+			h.add(lib.getSpannedString(logStr));
+		}
+		
 	};
 
 	void waitPictureToDraw() {

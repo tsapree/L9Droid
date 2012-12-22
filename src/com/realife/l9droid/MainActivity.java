@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,7 +29,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener, OnMenuItemClickListener {
+public class MainActivity extends Activity implements OnClickListener,OnEditorActionListener, OnMenuItemClickListener, OnItemClickListener, OnItemLongClickListener {
 	
 	SharedPreferences sp;
 	Typeface tf;
@@ -98,6 +101,10 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
         lvMain.setSelection(lvMain.getAdapter().getCount()-1);
         
         lvHistory.setAdapter(mt.lvHistoryAdapter);
+        lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
+        lvHistory.setOnItemClickListener(this);
+        lvHistory.setOnItemLongClickListener(this);
+        
         
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
@@ -279,6 +286,16 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		}
 	}
 
+	public void onItemClick(AdapterView<?> parent, View arg1, int position, long id) {
+		etCmd.setText(mt.lvHistoryAdapter.getItem(position));
+		postCommand();
+	};
+	
+	public boolean onItemLongClick(AdapterView<?> parent, View arg1, int position, long id) {
+		etCmd.setText(mt.lvHistoryAdapter.getItem(position));
+		return true;
+	}
+	
 	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
 		postCommand();
 		return true;
@@ -317,6 +334,7 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 			mt.logStringCapacitor=null;
 			if (finishThisString) mt.logStrId=-1;
 			else mt.logStrId=lvMain.getAdapter().getCount()-1;
+			mt.lvAdapter.notifyDataSetChanged();
 			lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 		};
 	}
@@ -326,7 +344,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 		if (etCmd.length()>0 && mt.l9.L9State==mt.l9.L9StateWaitForCommand) {
 			outUserInputToLog(etCmd.getText().toString());
     
-			mt.lvHistoryAdapter.add(etCmd.getText().toString());
+			mt.history.add(etCmd.getText().toString());
+			mt.lvHistoryAdapter.notifyDataSetChanged();
+			lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
 			
 			command=etCmd.getText().toString();
 			etCmd.setText("");
@@ -337,9 +357,9 @@ public class MainActivity extends Activity implements OnClickListener,OnEditorAc
 	void postHashCommand(String cmd) {
 		etCmd.setText(cmd);
 		postCommand();
-	};
-
 	}
+
+}
 
 class DebugStorage {
     private char[] debug;
