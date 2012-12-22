@@ -84,6 +84,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			if (downloadedPath!=null) {
 				Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
 				if (lib.unzipFile(downloadedPath, "SNA/V3/WORM.SNA", "Worm In Paradise V3 S48")) {
+				//if (lib.unzipFile(downloadedPath, "SNA/V3/", "Return to Eden V3 S48")) { //check ability to extract all files in directory
 					Toast.makeText(this, "UnZipped well!", Toast.LENGTH_SHORT).show();
 					fillInfo();
 				} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();

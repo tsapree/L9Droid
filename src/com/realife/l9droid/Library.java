@@ -710,49 +710,54 @@ public class Library {
 		return src.substring(src.lastIndexOf('/')+1);
 	};
 	
+	//метод разархивирует все файлы, начинающиеся с fileToExtract, маленький недочет в том, что все файлы,
+	//начинающиеся с этого пути будут помещены в одну папку, меня это пока устраивает
 	public boolean unzipFile(String zipPath, String fileToExtract, String folderTo) {
 		ZipFile z;
 		ZipEntry ze;
 		String absFolderTo;
+		int filesUnzipped=0;
 		try {
 			
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 				File sdPath = android.os.Environment.getExternalStorageDirectory();
 				absFolderTo=unifyFolder(sdPath.getAbsolutePath() + LIBDIR_SD + folderTo);
-			
 				z=new ZipFile(zipPath);
+				File path=new File(absFolderTo);
+				if (!path.isDirectory()) path.mkdirs();
 				
-				/*
 				Enumeration<? extends ZipEntry> e=z.entries();
 				while (e.hasMoreElements())
 				{
 					ze=e.nextElement();
-					String name=ze.getName();
-					name=name+" ";
-				};*/
+					String zipPathName=ze.getName().toLowerCase();
+					if (zipPathName.startsWith(fileToExtract.toLowerCase())) {
+
+						if (!ze.isDirectory()) {
+							File fdst=new File(absFolderTo+"/"+getFileName(zipPathName));
+							OutputStream out = new FileOutputStream(fdst);
+							InputStream in = z.getInputStream(ze);
+							byte[] buf = new byte[1024];
+						    int len;
+						    while ((len = in.read(buf)) > 0) {
+						        out.write(buf, 0, len);
+						    }
+						    in.close();
+						    out.close();
+						    filesUnzipped++;
+						};
+					};
+				};
+			    z.close();
 				
+				/*
 				ze = z.getEntry(fileToExtract);
 				if (ze==null) {
 					z.close();
 					return false;
 				};
-				if (!ze.isDirectory()) {
-					InputStream in = z.getInputStream(ze);
-					File path=new File(absFolderTo);
-					if (!path.isDirectory()) path.mkdirs();
-					
-					File fdst=new File(absFolderTo+"/"+getFileName(ze.getName()));
-					OutputStream out = new FileOutputStream(fdst);
-					byte[] buf = new byte[1024];
-				    int len;
-				    while ((len = in.read(buf)) > 0) {
-				        out.write(buf, 0, len);
-				    }
-				    in.close();
-				    out.close();
-				    z.close();
-				};
+				*/
 				
 			} else return false;
 			
@@ -761,6 +766,7 @@ public class Library {
 			e.printStackTrace();
 			return false;
 		}
-		return true;
+		if (filesUnzipped>0) return true;
+		else return false;
 	};
 }
