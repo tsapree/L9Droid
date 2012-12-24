@@ -479,9 +479,11 @@ public class Library {
 	public ArrayList<String> getInstalledVersions(String gameName) {
 		if (paths==null) requestPaths();
 		ArrayList<String> p=new ArrayList<String>();
-		for (int i=0;i<paths.length;i++) {
-			if (paths[i].toLowerCase().contains(gameName.toLowerCase())) {
-				p.add(paths[i]);
+		if (paths!=null) {
+			for (int i=0;i<paths.length;i++) {
+				if (paths[i].toLowerCase().contains(gameName.toLowerCase())) {
+					p.add(paths[i]);
+				};
 			};
 		};
 		return p;
