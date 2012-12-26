@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 public class LibraryGameInfoActivity extends Activity implements OnClickListener {
 	
-	int selected_game_id;
 	TextView tvGameName;
 	TextView tvCategory;
 	TextView tvAbout;
@@ -81,6 +80,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			};
 			break;
 		case R.id.bInstall:
+			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
+			startActivity(intent);
+			/*
 			for (int n=0;n<gi.getNumberOfPaths();n++) {
 				String downloadedPath = lib.downloadFileToCache(gi.getPath(n));
 				if (downloadedPath!=null) {
@@ -93,6 +95,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 				}
 				else Toast.makeText(this, "Download error!", Toast.LENGTH_SHORT).show();
 			};
+			*/
 		}
 	};
 	

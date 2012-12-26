@@ -29,7 +29,9 @@
         <activity android:name="ImportActivity"></activity>
         <activity android:name="ImportSelectFolderName"></activity>
         <activity android:name="LibraryGamesActivity"></activity>
-        <activity android:name="com.realife.l9droid.LibraryGameInfoActivity"></activity>
+        <activity android:name="LibraryGameInfoActivity"></activity>
+        <activity android:name="LibraryGameDownloadActivity"></activity>
+        <activity android:name="LibraryGameInstallActivity"></activity>
     </application>
 
 </manifest>
