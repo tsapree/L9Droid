@@ -24,10 +24,12 @@ public class LibraryGameInstallActivity extends Activity implements OnClickListe
 		switch (v.getId()) {
 		case R.id.bInstallDownload: // кнопка ввода команды
 			Intent intent=new Intent(this, LibraryGameDownloadActivity.class);
+			intent.putExtra("selectedgame", getIntent().getStringExtra("selectedgame"));			
 			startActivity(intent);
 			finish();
 			break;
 		};
 	};
+	
 
 }

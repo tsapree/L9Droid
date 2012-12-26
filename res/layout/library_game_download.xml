@@ -63,7 +63,7 @@
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/llInstalled"
+                android:id="@+id/llSources"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

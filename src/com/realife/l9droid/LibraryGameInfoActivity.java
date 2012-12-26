@@ -81,7 +81,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			break;
 		case R.id.bInstall:
 			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
+			intent.putExtra("selectedgame", game);
 			startActivity(intent);
+			
 			/*
 			for (int n=0;n<gi.getNumberOfPaths();n++) {
 				String downloadedPath = lib.downloadFileToCache(gi.getPath(n));
