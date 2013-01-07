@@ -1,16 +1,26 @@
 package com.realife.l9droid;
 
-import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class LibraryGameDownloadActivity extends Activity {
+public class LibraryGameDownloadActivity extends Activity implements OnClickListener {
+
+	final int LG_ReadyToDownload=0;
+	final int LG_Downloading=1;
+	final int LG_Unzipping=2;
+	final int LG_Installed=3;
+	final int LG_Canceled=4;
 	
 	TextView tvGameName;
 	TextView tvCategory;
@@ -37,6 +47,11 @@ public class LibraryGameDownloadActivity extends Activity {
 	    //Button bInstallDownload = (Button) findViewById(R.id.bInstallDownload);
 	    //bInstallDownload.setOnClickListener(this);
 		
+		FillSourcesInfo();
+	    
+	};
+	
+	void FillSourcesInfo() {
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llSources);
 		linLayout.removeAllViews();
 	    LayoutInflater ltInflater = getLayoutInflater();
@@ -45,14 +60,144 @@ public class LibraryGameDownloadActivity extends Activity {
 			TextView tvVersion = (TextView) item.findViewById(R.id.tvLink);
 			//fills info about this version, based on tags from parent dir
 			tvVersion.setText(gi.getPath(i)+" "+gi.getTags(i));
-			//Button bProperties = (Button) item.findViewById(R.id.bProperties);
-			//Button bPlay = (Button) item.findViewById(R.id.bPlay);
-			//item.setTag(versions.get(i));
-			//bProperties.setOnClickListener(this);
-			//bPlay.setOnClickListener(this);
+			Button bDownload = (Button) item.findViewById(R.id.bDownload);
+			bDownload.setOnClickListener(this);
+			if (lib.checkPathInLibrary(gi.getId()+" "+gi.getTags(i))) {
+				bDownload.setText("Installed");
+				bDownload.setEnabled(false);
+			} else if (lib.checkFileInCache(gi.getPath(i))!=null) bDownload.setText("Install");
+			
+			item.setTag(i);
 			linLayout.addView(item);
 	    };
-	    
 	};
+	
+	public void onClick(View v) {
+		View p=(View)v.getParent();
+
+		if ((p!=null) && (p.getTag()!=null)) {
+			int index=(Integer) p.getTag();
+			switch (v.getId()) {
+			case R.id.bDownload:
+				
+				LinearLayout linLayout = (LinearLayout) findViewById(R.id.llSources);
+				for (int i=0; i<linLayout.getChildCount();i++) {
+					linLayout.getChildAt(i).findViewById(R.id.bDownload).setEnabled(false);
+				};
+				
+				//Toast.makeText(this, "download pressed: "+gi.getPath(index), Toast.LENGTH_SHORT).show();
+				DownloadInstallFileTask mt = new DownloadInstallFileTask(p);
+			    mt.execute(gi.getPath(index),gi.getFiles(index), gi.getId()+" "+gi.getTags(index));
+
+			}
+		};
+	};
+	
+	class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
+
+		View v;
+		int operation=0;
+		
+		DownloadInstallFileTask(View view) {
+			v=view;
+		};
+		
+	    @Override
+	    protected void onPreExecute() {
+	    	super.onPreExecute();
+	    	if (v!=null) {
+				TextView tvStatus=(TextView)v.findViewById(R.id.tvStatus);
+				ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
+				tvStatus.setText("Downloading:");
+				tvStatus.setVisibility(View.VISIBLE);
+				pbProgress.setIndeterminate(true);
+				pbProgress.setVisibility(View.VISIBLE);
+	    	  
+		  		Button bDownload = (Button) v.findViewById(R.id.bDownload);
+				Button bCancel = (Button) v.findViewById(R.id.bCancel);
+	
+				bDownload.setVisibility(View.INVISIBLE);
+				bCancel.setVisibility(View.VISIBLE);  
+	    	}
+	    }
+
+	    @Override
+	    protected Void doInBackground(String... params) {
+	    	
+	    	String downloadedPath = lib.downloadFileToCache(params[0],this);
+	    	if (downloadedPath!=null) {
+	    		operation=1;
+				if (lib.unzipFile(downloadedPath, params[1], params[2],this)) {
+					//download goog, unzipped good
+				} else {
+					//download good, unzipped with error;
+				}
+			} else {
+				//download with error
+			};
+	    	
+	    /*
+	      try {
+	        for (int i=0; i<10; i++) {
+	        	TimeUnit.SECONDS.sleep(1);
+	        	doProgressUpdate(i, 9);
+	        }
+	      } catch (InterruptedException e) {
+	        e.printStackTrace();
+	      }
+	      
+	      operation=1;
+	      
+	      try {
+		        for (int i=0; i<10; i++) {
+		        	TimeUnit.SECONDS.sleep(1);
+		        	doProgressUpdate(i, 9);
+		        }
+		      } catch (InterruptedException e) {
+		        e.printStackTrace();
+		      }
+	      */
+	      
+	      
+	      return null;
+	    }
+	    
+	    void doProgressUpdate(int current, int max) {
+	    	publishProgress(current, max);
+	    }
+
+	    @Override
+	    protected void onProgressUpdate(Integer... values) {
+	      super.onProgressUpdate(values);
+	      if (v!=null) {
+	    	  if (operation==1) {
+	    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
+		    	  tv.setText("Installing:");
+		    	  operation=2;
+	    	  };
+	    	  ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
+	    	  if (values[1]>0) {
+	    		  pbProgress.setIndeterminate(false);
+	    		  pbProgress.setMax(values[1]);
+	    		  pbProgress.setProgress(values[0]);
+	    	  } else {
+	    		  pbProgress.setIndeterminate(true);
+	    		  //no info about file size, but downloading started
+	    	  }
+	      }
+	    }
+	    
+	    @Override
+	    protected void onPostExecute(Void result) {
+	      super.onPostExecute(result);
+	      if (v!=null) {
+	    	  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
+	    	  tv.setText("Download&Install complete");
+	    	  ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
+	    	  pbProgress.setVisibility(View.INVISIBLE);
+	      }
+	      FillSourcesInfo();
+	    }
+	  }
 	
 }

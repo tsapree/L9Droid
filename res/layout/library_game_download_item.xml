@@ -1,19 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content" >
-	
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <Button
+        android:id="@+id/bDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Download" />
+    
+	<Button
+	    android:id="@+id/bCancel"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/tvDownloading"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignParentTop="true"
+	    android:text="Cancel"
+	    android:visibility="gone" />
+
+	<TextView
+	    android:id="@+id/tvStatus"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@+id/tvLink"
+	    android:gravity="center_vertical"
+	    android:padding="5dp"
+	    android:text="Downloading"
+	    android:visibility="gone" />
+
 	<TextView
 	    android:id="@+id/tvLink"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="1"
-	    android:text="Atari/C-64/Speccy/CPC " />
-	
-	<Button
-	    android:id="@+id/bDownload"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true"
+	    android:layout_toLeftOf="@+id/bDownload"
+	    android:gravity="center_vertical"
+	    android:padding="5dp"
+	    android:text="aaa"
+	    android:visibility="visible" />
+
+	<ProgressBar
+	    android:id="@+id/pbProgress"
+	    style="?android:attr/progressBarStyleHorizontal"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:text="Download" />
+	    android:layout_alignBottom="@+id/tvStatus"
+	    android:layout_margin="5dp"
+	    android:layout_toLeftOf="@+id/bCancel"
+	    android:layout_toRightOf="@+id/tvStatus"
+	    android:indeterminate="true"
+	    android:visibility="gone" />
 
-</LinearLayout>
+</RelativeLayout>

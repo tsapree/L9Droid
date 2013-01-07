@@ -36,6 +36,8 @@ import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.realife.l9droid.LibraryGameDownloadActivity.DownloadInstallFileTask;
+
 public class Library {
 
 	final String LIBDIR_SD = "/L9Droid/";
@@ -671,7 +673,32 @@ public class Library {
 		return uF;
 	};
 	
-	public String downloadFileToCache(String src) {
+	public String checkFileInCache(String src) {
+		String dst=null;
+		String filename=getFileName(src);
+		String folder=src.replace('/', '_').replace(":", "_");
+		
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			dst=sdPath.getAbsolutePath() + LIBDIR_SD + "_cache/" + folder + "/" + filename;
+			File fdst=new File(dst);
+			if (fdst.exists()) return dst; //если уже файл скачан ранее, вернуть путь
+		};
+		return null;
+	};
+	
+	public boolean checkPathInLibrary(String folderTo) {
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			File path=new File(sdPath.getAbsolutePath() + LIBDIR_SD + folderTo);
+			if (path.isDirectory()) return true;
+		};
+		return false;
+	};
+	
+	public String downloadFileToCache(String src, DownloadInstallFileTask d) {
 		String dst=null;
 		
 		try {
@@ -691,12 +718,17 @@ public class Library {
 				
 				URL url = new URL(src);
 				URLConnection connection = url.openConnection();
+				int filelenght=connection.getContentLength();
 				InputStream in = connection.getInputStream();
+				
 				OutputStream out = new FileOutputStream(fdst);
-			    byte[] buf = new byte[1024];
+			    byte[] buf = new byte[8192];
 			    int len;
+			    int downloaded=0;
 			    while ((len = in.read(buf)) > 0) {
 			        out.write(buf, 0, len);
+			        downloaded+=len;
+			        if (d!=null) d.doProgressUpdate(downloaded, filelenght);
 			    }
 			    in.close();
 			    out.close();
@@ -722,7 +754,7 @@ public class Library {
 	
 	//метод разархивирует все файлы, начинающиеся с fileToExtract, маленький недочет в том, что все файлы,
 	//начинающиеся с этого пути будут помещены в одну папку, меня это пока устраивает
-	public boolean unzipFile(String zipPath, String fileToExtract, String folderTo) {
+	public boolean unzipFile(String zipPath, String fileToExtract, String folderTo, DownloadInstallFileTask d) {
 		ZipFile z;
 		ZipEntry ze;
 		String absFolderTo;
@@ -750,8 +782,12 @@ public class Library {
 							InputStream in = z.getInputStream(ze);
 							byte[] buf = new byte[1024];
 						    int len;
+						    int filelenght=(int)ze.getSize();
+						    int unzipped=0;
 						    while ((len = in.read(buf)) > 0) {
 						        out.write(buf, 0, len);
+						        if (d!=null) 
+						        	d.doProgressUpdate(unzipped, filelenght);
 						    }
 						    in.close();
 						    out.close();

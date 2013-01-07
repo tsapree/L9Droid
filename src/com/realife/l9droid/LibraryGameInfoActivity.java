@@ -8,10 +8,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class LibraryGameInfoActivity extends Activity implements OnClickListener {
 	
@@ -36,32 +40,39 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	    
-	    lib = new Library();
-	    
+
 	    setContentView(R.layout.library_game_info);
 	    
 	    bInstall=(Button) findViewById(R.id.bInstall);
 	    bInstall.setOnClickListener(this);
 
 		game=getIntent().getStringExtra("selectedgame");
-		fillInfo();
-
-	    //int info[]={0,0,0,0};
-	    //lib.getGameInfo(game,info);
 	    
-	    gi=lib.getGameInfo(this,game);
+
 	    
 		tvGameName = (TextView)findViewById(R.id.tvGameName);
 		tvCategory = (TextView)findViewById(R.id.tvCategory);
 		tvAbout = (TextView)findViewById(R.id.tvAbout);
 		tvAuthors = (TextView)findViewById(R.id.tvAuthors);
 		
+
+	}
+	
+	protected void onResume() {
+    	super.onResume();
+    	
+	    lib = new Library();
+		fillInfo();
+		
+	    gi=lib.getGameInfo(this,game);
+	    
 	    tvCategory.setText(gi.getCategory().toUpperCase());
 		tvGameName.setText(gi.getTitle());
 		tvAbout.setText(gi.getAbout());
 		tvAuthors.setText(gi.getAuthors());
-	}
+    	
+    }
+	
 
 	public void onClick(View v) {
 		View p=(View)v.getParent();
