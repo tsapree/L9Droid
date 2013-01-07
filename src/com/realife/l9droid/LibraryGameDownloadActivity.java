@@ -30,6 +30,8 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	String game;
 	GameInfo gi;
 	
+	boolean cancelPressed=false;
+	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -52,6 +54,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	};
 	
 	void FillSourcesInfo() {
+		cancelPressed=false;
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llSources);
 		linLayout.removeAllViews();
 	    LayoutInflater ltInflater = getLayoutInflater();
@@ -62,6 +65,8 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			tvVersion.setText(gi.getPath(i)+" "+gi.getTags(i));
 			Button bDownload = (Button) item.findViewById(R.id.bDownload);
 			bDownload.setOnClickListener(this);
+			Button bCancel = (Button) item.findViewById(R.id.bCancel);
+			bCancel.setOnClickListener(this);
 			if (lib.checkPathInLibrary(gi.getId()+" "+gi.getTags(i))) {
 				bDownload.setText("Installed");
 				bDownload.setEnabled(false);
@@ -88,8 +93,13 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 				//Toast.makeText(this, "download pressed: "+gi.getPath(index), Toast.LENGTH_SHORT).show();
 				DownloadInstallFileTask mt = new DownloadInstallFileTask(p);
 			    mt.execute(gi.getPath(index),gi.getFiles(index), gi.getId()+" "+gi.getTags(index));
-
+			    
+			    break;
+			case R.id.bCancel:
+				cancelPressed=true;
+				break;
 			}
+			
 		};
 	};
 	
@@ -162,8 +172,9 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	      return null;
 	    }
 	    
-	    void doProgressUpdate(int current, int max) {
+	    boolean doProgressUpdate(int current, int max) {
 	    	publishProgress(current, max);
+	    	return cancelPressed;
 	    }
 
 	    @Override

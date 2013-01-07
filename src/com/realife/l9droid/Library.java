@@ -700,6 +700,9 @@ public class Library {
 	
 	public String downloadFileToCache(String src, DownloadInstallFileTask d) {
 		String dst=null;
+		File fdst=null;
+		File dir=null;
+		boolean cancelled=false;
 		
 		try {
 			String filename=getFileName(src);
@@ -710,8 +713,8 @@ public class Library {
 				File sdPath = android.os.Environment.getExternalStorageDirectory();
 				dst=sdPath.getAbsolutePath() + LIBDIR_SD + "_cache/" + folder + "/" + filename;
 				
-				File fdst=new File(dst);
-				File dir=fdst.getParentFile();
+				fdst=new File(dst);
+				dir=fdst.getParentFile();
 				if (!dir.isDirectory()) dir.mkdirs();
 				
 				if (fdst.exists()) return dst; //если уже файл скачан ранее, просто вернуть путь
@@ -725,10 +728,10 @@ public class Library {
 			    byte[] buf = new byte[8192];
 			    int len;
 			    int downloaded=0;
-			    while ((len = in.read(buf)) > 0) {
+			    while ((len = in.read(buf)) > 0 && !cancelled) {
 			        out.write(buf, 0, len);
 			        downloaded+=len;
-			        if (d!=null) d.doProgressUpdate(downloaded, filelenght);
+			        if (d!=null) cancelled=d.doProgressUpdate(downloaded, filelenght);
 			    }
 			    in.close();
 			    out.close();
@@ -738,12 +741,18 @@ public class Library {
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
+			dst=null;
+			//return null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
+			dst=null;
+			//return null;
 		}
+		if (cancelled || (dst==null)) { //если произошла отмена или ошибка
+			if ((fdst!=null) && (fdst.exists())) fdst.delete();
+			if ((dir!=null) && (dir.isDirectory())) dir.delete();
+		};
 		return dst;
 		
 	}
