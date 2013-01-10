@@ -13,7 +13,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -718,9 +720,21 @@ public class Library {
 				if (!dir.isDirectory()) dir.mkdirs();
 				
 				if (fdst.exists()) return dst; //если уже файл скачан ранее, просто вернуть путь
-				
+
 				URL url = new URL(src);
-				URLConnection connection = url.openConnection();
+				URLConnection connection;
+				
+				//TODO: методы получения адреса и порта прокси deprecated, поэтому
+				//      надо перевести на определение стандартным java-способом
+				//      либо вынести настройки прокси в настройки и не париться.
+				String proxyServer = android.net.Proxy.getDefaultHost();
+				int proxyPort = android.net.Proxy.getDefaultPort();
+				if (proxyServer!=null && proxyPort>0) {
+					Proxy proxy=new Proxy(java.net.Proxy.Type.HTTP,new InetSocketAddress(proxyServer,proxyPort));
+					connection = url.openConnection(proxy);
+				} else {
+					connection = url.openConnection();
+				};
 				int filelenght=connection.getContentLength();
 				InputStream in = connection.getInputStream();
 				
