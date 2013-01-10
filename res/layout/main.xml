@@ -30,15 +30,15 @@
 	    </ListView>
 
 		<EditText
-	        android:id="@+id/etCmd"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentBottom="true"
-	        android:layout_alignParentLeft="true"
-	        android:layout_toLeftOf="@+id/bCmd"
-	        android:ems="10"
-	        android:imeOptions="normal"
-	        android:inputType="textNoSuggestions" >
+		    android:id="@+id/etCmd"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentBottom="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_toLeftOf="@+id/bCmd"
+		    android:ems="10"
+		    android:imeOptions="normal|flagNoExtractUi"
+		    android:inputType="textNoSuggestions" >
 	
 	        <requestFocus />
 	    </EditText>
