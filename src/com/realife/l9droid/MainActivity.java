@@ -8,8 +8,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -29,7 +31,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener,
+public class MainActivity extends Activity implements OnClickListener, TextWatcher,
 		OnEditorActionListener,
 
 		OnMenuItemClickListener,
@@ -76,6 +78,7 @@ public class MainActivity extends Activity implements OnClickListener,
         
         etCmd = (EditText) findViewById(R.id.etCmd);
         etCmd.setHint("Enter your command");
+        etCmd.addTextChangedListener(this);
 
         etCmd.setOnEditorActionListener(this);
         
@@ -286,7 +289,11 @@ public class MainActivity extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.bCmd: // кнопка ввода команды
-			postCommand();
+			if (etCmd.length()>0) {
+				postCommand();
+			} else {
+				toggleCommandsHistory();
+			}
 			break;
 		case R.id.imageView1:
 			if (mt!=null && mt.l9!=null) 
@@ -389,6 +396,55 @@ public class MainActivity extends Activity implements OnClickListener,
 		etCmd.setText(cmd);
 		postCommand();
 	}
+
+	@Override
+	public void afterTextChanged(Editable arg0) {
+		bCmdSetText();
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	void toggleCommandsHistory() {
+		if (lvHistory.getVisibility()==View.VISIBLE) {
+			lvHistory.setVisibility(View.GONE);
+			bCmdSetText();
+		} else {
+			lvHistory.setVisibility(View.VISIBLE);
+			bCmdSetText();
+		};
+	};
+	
+	void bCmdSetText() {
+		bCmdSetText(null);
+	};
+		
+	void bCmdSetText(String txt) {
+		String label=null;
+		if ((etCmd==null) || (lvHistory==null)) return;
+		
+		if (txt==null) {
+			label=(String)(bCmd.getTag());
+		} else {
+			label=txt;
+			bCmd.setTag(txt);
+		};
+		if (etCmd.getText().length()>0) bCmd.setText(label);
+		else {
+			if (lvHistory.getVisibility()==View.VISIBLE) bCmd.setText("H>");
+			else bCmd.setText("<H");
+		};
+	};
 
 }
 

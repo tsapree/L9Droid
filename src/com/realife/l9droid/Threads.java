@@ -81,7 +81,8 @@ public class Threads {
 		    	switch (msg.what) {
 		    	case MACT_L9WORKING:
 		    		menuHashEnabled=false;
-		    		activity.bCmd.setText("...");
+		    		//activity.bCmd.setText("...");
+		    		activity.bCmdSetText("...");
 		    		activity.bCmd.setEnabled(false);
 		    		break;
 		    	case MACT_L9WAITFORCOMMAND:
@@ -89,7 +90,8 @@ public class Threads {
 		    		activity.etCmd.setFocusable(true);
 		    		activity.etCmd.requestFocus();
 		    		menuHashEnabled=true;
-		    		activity.bCmd.setText("Do");
+		    		//activity.bCmd.setText("Do");
+		    		activity.bCmdSetText("Do");
 		    		activity.bCmd.setEnabled(true);
 		    		activity.bSpace.setVisibility(View.INVISIBLE);
 		    		activity.bEnter.setVisibility(View.INVISIBLE);
@@ -107,7 +109,8 @@ public class Threads {
 		    		keyPressed=0;
 		    		break;	
 		    	case MACT_L9WAITBEFORESCRIPT:
-		    		activity.bCmd.setText("<!>");
+		    		//activity.bCmd.setText("<!>");
+		    		activity.bCmdSetText("<!>");
 		    		activity.bCmd.setEnabled(false);
 		    		break;
 	    		case MACT_PRINTCHAR:
