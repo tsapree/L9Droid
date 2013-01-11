@@ -165,6 +165,8 @@ public class Threads {
 		destroy(false);
 
 		l9=new L9implement(lib,h,this);
+		if (gamepath==null) return;
+		
         lib.setPath(gamepath);
         String picturefilename=l9.findPictureFile(gamepath);
         if (l9.LoadGame(gamepath, picturefilename)!=true) {

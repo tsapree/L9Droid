@@ -79,27 +79,26 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         etCmd = (EditText) findViewById(R.id.etCmd);
         etCmd.setHint("Enter your command");
         etCmd.addTextChangedListener(this);
-
         etCmd.setOnEditorActionListener(this);
-        
         etCmd.setText("");
         
-        // находим список
         lvMain = (ListView) findViewById(R.id.lvLog);
         lvMain.setDividerHeight(0);
         
         lvHistory = (ListView) findViewById(R.id.lvHistory);
-        lvHistory.setVisibility(ListView.VISIBLE);
+        //lvHistory.setVisibility(ListView.VISIBLE);
                  
         command=null;
+        
+        SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+        setVisibilityCommandsHistory(sPref.getBoolean("showhistory", false)) ;
         
         mt = (Threads) getLastNonConfigurationInstance();
 	    if (mt == null) {
 	    	mt=new Threads();
 	    	mt.link(this);
 	        mt.create();
-	        SharedPreferences sPref=getPreferences(MODE_PRIVATE);
-	        String lastGame = sPref.getString("lastgame", "Worm In Paradise/Speccy/worm.sna");
+	        String lastGame = sPref.getString("lastgame", null);
 	        mt.startGame(lastGame,true);
 	        if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
 	        else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
@@ -112,7 +111,6 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
         lvHistory.setOnItemClickListener(this);
         lvHistory.setOnItemLongClickListener(this);
-        
 
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
     }
@@ -152,8 +150,6 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     	//etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
     	etCmd.setTextSize(fontSize);
     	
-    	//etLogScroll.fullScroll(ScrollView.FOCUS_DOWN);
-    	
     	mt.activityPaused=false;
     	super.onResume();
     }
@@ -166,15 +162,19 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     protected void onDestroy() {
 		super.onDestroy();
 		mt.activityPaused=true;
+
+		SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+		Editor ed = sPref.edit();
+		ed.putBoolean("showhistory", getVisibilityCommandsHistory());
+		
 		//Log.d("l9droid", "need to stop application");
 		if (killThreadsOnDestroyActivity && mt.l9!=null) {
-			SharedPreferences sPref=getPreferences(MODE_PRIVATE);
-			Editor ed = sPref.edit();
 			ed.putString("lastgame", mt.l9.LastGame);
-			ed.commit();
 			mt.destroy(true);
 		}
-        //mt=null;
+		
+		ed.commit();
+
     }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -208,12 +208,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         mi.setIntent(new Intent(this, AboutActivity.class));
     	mi = menu.add(0, 1, 2, "Library Files");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(0, 10, 3, "Show history");
+    	mi = menu.add(0, 10, 3, "Commands History");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(0, 11, 4, "Hide history");
-    	mi.setOnMenuItemClickListener(this);
-    	
-
     	
         return super.onCreateOptionsMenu(menu);
     }
@@ -248,10 +244,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 			postHashCommand("#play");
 			break;
 		case 10:
-			lvHistory.setVisibility(View.VISIBLE);
-			break;
-		case 11:
-			lvHistory.setVisibility(View.GONE);
+			toggleCommandsHistory();
 			break;
 		};
 
@@ -279,9 +272,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 				break;
 			}
 			// если вернулось не ОК
-		} else {
-			Toast.makeText(this, "Wrong result", Toast.LENGTH_SHORT).show();
-		}
+		};
 	}
     
     // some text
@@ -397,32 +388,37 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		postCommand();
 	}
 
-	@Override
 	public void afterTextChanged(Editable arg0) {
 		bCmdSetText();
 	}
 
-	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count,
 			int after) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	void toggleCommandsHistory() {
-		if (lvHistory.getVisibility()==View.VISIBLE) {
-			lvHistory.setVisibility(View.GONE);
-			bCmdSetText();
-		} else {
+		setVisibilityCommandsHistory(!getVisibilityCommandsHistory());
+	};
+	
+	void setVisibilityCommandsHistory(boolean show) {
+		if (show) {
 			lvHistory.setVisibility(View.VISIBLE);
 			bCmdSetText();
+		} else {
+			lvHistory.setVisibility(View.GONE);
+			bCmdSetText();
 		};
+	}
+	
+	boolean getVisibilityCommandsHistory() {
+		return lvHistory.getVisibility()==View.VISIBLE;
 	};
 	
 	void bCmdSetText() {
@@ -441,8 +437,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		};
 		if (etCmd.getText().length()>0) bCmd.setText(label);
 		else {
-			if (lvHistory.getVisibility()==View.VISIBLE) bCmd.setText("H>");
-			else bCmd.setText("<H");
+			if (lvHistory.getVisibility()==View.VISIBLE) bCmd.setText(">");
+			else bCmd.setText("<");
 		};
 	};
 

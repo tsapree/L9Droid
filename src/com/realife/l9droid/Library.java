@@ -42,9 +42,8 @@ import com.realife.l9droid.LibraryGameDownloadActivity.DownloadInstallFileTask;
 
 public class Library {
 
-	final String LIBDIR_SD = "/L9Droid/";
-	final String DIR_SD = "Worm In Paradise/Speccy";
-	final String FILE_SD="worm.sna";
+	final String LIBDIR_SD = "L9Droid";
+	final String FILE_NOMEDIA=".nomedia";
 	
 	Handler h;
 	String GameFullPathName;
@@ -57,6 +56,10 @@ public class Library {
 	};
 	
 	String tags[][]={
+			{"V1","A-Code V1"},
+			{"V2","A-Code V2"},
+			{"V3","A-Code V3"},
+			{"V4","A-Code V4"},
 			{"Amiga","Amiga"},
 			{"Atari","Atari?"},
 			{"BBC","BBC"},
@@ -74,23 +77,18 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD+DIR_SD);
+			sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD);
 			if (!sdPath.isDirectory()) {
 				Toast.makeText(act, "Creating library", Toast.LENGTH_LONG).show();
-				//
 				sdPath.mkdirs();
-				File sdFile = new File(sdPath, FILE_SD);
-			    try {
-			    	
-			        byte buff[]=new byte[49179];	        
-					InputStream is=act.getResources().openRawResource(R.raw.wormv3);
-					is.read(buff);            
+				File sdFile = new File(sdPath, FILE_NOMEDIA);
+			    try {	        
 			    	OutputStream out = new FileOutputStream(sdFile);
-	                out.write(buff, 0, buff.length);
+	                out.write(' ');
 	                out.close();
 			    } catch (IOException e) {
 			      e.printStackTrace();
-			      return false; //ошибка - заканчиваю с подготовкой библиотеки?
+			      return false;
 			    }
 			};
 			requestPaths();
@@ -103,7 +101,7 @@ public class Library {
 		int paths_num=0;
 		String[] temppaths=new String[300];
 		File sdPath = android.os.Environment.getExternalStorageDirectory();
-		sdPath = new File(sdPath.getAbsolutePath() + LIBDIR_SD);
+		sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/");
 		File[] pathdirs=sdPath.listFiles();
 		if (pathdirs!=null) {
 			for (int i=0; i<pathdirs.length; i++) {
@@ -157,8 +155,6 @@ public class Library {
 		byte buff[]=null;
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			//File sdPath = android.os.Environment.getExternalStorageDirectory();
-			//File sdFile = new File(sdPath.getAbsolutePath() + LIBDIR_SD + path);
 			File sdFile = new File(absolutePath);
 		    try {
 		    	int size=(int)sdFile.length();
@@ -364,7 +360,7 @@ public class Library {
 			File newFolder;
 			int index=0;
 			do {
-				newFolder = new File(sdPath.getAbsolutePath() + LIBDIR_SD+folderName);
+				newFolder = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/"+folderName);
 				//TODO: сделать изменение папки, если она уже существует
 				index++;
 			} while (newFolder.exists());
@@ -683,7 +679,7 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			dst=sdPath.getAbsolutePath() + LIBDIR_SD + "_cache/" + folder + "/" + filename;
+			dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/_cache/" + folder + "/" + filename;
 			File fdst=new File(dst);
 			if (fdst.exists()) return dst; //если уже файл скачан ранее, вернуть путь
 		};
@@ -694,7 +690,7 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			File path=new File(sdPath.getAbsolutePath() + LIBDIR_SD + folderTo);
+			File path=new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
 			if (path.isDirectory()) return true;
 		};
 		return false;
@@ -713,7 +709,7 @@ public class Library {
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 				File sdPath = android.os.Environment.getExternalStorageDirectory();
-				dst=sdPath.getAbsolutePath() + LIBDIR_SD + "_cache/" + folder + "/" + filename;
+				dst=sdPath.getAbsolutePath() + "/" + LIBDIR_SD + "/_cache/" + folder + "/" + filename;
 				
 				fdst=new File(dst);
 				dir=fdst.getParentFile();
@@ -787,7 +783,7 @@ public class Library {
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 				File sdPath = android.os.Environment.getExternalStorageDirectory();
-				absFolderTo=unifyFolder(sdPath.getAbsolutePath() + LIBDIR_SD + folderTo);
+				absFolderTo=unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
 				z=new ZipFile(zipPath);
 				File path=new File(absFolderTo);
 				if (!path.isDirectory()) path.mkdirs();
