@@ -61,6 +61,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	boolean killThreadsOnDestroyActivity=true;
 	
 	int prevAppHeight = 0;
+	int prevAppWidth = 0;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,17 +119,19 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
 	    
 	    //when keyboard is showing (changes app view to small size), scroll down log
-	    final View activityRootView = findViewById(R.id.activityRoot);
-	    activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-	        @Override
+	    lvMain.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 	        public void onGlobalLayout() {
-	        	int appHeight = activityRootView.getHeight();
-	        	if (prevAppHeight > appHeight) {
+	        	int appHeight = lvMain.getHeight();
+	        	int appWidth = lvMain.getWidth();
+	        	if ((prevAppHeight > appHeight) || (prevAppWidth > appWidth)) {
 		            lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+		            lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
 	        	};
 	        	prevAppHeight = appHeight;
+	        	prevAppWidth = appWidth;
 	         }
 	    });
+	    
     }
     
     public Object onRetainNonConfigurationInstance() {
