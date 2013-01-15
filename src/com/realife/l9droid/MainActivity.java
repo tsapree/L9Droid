@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -58,6 +59,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	static Threads mt;
     
 	boolean killThreadsOnDestroyActivity=true;
+	
+	int prevAppHeight = 0;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +116,19 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         lvHistory.setOnItemLongClickListener(this);
 
 	    ivScreen.setScaleType(ScaleType.FIT_XY);
+	    
+	    //when keyboard is showing (changes app view to small size), scroll down log
+	    final View activityRootView = findViewById(R.id.activityRoot);
+	    activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+	        @Override
+	        public void onGlobalLayout() {
+	        	int appHeight = activityRootView.getHeight();
+	        	if (prevAppHeight > appHeight) {
+		            lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+	        	};
+	        	prevAppHeight = appHeight;
+	         }
+	    });
     }
     
     public Object onRetainNonConfigurationInstance() {
