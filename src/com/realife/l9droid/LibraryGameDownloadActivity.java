@@ -1,7 +1,5 @@
 package com.realife.l9droid;
 
-import java.util.concurrent.TimeUnit;
-
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class LibraryGameDownloadActivity extends Activity implements OnClickListener {
 
@@ -24,6 +21,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	
 	TextView tvGameName;
 	TextView tvCategory;
+	TextView tvNoSources;
 	
 	Library lib;
 	
@@ -42,12 +40,9 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    game=getIntent().getStringExtra("selectedgame");
 	    gi=lib.getGameInfo(this,game);
 	    tvGameName = (TextView)findViewById(R.id.tvGameName);
-		tvCategory = (TextView)findViewById(R.id.tvCategory);
-		tvCategory.setText(gi.getCategory().toUpperCase());
-		tvGameName.setText(gi.getTitle());
-	    
-	    //Button bInstallDownload = (Button) findViewById(R.id.bInstallDownload);
-	    //bInstallDownload.setOnClickListener(this);
+		tvNoSources = (TextView)findViewById(R.id.tvNoSources);
+		
+		tvGameName.setText(gi.getTitle().toUpperCase());
 		
 		FillSourcesInfo();
 	    
@@ -58,6 +53,9 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llSources);
 		linLayout.removeAllViews();
 	    LayoutInflater ltInflater = getLayoutInflater();
+	    if (gi.getNumberOfPaths()>0) tvNoSources.setVisibility(View.GONE);
+	    else tvNoSources.setVisibility(View.VISIBLE);
+	    
 	    for (int i=0;i<gi.getNumberOfPaths();i++) {
 			View item = ltInflater.inflate(R.layout.library_game_download_item, linLayout, false);
 			TextView tvVersion = (TextView) item.findViewById(R.id.tvLink);
