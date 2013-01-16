@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
@@ -61,7 +62,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	boolean killThreadsOnDestroyActivity=true;
 	
 	int prevAppHeight = 0;
-	int prevAppWidth = 0;
+	int prevLogHeight = 0;
+	int prevLogWidth = 0;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,20 +117,20 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
         lvHistory.setOnItemClickListener(this);
         lvHistory.setOnItemLongClickListener(this);
-
-	    ivScreen.setScaleType(ScaleType.FIT_XY);
+        
+	    //ivScreen.setScaleType(ScaleType.FIT_XY);
 	    
 	    //when keyboard is showing (changes app view to small size), scroll down log
 	    lvMain.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 	        public void onGlobalLayout() {
-	        	int appHeight = lvMain.getHeight();
-	        	int appWidth = lvMain.getWidth();
-	        	if ((prevAppHeight > appHeight) || (prevAppWidth > appWidth)) {
+	        	int logHeight = lvMain.getHeight();
+	        	int logWidth = lvMain.getWidth();
+	        	if ((prevLogHeight > logHeight) || (prevLogWidth > logWidth)) {
 		            lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 		            lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
 	        	};
-	        	prevAppHeight = appHeight;
-	        	prevAppWidth = appWidth;
+	        	prevLogHeight = logHeight;
+	        	prevLogWidth = logWidth;
 	         }
 	    });
 	    
