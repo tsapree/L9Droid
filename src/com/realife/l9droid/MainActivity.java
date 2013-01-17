@@ -225,8 +225,6 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         mi.setIntent(new Intent(this, PrefActivity.class));
     	mi = menu.add(1, 8, 0,"Play Script");
     	mi.setOnMenuItemClickListener(this);
-        mi = menu.add(0, 3, 1, "About");
-        mi.setIntent(new Intent(this, AboutActivity.class));
     	mi = menu.add(0, 1, 2, "Library Files");
     	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, 10, 3, "Commands History");

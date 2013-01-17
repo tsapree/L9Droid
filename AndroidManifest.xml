@@ -25,7 +25,6 @@
         </activity>
         <activity android:name="PrefActivity"></activity>
         <activity android:name="LibraryActivity"></activity>
-        <activity android:name="AboutActivity" android:theme="@android:style/Theme.Dialog"></activity>
         <activity android:name="ImportActivity"></activity>
         <activity android:name="ImportSelectFolderName"></activity>
         <activity android:name="LibraryGamesActivity"></activity>
