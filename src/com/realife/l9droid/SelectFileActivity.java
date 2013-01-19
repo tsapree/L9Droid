@@ -36,7 +36,6 @@ public class SelectFileActivity extends Activity implements OnItemClickListener{
 
 	}
 
-	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 		String p=(String)(data.get(position).get(Library.ATTR_PATH));
 		Intent intent = new Intent();
