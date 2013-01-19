@@ -132,10 +132,12 @@ public class Threads {
 		    		menuPicturesEnabled=false;
 	    			bm=null;
 	    			activity.ivScreen.setImageBitmap(bm);
+	    			activity.ivScreen.setVisibility(View.GONE);
 	    			break;
 	    		case MACT_GFXON:
 	    			menuPicturesEnabled=true;
 	    			activity.ivScreen.setImageBitmap(bm);
+	    			activity.ivScreen.setVisibility(View.VISIBLE);
 	    			break;
 	    		case MACT_GFXUPDATE:
 	    			

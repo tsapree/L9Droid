@@ -26,10 +26,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
@@ -39,11 +37,23 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		OnMenuItemClickListener,
 		OnItemClickListener,
 		OnItemLongClickListener {
+
+    final private int MENU_ITEM_LIBRARY_FILES = 1;
+    final private int MENU_ITEM_SETTINGS = 2;
+    final private int MENU_ITEM_SAVE_STATE = 4;
+    final private int MENU_ITEM_RESTORE_STATE = 5;
+    final private int MENU_ITEM_PICTURES = 6;
+    final private int MENU_ITEM_WORDS = 7;
+    final private int MENU_ITEM_PLAY_SCRIPT = 8;
+    final private int MENU_ITEM_LIBRARY = 9;
+    final private int MENU_ITEM_HISTORY = 10;
 	
 	SharedPreferences sp;
 	Typeface tf;
 	Typeface tfDefault=null;
 	float fontSizeDefault=0;
+	
+	View activityRootView;
 	
 	Button bCmd;
 	EditText etCmd;
@@ -54,6 +64,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	ListView lvHistory;
    
 	ImageView ivScreen;
+	int MaxPictureHeightInPercent = 30; 
     
 	String command;
     
@@ -62,6 +73,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	boolean killThreadsOnDestroyActivity=true;
 	
 	int prevAppHeight = 0;
+	int prevAppWidth = 0;
 	int prevLogHeight = 0;
 	int prevLogWidth = 0;
     
@@ -71,7 +83,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         setContentView(R.layout.main);
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         
-        ivScreen=(ImageView) findViewById(R.id.imageView1);
+        ivScreen=(ImageView) findViewById(R.id.ivPicture);
         ivScreen.setOnClickListener(this);
                        
         bCmd = (Button) findViewById(R.id.bCmd);
@@ -118,23 +130,32 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         lvHistory.setOnItemClickListener(this);
         lvHistory.setOnItemLongClickListener(this);
         
-	    //ivScreen.setScaleType(ScaleType.FIT_XY);
-	    
-	    //when keyboard is showing (changes app view to small size), scroll down log
-	    lvMain.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-	        public void onGlobalLayout() {
-	        	int logHeight = lvMain.getHeight();
-	        	int logWidth = lvMain.getWidth();
-	        	if ((prevLogHeight > logHeight) || (prevLogWidth > logWidth)) {
-		            lvMain.setSelection(lvMain.getAdapter().getCount()-1);
-		            lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
-	        	};
-	        	prevLogHeight = logHeight;
-	        	prevLogWidth = logWidth;
-	         }
-	    });
+        activityRootView = findViewById(R.id.rlMain);
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+            	int viewHeight = activityRootView.getHeight();
+            	int viewWidth = activityRootView.getWidth();
+            	if (((viewHeight!=prevAppHeight) || (viewWidth != prevAppWidth) ) && ivScreen!=null) {
+                	prevAppHeight = viewHeight;
+                	prevAppWidth = viewWidth;
+                	updatePictureSize();
+            	};
+            	
+             }});
 	    
     }
+    
+    public void updatePictureSize() {
+    	if (mt.bm!=null) {
+    		int bmWidth=mt.bm.getWidth();
+    		int bmHeight=mt.bm.getHeight();
+    		int maxHeight = bmHeight * activityRootView.getWidth() / bmWidth ;
+    		int h = activityRootView.getHeight() * MaxPictureHeightInPercent / 100;
+    		if (h>maxHeight) h=maxHeight;
+    		ivScreen.getLayoutParams().height=h;
+    		ivScreen.requestLayout();
+    	};
+    };
     
     public Object onRetainNonConfigurationInstance() {
     	killThreadsOnDestroyActivity=false;
@@ -200,8 +221,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.setGroupVisible(1, mt.menuHashEnabled);
-        menu.setGroupVisible(2, mt.menuHashEnabled && mt.gfx_ready && (!mt.menuPicturesEnabled));
-        menu.setGroupVisible(3, mt.menuHashEnabled && mt.gfx_ready &&  mt.menuPicturesEnabled);
+        menu.setGroupVisible(2, mt.menuHashEnabled && Threads.gfx_ready && (!mt.menuPicturesEnabled));
+        menu.setGroupVisible(3, mt.menuHashEnabled && Threads.gfx_ready &&  mt.menuPicturesEnabled);
         
         return super.onPrepareOptionsMenu(menu);
     }
@@ -211,23 +232,23 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         //getMenuInflater().inflate(R.menu.main, menu);
         //return true;
     	MenuItem mi;
-    	mi = menu.add(0, 9,0,"Library");
+    	mi = menu.add(0, MENU_ITEM_LIBRARY,0,"Library");
     	mi.setOnMenuItemClickListener(this);
-        mi = menu.add(1, 4, 0,"Save State");
+        mi = menu.add(1, MENU_ITEM_SAVE_STATE, 0,"Save State");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(1, 5, 0,"Restore State");
+    	mi = menu.add(1, MENU_ITEM_RESTORE_STATE, 0,"Restore State");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(2, 6, 0,"Pictures");
+    	mi = menu.add(2, MENU_ITEM_PICTURES, 0,"Pictures");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(3, 7, 0,"Words");
+    	mi = menu.add(3, MENU_ITEM_WORDS, 0,"Words");
     	mi.setOnMenuItemClickListener(this);
-        mi = menu.add(0, 2, 0, "Settings");
+        mi = menu.add(0, MENU_ITEM_SETTINGS, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
-    	mi = menu.add(1, 8, 0,"Play Script");
+    	mi = menu.add(1, MENU_ITEM_PLAY_SCRIPT, 0,"Play Script");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(0, 1, 2, "Library Files");
+    	mi = menu.add(0, MENU_ITEM_LIBRARY_FILES, 2, "Library Files");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(0, 10, 3, "Commands History");
+    	mi = menu.add(0, MENU_ITEM_HISTORY, 3, "Commands History");
     	mi.setOnMenuItemClickListener(this);
     	
         return super.onCreateOptionsMenu(menu);
@@ -237,32 +258,32 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	public boolean onMenuItemClick(MenuItem arg0) {
 		Intent intent;
 		switch (arg0.getItemId()) {
-		case 1: //library TODO: переделать в id, возможно перенести меню в ресурсы
+		case MENU_ITEM_LIBRARY_FILES: 
 			intent=new Intent(this, LibraryActivity.class);
 			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
 	        //mi.setIntent(intent);
 			break;
-		case 9: //library TODO: переделать в id, возможно перенести меню в ресурсы
+		case MENU_ITEM_LIBRARY: 
 			intent=new Intent(this, LibraryGamesActivity.class);
 			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
 	        //mi.setIntent(intent);
 			break;
-		case 4:
+		case MENU_ITEM_SAVE_STATE:
 			postHashCommand("#save");
 			break;
-		case 5:
+		case MENU_ITEM_RESTORE_STATE:
 			postHashCommand("#restore");
 			break;
-		case 6:
+		case MENU_ITEM_PICTURES:
 			postHashCommand("pictures");
 			break;
-		case 7:
+		case MENU_ITEM_WORDS:
 			postHashCommand("words");
 			break;
-		case 8:
+		case MENU_ITEM_PLAY_SCRIPT:
 			postHashCommand("#play");
 			break;
-		case 10:
+		case MENU_ITEM_HISTORY:
 			toggleCommandsHistory();
 			break;
 		};
@@ -305,7 +326,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 				toggleCommandsHistory();
 			}
 			break;
-		case R.id.imageView1:
+		case R.id.ivPicture:
 			if (mt!=null && mt.l9!=null) 
 				mt.l9.waitPictureToDraw(); 
 			break;
@@ -388,8 +409,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	}
 	
 	void postCommand() {
-		//TODO: как вариант - глотать команды, добавляя в command - но только в 3и4 версиях
-		if (etCmd.length()>0 && mt.l9.L9State==mt.l9.L9StateWaitForCommand) {
+		if (etCmd.length()>0 && mt.l9.L9State==L9.L9StateWaitForCommand) {
 			outUserInputToLog(etCmd.getText().toString());
     
 			mt.history.add(etCmd.getText().toString());
@@ -413,13 +433,12 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 
 	public void beforeTextChanged(CharSequence s, int start, int count,
 			int after) {
-		// TODO Auto-generated method stub
+		//Auto-generated method stub
 		
 	}
 
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		// TODO Auto-generated method stub
-		
+		//Auto-generated method stub
 	}
 	
 	void toggleCommandsHistory() {

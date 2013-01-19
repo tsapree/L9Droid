@@ -492,12 +492,12 @@ public class L9implement extends L9 {
 		name=lib.changeFileExtension(path, "log");
 		lib.SaveLogFromSpannableArrayAdapter(name, th.lvAdapter);
 		
+		name=lib.changeFileExtension(path, "png");
 		if (PicMode!=0) {
 			waitPictureToDraw();
-			name=lib.changeFileExtension(path, "png");
 			if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
 			else lib.deleteFile(name);
-		};
+		} else lib.deleteFile(name);
 	}
 
 	void load_piclog(String path, History h) {
