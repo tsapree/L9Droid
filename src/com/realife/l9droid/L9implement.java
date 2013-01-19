@@ -80,6 +80,8 @@ public class L9implement extends L9 {
 	int L9_FillColour1;
 	int L9_FillColour2;
 	
+	String save_prefix="game";
+	
 	L9implement( Library l, Handler h, Threads t) {
 		lib=l;
 		gamedata=null;
@@ -134,8 +136,10 @@ public class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		String path="Saves/1.sav";
+		String path="Saves/"+save_prefix+".sav";
+
 		path=lib.getAbsolutePath(path);
+		path=lib.unifyFile(path);
 		save_piclog(path);
 		return lib.fileSaveFromArray(path,buff);
 	};
@@ -173,7 +177,7 @@ public class L9implement extends L9 {
 		PicHeight=ph[0];
 		if (PicWidth<=0 || PicHeight<=0 || mode==0) return;
 		L9UpdateGfxSize();
-		MainActivity.mt.gfx_ready=true;
+		Threads.gfx_ready=true;
 	};
 	
 	void L9UpdateGfxSize() {
@@ -188,11 +192,8 @@ public class L9implement extends L9 {
 	
 	void os_cleargraphics() {
 		if (PicMode==0 || PicMode==2 || PicBuff==null /*|| iApV->iPicturesEnabled==EFalse*/) return;
-		//memclr(PicBuff,PicHeight*PicWidth);
 		L9_FillCount=0; //отменить закраску, если она выполнялась.
 		for (int i=0;i<PicHeight*PicWidth;i++) PicBuff[i]=0;
-		//TODO:iApV->DrawDeferred();
-		
 	};
 	
 	void os_show_bitmap(int pic, int x, int y) {
@@ -219,7 +220,7 @@ public class L9implement extends L9 {
 				for (int i=0; i<max_x; i++)
 					PicBuff[j*PicWidth+i]=(byte)(l9bitmap.l9picture.bitmap[j*l9bitmap.l9picture.width+i]&0x1f);
 			flgNeedToRepaint=true;
-			MainActivity.mt.gfx_ready=true;
+			Threads.gfx_ready=true;
 		};
 	};
 
@@ -452,7 +453,6 @@ public class L9implement extends L9 {
 			}
 			mHandler.sendEmptyMessage(Threads.MACT_L9WORKING);
 		};
-		//os_printchar('\r');
 		return key;
 	};
 	
@@ -518,7 +518,7 @@ public class L9implement extends L9 {
 
 	void waitPictureToDraw() {
 		if (PicMode==1) {
-			while (th.gfx_ready && !picDrawed) {
+			while (Threads.gfx_ready && !picDrawed) {
 				fastShowPic=true;
 				try {
 					TimeUnit.MILLISECONDS.sleep(100);

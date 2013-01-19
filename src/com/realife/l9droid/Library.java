@@ -671,6 +671,33 @@ public class Library {
 		return uF;
 	};
 	
+	String unifyFile(String file) {
+		String uF;
+		int i=0;
+		File f;
+		
+		String filename;
+		String ext;
+		int filenameAt = file.lastIndexOf('/');
+		if (filenameAt<0) filenameAt=0;
+		int extAt = file.lastIndexOf('.');
+		if (extAt<filenameAt) {
+			filename=file;
+			ext="";
+		} else {
+			filename=file.substring(0, extAt);
+			ext=file.substring(extAt);
+		};
+		if (extAt==filenameAt) i++;
+
+		do {
+			uF=(i==0)?file:String.format("%s%d%s", filename, i, ext);
+			i++;
+			f = new File(uF);
+		} while (f.isFile());
+		return uF;
+	};
+	
 	public String checkFileInCache(String src) {
 		String dst=null;
 		String filename=getFileName(src);
