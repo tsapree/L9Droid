@@ -187,9 +187,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     		tf=tfDefault;
     		fontSize=fontSizeDefault;
     	};
-    	//etLog.setTypeface(tf);
     	etCmd.setTypeface(tf);
-    	//etLog.setTextSize(fontSize); //TODO: как вернуть настройки шрифта к системным?
     	etCmd.setTextSize(fontSize);
     	
     	mt.activityPaused=false;
@@ -229,8 +227,6 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     
     //@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.main, menu);
-        //return true;
     	MenuItem mi;
     	mi = menu.add(0, MENU_ITEM_LIBRARY,0,"Library");
     	mi.setOnMenuItemClickListener(this);
