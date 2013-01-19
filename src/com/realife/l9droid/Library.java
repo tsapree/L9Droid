@@ -52,6 +52,7 @@ public class Library {
 	public static final String ATTR_NAME = "name";
 	public static final String ATTR_DATE = "date";
 	public static final String ATTR_PATH = "path";
+	public static final String ATTR_TYPE = "type";
 	public static final String ATTR_IMAGE = "image";
 	public static final String ATTR_MODIFIED = "modified";
 	
@@ -887,20 +888,22 @@ public class Library {
 			if (sdpath.isDirectory()) {
 				File[] f = sdpath.listFiles(new SavedGamesFilter());
 				for (int i=0; i<f.length;i++) {
-					m = new HashMap<String, Object>();
-					Long modified = Long.valueOf(f[i].lastModified());
-					m.put(ATTR_MODIFIED, modified);
-					t.set(modified);
-					  
-					m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
-					m.put(ATTR_NAME, f[i].getName());
-					m.put(ATTR_PATH, f[i].getAbsolutePath());
-					m.put(ATTR_IMAGE, null);
-					
-					//sort
-					int x=0;
-					while (x<data.size() && ((Long)(data.get(x).get(ATTR_MODIFIED))>modified)) x++;
-					data.add(x,m);
+					if (f[i].isFile()) {
+						m = new HashMap<String, Object>();
+						Long modified = Long.valueOf(f[i].lastModified());
+						m.put(ATTR_MODIFIED, modified);
+						t.set(modified);
+						  
+						m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
+						m.put(ATTR_NAME, f[i].getName());
+						m.put(ATTR_PATH, f[i].getAbsolutePath());
+						m.put(ATTR_IMAGE, null);
+						
+						//sort
+						int x=0;
+						while (x<data.size() && ((Long)(data.get(x).get(ATTR_MODIFIED))>modified)) x++;
+						data.add(x,m);
+					};
 	    
 				};
 			};
@@ -908,13 +911,52 @@ public class Library {
 		
         return data;
 	}
-	
-    @SuppressLint("DefaultLocale")
+
 	class SavedGamesFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
         	return (name.toLowerCase().endsWith(".sav"));
         }
     }
 	
+	//получить информацию о каталоге для activity select file
+	ArrayList<Map<String, Object>> getFilesInFolder(String path) {
+
+		ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        Map<String, Object> m;
+
+		Time t=new Time();
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdpath=new File(path);
+			if (sdpath.isDirectory()) {
+				File[] f = sdpath.listFiles();
+				for (int i=0; i<f.length;i++) {
+					if (!f[i].isHidden()) {
+						m = new HashMap<String, Object>();
+						Long modified = Long.valueOf(f[i].lastModified());
+						m.put(ATTR_MODIFIED, modified);
+						t.set(modified);
+						  
+						m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
+						m.put(ATTR_NAME, f[i].getName());
+						m.put(ATTR_PATH, f[i].getAbsolutePath());
+
+						int type=f[i].isFile()?2:1;
+						m.put(ATTR_TYPE, type);
+						if (type==1) m.put(ATTR_IMAGE, null);
+						else m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+						
+						//sort
+						int x=0;
+						while (x<data.size() && ((Long)(data.get(x).get(ATTR_MODIFIED))>modified)) x++;
+						data.add(x,m);
+					};
+	    
+				};
+			};
+		};
+		
+        return data;
+	}
 	
 }

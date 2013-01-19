@@ -17,14 +17,23 @@ public class LibraryGameInstallActivity extends Activity implements OnClickListe
 	    
 	    Button bInstallDownload = (Button) findViewById(R.id.bInstallDownload);
 	    bInstallDownload.setOnClickListener(this);
+	    Button bInstallImport = (Button) findViewById(R.id.bInstallImport);
+	    bInstallImport.setOnClickListener(this);
 	    
 	};
 	
 	public void onClick(View v) {
+		Intent intent;
 		switch (v.getId()) {
-		case R.id.bInstallDownload: // кнопка ввода команды
-			Intent intent=new Intent(this, LibraryGameDownloadActivity.class);
+		case R.id.bInstallDownload:
+			intent=new Intent(this, LibraryGameDownloadActivity.class);
 			intent.putExtra("selectedgame", getIntent().getStringExtra("selectedgame"));			
+			startActivity(intent);
+			finish();
+			break;
+		case R.id.bInstallImport:
+			intent=new Intent(this, SelectFileActivity.class);
+			intent.putExtra("selectedgame", getIntent().getStringExtra("selectedgame"));
 			startActivity(intent);
 			finish();
 			break;
