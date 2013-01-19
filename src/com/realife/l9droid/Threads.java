@@ -15,6 +15,7 @@ public class Threads {
 	public final static int MACT_L9WORKING = 0;
 	public final static int MACT_L9WAITFORCOMMAND = 1;
 	public final static int MACT_PRINTCHAR = 2;
+	public final static int MACT_L9SELECTFILENAMETORESTORE = 3;
 	public final static int MACT_GFXON=5;
 	public final static int MACT_GFXOFF=6;
 	public final static int MACT_GFXUPDATE=7;
@@ -48,6 +49,9 @@ public class Threads {
 	ArrayAdapter<String> lvHistoryAdapter;
 	
 	char keyPressed=0;
+	
+	boolean choosing_restore_filename;
+	String choosed_restore_filename;
 
     void link(MainActivity m) {
     	activity=m;
@@ -112,6 +116,9 @@ public class Threads {
 		    		//activity.bCmd.setText("<!>");
 		    		activity.bCmdSetText("<!>");
 		    		activity.bCmd.setEnabled(false);
+		    		break;
+		    	case MACT_L9SELECTFILENAMETORESTORE:
+		    		activity.selectFileToRestore();
 		    		break;
 	    		case MACT_PRINTCHAR:
 	    			char c=(char)msg.arg1;

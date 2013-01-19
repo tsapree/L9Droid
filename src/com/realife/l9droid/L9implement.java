@@ -145,7 +145,18 @@ public class L9implement extends L9 {
 	};
 	
 	byte[] os_load_file() {
-		String path="Saves/1.sav";
+		th.choosing_restore_filename=true;
+		mHandler.sendEmptyMessage(Threads.MACT_L9SELECTFILENAMETORESTORE);
+		try {
+			while (th.choosing_restore_filename) {
+				TimeUnit.MILLISECONDS.sleep(100);
+			};
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String path=th.choosed_restore_filename;//"Saves/1.sav";
+		if ((path==null) || (path.length()<1)) return null;
 		path=lib.getAbsolutePath(path);
 		load_piclog(path,th.history);
 		mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);

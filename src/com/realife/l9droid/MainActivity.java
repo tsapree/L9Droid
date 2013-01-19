@@ -38,16 +38,19 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		OnItemClickListener,
 		OnItemLongClickListener {
 
-    final private int MENU_ITEM_LIBRARY_FILES = 1;
-    final private int MENU_ITEM_SETTINGS = 2;
-    final private int MENU_ITEM_SAVE_STATE = 4;
-    final private int MENU_ITEM_RESTORE_STATE = 5;
-    final private int MENU_ITEM_PICTURES = 6;
-    final private int MENU_ITEM_WORDS = 7;
-    final private int MENU_ITEM_PLAY_SCRIPT = 8;
-    final private int MENU_ITEM_LIBRARY = 9;
-    final private int MENU_ITEM_HISTORY = 10;
-	
+    private final static int MENU_ITEM_LIBRARY_FILES = 1;
+    private final static int MENU_ITEM_SETTINGS = 2;
+    private final static int MENU_ITEM_SAVE_STATE = 4;
+    private final static int MENU_ITEM_RESTORE_STATE = 5;
+    private final static int MENU_ITEM_PICTURES = 6;
+    private final static int MENU_ITEM_WORDS = 7;
+    private final static int MENU_ITEM_PLAY_SCRIPT = 8;
+    private final static int MENU_ITEM_LIBRARY = 9;
+    private final static int MENU_ITEM_HISTORY = 10;
+
+	private final static int LIBRARYACTIVITY_RESULT = 1;
+	private final static int RESTOREGAMEACTIVITY_RESULT = 2;
+    
 	SharedPreferences sp;
 	Typeface tf;
 	Typeface tfDefault=null;
@@ -256,13 +259,11 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		switch (arg0.getItemId()) {
 		case MENU_ITEM_LIBRARY_FILES: 
 			intent=new Intent(this, LibraryActivity.class);
-			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
-	        //mi.setIntent(intent);
+			startActivityForResult(intent, LIBRARYACTIVITY_RESULT);
 			break;
 		case MENU_ITEM_LIBRARY: 
 			intent=new Intent(this, LibraryGamesActivity.class);
-			startActivityForResult(intent, 1); //TODO: "1"-change it or kill ))
-	        //mi.setIntent(intent);
+			startActivityForResult(intent, LIBRARYACTIVITY_RESULT);
 			break;
 		case MENU_ITEM_SAVE_STATE:
 			postHashCommand("#save");
@@ -287,13 +288,17 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		return false;
 	}
 	
+	public void selectFileToRestore() {
+		Intent intent=new Intent(this, RestoreGameActivity.class);
+		startActivityForResult(intent, RESTOREGAMEACTIVITY_RESULT);
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// если пришло ОК
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
-			case 1:
-				//Toast.makeText(this, data.getStringExtra("opengame"), Toast.LENGTH_SHORT).show();
+			case LIBRARYACTIVITY_RESULT: 
 				String newGame=data.getStringExtra("opengame");
 				mt.stopGame();
 				mt.logStringCapacitor=null;
@@ -306,8 +311,20 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 				} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
 				etCmd.setText("");
 				break;
+			case RESTOREGAMEACTIVITY_RESULT: //restore game activity
+				String restoreGame=data.getStringExtra("restoregame");
+				mt.choosed_restore_filename=restoreGame;
+				mt.choosing_restore_filename=false;
+				break;
 			}
 			// если вернулось не ОК
+		} else {
+			switch (requestCode) {
+			case RESTOREGAMEACTIVITY_RESULT:
+				mt.choosed_restore_filename=null;
+				mt.choosing_restore_filename=false;
+				break;
+			}
 		};
 	}
     
