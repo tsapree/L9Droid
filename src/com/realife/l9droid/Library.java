@@ -20,12 +20,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +37,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.format.Time;
 import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -44,6 +48,12 @@ public class Library {
 
 	final String LIBDIR_SD = "L9Droid";
 	final String FILE_NOMEDIA=".nomedia";
+	
+	public static final String ATTR_NAME = "name";
+	public static final String ATTR_DATE = "date";
+	public static final String ATTR_PATH = "path";
+	public static final String ATTR_IMAGE = "image";
+	public static final String ATTR_MODIFIED = "modified";
 	
 	Handler h;
 	String GameFullPathName;
@@ -861,4 +871,50 @@ public class Library {
 		if (filesUnzipped>0) return true;
 		else return false;
 	};
+	
+	//получить информацию о сохраненных играх по папке или пути до файла
+	ArrayList<Map<String, Object>> getSaved(String path) {
+
+		ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        Map<String, Object> m;
+
+		Time t=new Time();
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File sdpath=new File(path);
+			if (sdpath.isFile()) sdpath=sdpath.getParentFile();
+			sdpath = new File(sdpath.getAbsolutePath()+"/Saves");
+			if (sdpath.isDirectory()) {
+				File[] f = sdpath.listFiles(new SavedGamesFilter());
+				for (int i=0; i<f.length;i++) {
+					m = new HashMap<String, Object>();
+					Long modified = Long.valueOf(f[i].lastModified());
+					m.put(ATTR_MODIFIED, modified);
+					t.set(modified);
+					  
+					m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
+					m.put(ATTR_NAME, f[i].getName());
+					m.put(ATTR_PATH, f[i].getAbsolutePath());
+					m.put(ATTR_IMAGE, null);
+					
+					//sort
+					int x=0;
+					while (x<data.size() && ((Long)(data.get(x).get(ATTR_MODIFIED))>modified)) x++;
+					data.add(x,m);
+	    
+				};
+			};
+		};
+		
+        return data;
+	}
+	
+    @SuppressLint("DefaultLocale")
+	class SavedGamesFilter implements FilenameFilter {
+        public boolean accept(File dir, String name) {
+        	return (name.toLowerCase().endsWith(".sav"));
+        }
+    }
+	
+	
 }

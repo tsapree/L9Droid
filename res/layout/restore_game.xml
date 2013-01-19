@@ -16,7 +16,7 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
-            android:text="Select state to restore"
+            android:text="Select file to restore"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#ffffff"
             android:textStyle="bold" />
@@ -33,6 +33,15 @@
             android:textStyle="bold" />
 
     </RelativeLayout>
+    
+	<TextView
+		android:id="@+id/tvNoFiles"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="5dp"
+		android:text="No files found."
+		android:textColor="#BB0000"
+		android:textStyle="bold" />
 
     <ListView
         android:id="@+id/lvStates"

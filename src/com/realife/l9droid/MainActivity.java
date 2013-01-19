@@ -290,6 +290,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	
 	public void selectFileToRestore() {
 		Intent intent=new Intent(this, RestoreGameActivity.class);
+		intent.putExtra("gamepath", mt.lib.GameFullPathName);
 		startActivityForResult(intent, RESTOREGAMEACTIVITY_RESULT);
 	}
 	
