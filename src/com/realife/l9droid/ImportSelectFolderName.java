@@ -32,7 +32,7 @@ public class ImportSelectFolderName extends Activity implements OnClickListener 
 		
 		Intent intent = getIntent();
 		
-		fileName = intent.getStringExtra("importname");
+		fileName = intent.getStringExtra("selectedpath");
 		
 		File sdpath=new File(fileName);
 		if (sdpath.isDirectory()) {

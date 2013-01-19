@@ -51,10 +51,15 @@ public class Library {
 	
 	public static final String ATTR_NAME = "name";
 	public static final String ATTR_DATE = "date";
+	public static final String ATTR_SIZE = "size";
 	public static final String ATTR_PATH = "path";
 	public static final String ATTR_TYPE = "type";
 	public static final String ATTR_IMAGE = "image";
 	public static final String ATTR_MODIFIED = "modified";
+	
+	public static final int TYPE_PARENT_FOLDER = 0;
+	public static final int TYPE_FOLDER = 1;
+	public static final int TYPE_FILE = 2;
 	
 	Handler h;
 	String GameFullPathName;
@@ -368,13 +373,8 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			File newFolder;
-			int index=0;
-			do {
-				newFolder = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/"+folderName);
-				//TODO: сделать изменение папки, если она уже существует
-				index++;
-			} while (newFolder.exists());
+			File newFolder = new File (	unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/"+folderName));
+
 			File source=new File(fileName);
 			if (source.isDirectory()) return copy(fileName,newFolder.toString());
 			else if (source.isFile()) {
@@ -930,28 +930,61 @@ public class Library {
 			File sdpath=new File(path);
 			if (sdpath.isDirectory()) {
 				File[] f = sdpath.listFiles();
-				for (int i=0; i<f.length;i++) {
-					if (!f[i].isHidden()) {
-						m = new HashMap<String, Object>();
-						Long modified = Long.valueOf(f[i].lastModified());
-						m.put(ATTR_MODIFIED, modified);
-						t.set(modified);
-						  
-						m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
-						m.put(ATTR_NAME, f[i].getName());
-						m.put(ATTR_PATH, f[i].getAbsolutePath());
-
-						int type=f[i].isFile()?2:1;
-						m.put(ATTR_TYPE, type);
-						if (type==1) m.put(ATTR_IMAGE, null);
-						else m.put(ATTR_IMAGE, R.drawable.ic_launcher);
-						
-						//sort
-						int x=0;
-						while (x<data.size() && ((Long)(data.get(x).get(ATTR_MODIFIED))>modified)) x++;
-						data.add(x,m);
+				if (f!=null) {
+					for (int i=0; i<f.length;i++) {
+						if (!f[i].isHidden()) {
+							m = new HashMap<String, Object>();
+							Long modified = Long.valueOf(f[i].lastModified());
+							m.put(ATTR_MODIFIED, modified);
+							t.set(modified);
+							
+							m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
+							String name=f[i].getName();
+							m.put(ATTR_NAME, name);
+							m.put(ATTR_PATH, f[i].getAbsolutePath());
+								
+	
+							int type=f[i].isFile()?TYPE_FILE:TYPE_FOLDER;
+							m.put(ATTR_TYPE, type);
+							switch (type) {
+							case TYPE_FOLDER:
+								m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+								m.put(ATTR_SIZE, null);
+								break;
+							case TYPE_FILE:
+								m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+								long size=f[i].length();
+								if (size<1024) m.put(ATTR_SIZE, String.format("%d b", size));
+								else if (size<1000000) m.put(ATTR_SIZE, String.format("%.1f kb", (float)size/1024));
+								else if (size<1000000000) m.put(ATTR_SIZE, String.format("%.1f Mb", (float)size/(1024*1024)));
+								break;
+							};
+							
+							//sort
+							int x=0;
+							while (x<data.size()) {
+								int mtype = ((Integer)(data.get(x).get(ATTR_TYPE)));
+								if (mtype>type) break; //file>folder
+								if (mtype==type)  //file==file  folder==folder
+									if (((String)(data.get(x).get(ATTR_NAME))).compareToIgnoreCase(name)>0) break;
+								x++;
+							};
+							data.add(x,m);
+						};
 					};
-	    
+				};
+				
+				File p=sdpath.getParentFile();
+				if (p!=null) {
+					m = new HashMap<String, Object>();
+					m.put(ATTR_MODIFIED, 0);
+					m.put(ATTR_DATE, null);
+					m.put(ATTR_NAME, "..");
+					m.put(ATTR_PATH, p.getAbsolutePath());
+					m.put(ATTR_TYPE, TYPE_PARENT_FOLDER);
+					m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+					m.put(ATTR_SIZE, null);
+					data.add(0,m);
 				};
 			};
 		};

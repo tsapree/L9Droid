@@ -126,10 +126,10 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	        
 	    } else mt.link(this);
         lvMain.setAdapter(mt.lvAdapter);
-        lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+        //lvMain.setSelection(lvMain.getAdapter().getCount()-1);
         
         lvHistory.setAdapter(mt.lvHistoryAdapter);
-        lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
+        //lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
         lvHistory.setOnItemClickListener(this);
         lvHistory.setOnItemLongClickListener(this);
         
@@ -190,8 +190,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     		tf=tfDefault;
     		fontSize=fontSizeDefault;
     	};
-    	etCmd.setTypeface(tf);
-    	etCmd.setTextSize(fontSize);
+    	//etCmd.setTypeface(tf);
+    	//etCmd.setTextSize(fontSize);
     	
     	mt.activityPaused=false;
     	super.onResume();
@@ -418,7 +418,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 			if (finishThisString) mt.logStrId=-1;
 			else mt.logStrId=lvMain.getAdapter().getCount()-1;
 			mt.lvAdapter.notifyDataSetChanged();
-			lvMain.setSelection(lvMain.getAdapter().getCount()-1);
+			//lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 		};
 	}
 	
@@ -428,7 +428,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     
 			mt.history.add(etCmd.getText().toString());
 			mt.lvHistoryAdapter.notifyDataSetChanged();
-			lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
+			//lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
 			
 			command=etCmd.getText().toString();
 			etCmd.setText("");

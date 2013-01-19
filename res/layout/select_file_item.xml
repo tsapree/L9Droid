@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:padding="5dp" >
 
     <ImageView
         android:id="@+id/ivPic"
@@ -19,30 +20,32 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/ivPic"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
         android:text="Name"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tvDate"
+        android:id="@+id/tvSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ivPic"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/ivPic"
-        android:gravity="right"
-        android:text="Date"
+        android:layout_alignLeft="@+id/tvName"
+        android:layout_below="@+id/tvName"
+        android:paddingLeft="5dp"
+        android:text="Size"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#707070" />
 
     <TextView
-        android:id="@+id/tvSize"
+        android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ivPic"
-        android:layout_alignParentRight="true"
+        android:layout_alignRight="@+id/tvName"
+        android:layout_below="@+id/tvName"
         android:layout_toRightOf="@+id/ivPic"
-        android:text="Size"
+        android:gravity="right"
+        android:text="Date"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#707070" />
     
