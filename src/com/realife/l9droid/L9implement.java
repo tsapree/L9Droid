@@ -495,9 +495,9 @@ public class L9implement extends L9 {
 		name=lib.changeFileExtension(path, "png");
 		if (PicMode!=0) {
 			waitPictureToDraw();
-			if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
-			else lib.deleteFile(name);
-		} else lib.deleteFile(name);
+		};
+		if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
+		else lib.deleteFile(name);
 	}
 
 	void load_piclog(String path, History h) {
