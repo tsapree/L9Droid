@@ -7,13 +7,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-public class SelectFileActivity extends Activity implements OnItemClickListener, OnItemLongClickListener {
+public class SelectFileActivity extends Activity implements OnItemClickListener, OnItemLongClickListener, OnClickListener {
 	Library lib;
 	
 	ListView lvFiles;
@@ -37,6 +39,9 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 		lvFiles.setAdapter(sAdapter);
 		lvFiles.setOnItemClickListener(this);
 		lvFiles.setOnItemLongClickListener(this);
+		
+		Button bBack = (Button) findViewById(R.id.bBack);
+	    bBack.setOnClickListener(this);
 
 	}
 
@@ -70,6 +75,12 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 		intent.putExtra("selectedpath", filename );
 	    startActivity(intent);
 	    finish();
+	}
+
+	public void onClick(View v) {
+		if (v.getId()==R.id.bBack) {
+			onBackPressed();
+		};
 	}
 
 }

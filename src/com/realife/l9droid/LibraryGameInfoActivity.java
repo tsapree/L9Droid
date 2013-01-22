@@ -41,6 +41,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    
 	    bInstall=(Button) findViewById(R.id.bInstall);
 	    bInstall.setOnClickListener(this);
+	    
+		Button bBack = (Button) findViewById(R.id.bBack);
+	    bBack.setOnClickListener(this);
 
 		game=getIntent().getStringExtra("selectedgame");
 	    
@@ -99,6 +102,10 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
 			intent.putExtra("selectedgame", game);
 			startActivity(intent);
+			break;
+		case R.id.bBack:
+			onBackPressed();
+			break;
 			
 			/*
 			for (int n=0;n<gi.getNumberOfPaths();n++) {

@@ -7,13 +7,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-public class RestoreGameActivity extends Activity implements OnItemClickListener {
+public class RestoreGameActivity extends Activity implements OnItemClickListener, OnClickListener {
 	
 	Library lib;
 	
@@ -25,6 +27,9 @@ public class RestoreGameActivity extends Activity implements OnItemClickListener
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.restore_game);
+		
+		Button bBack = (Button) findViewById(R.id.bBack);
+	    bBack.setOnClickListener(this);
 
 		lib = new Library();
 		String gamepath=getIntent().getStringExtra("gamepath");
@@ -50,4 +55,10 @@ public class RestoreGameActivity extends Activity implements OnItemClickListener
   	  	setResult(RESULT_OK,intent);
   	  	finish();		
 	};
+	
+	public void onClick(View v) {
+		if (v.getId()==R.id.bBack) {
+			onBackPressed();
+		};
+	}
 }

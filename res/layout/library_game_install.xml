@@ -29,4 +29,13 @@
         android:layout_marginTop="15dp"
         android:text="Import from local source" />
 
+    <Button
+        android:id="@+id/bBack"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="&lt;" />
+
 </RelativeLayout>

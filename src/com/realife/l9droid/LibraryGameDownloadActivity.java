@@ -44,6 +44,9 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		
 		tvGameName.setText(gi.getTitle().toUpperCase());
 		
+		Button bBack = (Button) findViewById(R.id.bBack);
+	    bBack.setOnClickListener(this);
+		
 		FillSourcesInfo();
 	    
 	};
@@ -76,6 +79,11 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	};
 	
 	public void onClick(View v) {
+		if (v.getId()==R.id.bBack) {
+			onBackPressed();
+			return;
+		};
+		
 		View p=(View)v.getParent();
 
 		if ((p!=null) && (p.getTag()!=null)) {

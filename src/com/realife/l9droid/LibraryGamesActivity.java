@@ -8,11 +8,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.SimpleExpandableListAdapter;
 
-public class LibraryGamesActivity extends Activity implements OnChildClickListener {
+public class LibraryGamesActivity extends Activity implements OnChildClickListener, OnClickListener {
 
 	// коллекция для категорий
 	ArrayList<Map<String, String>> categories;
@@ -28,6 +30,9 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.library_games);
+		
+		Button bBack = (Button) findViewById(R.id.bBack);
+	    bBack.setOnClickListener(this);
 		
 		Library lib=new Library();
 		
@@ -104,6 +109,12 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 			}
 		} else {
 		}
+	}
+	
+	public void onClick(View v) {
+		if (v.getId()==R.id.bBack) {
+			onBackPressed();
+		};
 	}
 
 }

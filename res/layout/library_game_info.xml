@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/bInstall"
+            android:layout_toRightOf="@+id/bBack"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
@@ -26,9 +26,9 @@
             android:id="@+id/tvCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignRight="@+id/tvGameName"
             android:layout_below="@+id/tvGameName"
+            android:layout_toRightOf="@+id/bBack"
             android:padding="5dp"
             android:textColor="#999999"
             android:textStyle="bold" />
@@ -42,6 +42,16 @@
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:text="Install" />
+
+        <Button
+            android:id="@+id/bBack"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:text="&lt;" />
 
     </RelativeLayout>
 
