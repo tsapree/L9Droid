@@ -3,18 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-	<ImageView
-	    android:id="@+id/ivPicture"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentRight="true"
-	    android:layout_alignParentTop="true"
-	    android:adjustViewBounds="true"
-	    android:scaleType="fitCenter"
-	    android:src="@drawable/ic_launcher"
-	    android:visibility="visible" />
-
    <RelativeLayout
        android:id="@+id/lmain"
        android:layout_width="wrap_content"
@@ -93,5 +81,16 @@
        android:visibility="gone" >
 
    </ListView>
+
+   <ImageView
+       android:id="@+id/ivPicture"
+       android:layout_width="100dp"
+       android:layout_height="wrap_content"
+       android:layout_alignParentTop="true"
+       android:layout_centerHorizontal="true"
+       android:adjustViewBounds="true"
+       android:scaleType="fitXY"
+       android:src="@drawable/ic_launcher"
+       android:visibility="visible" />
 
 </RelativeLayout>

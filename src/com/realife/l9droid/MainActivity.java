@@ -75,6 +75,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     
 	boolean killThreadsOnDestroyActivity=true;
 	
+	boolean pictureZoomHeight = true; //TODO: вынести в настройки
+	
 	int prevAppHeight = 0;
 	int prevAppWidth = 0;
 	int prevLogHeight = 0;
@@ -149,13 +151,20 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     }
     
     public void updatePictureSize() {
-    	if (mt.bm!=null) {
-    		int bmWidth=mt.bm.getWidth();
+    	if ((mt.bm!=null) && (activityRootView!=null)) {
+    		int maxWidth = activityRootView.getWidth();
+    		if (maxWidth<1) return;
     		int bmHeight=mt.bm.getHeight();
+    		int bmWidth=mt.bm.getWidth();
+    		if (bmWidth==160 && bmHeight ==128) bmWidth*=2;
+    		if (bmWidth>maxWidth) bmWidth=maxWidth;
     		int maxHeight = bmHeight * activityRootView.getWidth() / bmWidth ;
     		int h = activityRootView.getHeight() * MaxPictureHeightInPercent / 100;
     		if (h>maxHeight) h=maxHeight;
+    		int w = bmWidth * h / bmHeight;
+    		if (pictureZoomHeight) w=maxWidth;
     		ivScreen.getLayoutParams().height=h;
+    		ivScreen.getLayoutParams().width=w;
     		ivScreen.requestLayout();
     	};
     };

@@ -149,8 +149,19 @@ public class Threads {
 	    		case MACT_GFXUPDATE:
 	    			
 	    			if ((l9!=null) && (bm!=l9.bm)) {
+	    				boolean needUpdatePictureSize = false;
+	    				if (l9.bm!=null) {
+	    					if (bm!=null) {
+	    						if ((l9.bm.getHeight()!=bm.getHeight()) || (l9.bm.getWidth()!=bm.getWidth())) {
+	    							needUpdatePictureSize= true;
+	    						}
+	    					} else {
+	    						needUpdatePictureSize = true;
+	    					}
+	    				};
 	    				bm=l9.bm;
 	    				activity.ivScreen.setImageBitmap(bm);
+	    				if (needUpdatePictureSize) activity.updatePictureSize();
 	    			}
 	    			activity.ivScreen.invalidate();
 	    				
