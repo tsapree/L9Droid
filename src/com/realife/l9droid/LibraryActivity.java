@@ -45,7 +45,7 @@ public class LibraryActivity extends Activity implements OnMenuItemClickListener
     
     protected void onResume() {
     	super.onResume();
-	    lib=new Library();
+	    lib=Library.getInstance();
 	    lib.prepareLibrary(this);
 	    
 	    //paths = getResources().getStringArray(R.array.lib_paths);

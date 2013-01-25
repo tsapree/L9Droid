@@ -25,7 +25,7 @@ public class ImportSelectFolderName extends Activity implements OnClickListener 
 		setContentView(R.layout.import_choose_folder);
 		
 		
-		lib=new Library();
+		lib=Library.getInstance();
 		etFolder = (EditText) findViewById(R.id.importFolderName);
 		bImport = (Button) findViewById(R.id.bImport);
 		bImport.setOnClickListener(this);

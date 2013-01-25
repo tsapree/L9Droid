@@ -31,7 +31,7 @@ public class RestoreGameActivity extends Activity implements OnItemClickListener
 		Button bBack = (Button) findViewById(R.id.bBack);
 	    bBack.setOnClickListener(this);
 
-		lib = new Library();
+		lib = Library.getInstance();
 		String gamepath=getIntent().getStringExtra("gamepath");
 		data=lib.getSaved(gamepath);
 		

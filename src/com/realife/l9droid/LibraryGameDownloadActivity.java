@@ -36,7 +36,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    
 	    setContentView(R.layout.library_game_download);
 	    
-	    lib = new Library();
+	    lib = Library.getInstance();
 	    game=getIntent().getStringExtra("selectedgame");
 	    gi=lib.getGameInfo(this,game);
 	    tvGameName = (TextView)findViewById(R.id.tvGameName);

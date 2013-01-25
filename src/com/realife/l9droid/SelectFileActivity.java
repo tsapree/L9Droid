@@ -27,9 +27,9 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.select_file);
 
-		lib = new Library();
+		lib = Library.getInstance();
 		
-		data=lib.getFilesInFolder("/mnt/sdcard/l9droid/Snowball V3 S48");
+		data=lib.getFilesInFolder("/mnt/sdcard/l9droid/Snowball V3 S48");	//TODO: исправить
 		
 		String[] from = { Library.ATTR_NAME, Library.ATTR_DATE, Library.ATTR_IMAGE, Library.ATTR_SIZE };
 		int[] to = { R.id.tvName, R.id.tvDate, R.id.ivPic, R.id.tvSize };

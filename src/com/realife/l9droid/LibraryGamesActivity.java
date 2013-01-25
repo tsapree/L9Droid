@@ -34,7 +34,7 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		Button bBack = (Button) findViewById(R.id.bBack);
 	    bBack.setOnClickListener(this);
 		
-		Library lib=new Library();
+		Library lib=Library.getInstance();
 		
 		categories = new ArrayList<Map<String, String>>();
 		// создаем коллекцию для коллекций элементов 

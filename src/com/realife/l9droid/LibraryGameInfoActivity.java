@@ -58,7 +58,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	protected void onResume() {
     	super.onResume();
     	
-	    lib = new Library();
+	    lib = Library.getInstance();
 		fillInfo();
 		
 	    gi=lib.getGameInfo(this,game);

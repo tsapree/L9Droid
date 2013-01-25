@@ -1,6 +1,5 @@
 package com.realife.l9droid;
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +27,6 @@ import java.util.zip.ZipFile;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,6 +44,8 @@ import com.realife.l9droid.LibraryGameDownloadActivity.DownloadInstallFileTask;
 
 public class Library {
 
+	private static Library lib_instance;
+	
 	final String LIBDIR_SD = "L9Droid";
 	final String FILE_NOMEDIA=".nomedia";
 	
@@ -65,12 +65,6 @@ public class Library {
 	String GameFullPathName;
 	String paths[];
 
-	Library() {
-		h=null;
-		paths=null;
-		GameFullPathName="";
-	};
-	
 	String tags[][]={
 			{"V1","A-Code V1"},
 			{"V2","A-Code V2"},
@@ -86,7 +80,25 @@ public class Library {
 			{"ST","ST?"},
 			{"PC","PC"},
 	};
+
+	private Library() {
+		h=null;
+		paths=null;
+		GameFullPathName="";
+	};
 	
+
+	public static Library getInstance() {
+		return lib_instance;
+	}
+	
+	public static void initInstance() {
+		if (lib_instance == null) {
+			lib_instance = new Library();
+		}
+	}
+	
+	//TODO: вызываю извне этот метод, лучше убрать и вызывать из конструктора
 	boolean prepareLibrary(Activity act) {
 		paths=null;
 		//getting sdcard path
