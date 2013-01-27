@@ -231,8 +231,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.setGroupVisible(1, mt.menuHashEnabled);
-        menu.setGroupVisible(2, mt.menuHashEnabled && ivScreen.getVisibility()!=View.VISIBLE/*Threads.gfx_ready && (!mt.menuPicturesEnabled)*/);
-        menu.setGroupVisible(3, mt.menuHashEnabled && ivScreen.getVisibility()==View.VISIBLE/*Threads.gfx_ready &&  mt.menuPicturesEnabled*/);
+        menu.setGroupVisible(2, mt.menuHashEnabled && Threads.gfx_ready && (!mt.menuPicturesEnabled));
+        menu.setGroupVisible(3, mt.menuHashEnabled && Threads.gfx_ready &&  mt.menuPicturesEnabled);
         
         return super.onPrepareOptionsMenu(menu);
     }
