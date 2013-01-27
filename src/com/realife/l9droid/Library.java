@@ -961,11 +961,11 @@ public class Library {
 							m.put(ATTR_TYPE, type);
 							switch (type) {
 							case TYPE_FOLDER:
-								m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+								m.put(ATTR_IMAGE, R.drawable.ic_folder);
 								m.put(ATTR_SIZE, null);
 								break;
 							case TYPE_FILE:
-								m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+								m.put(ATTR_IMAGE, R.drawable.ic_file);
 								long size=f[i].length();
 								if (size<1024) m.put(ATTR_SIZE, String.format("%d b", size));
 								else if (size<1000000) m.put(ATTR_SIZE, String.format("%.1f kb", (float)size/1024));
@@ -995,7 +995,7 @@ public class Library {
 					m.put(ATTR_NAME, "..");
 					m.put(ATTR_PATH, p.getAbsolutePath());
 					m.put(ATTR_TYPE, TYPE_PARENT_FOLDER);
-					m.put(ATTR_IMAGE, R.drawable.ic_launcher);
+					m.put(ATTR_IMAGE, R.drawable.ic_parent_directory);
 					m.put(ATTR_SIZE, null);
 					data.add(0,m);
 				};

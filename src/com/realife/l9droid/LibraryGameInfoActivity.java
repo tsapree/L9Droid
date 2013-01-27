@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +29,6 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	
 	Library lib;
 	
-	Button bPlay;
 	Button bInstall;
 	
 	String game;
@@ -42,8 +43,8 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    bInstall=(Button) findViewById(R.id.bInstall);
 	    bInstall.setOnClickListener(this);
 	    
-		Button bBack = (Button) findViewById(R.id.bBack);
-	    bBack.setOnClickListener(this);
+	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
+	    ivBack.setOnClickListener(this);
 
 		game=getIntent().getStringExtra("selectedgame");
 	    
@@ -85,7 +86,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	public void onClick(View v) {
 		View p=(View)v.getParent();
 		switch (v.getId()) {
-		case R.id.bPlay: // кнопка ввода команды
+		case R.id.ibPlay:
 			if ((p!=null) && (p.getTag()!=null)) {
 				Intent intent = new Intent();
 		  	  	intent.putExtra("opengame", (String)p.getTag());
@@ -103,7 +104,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			intent.putExtra("selectedgame", game);
 			startActivity(intent);
 			break;
-		case R.id.bBack:
+		case R.id.ivBack:
 			onBackPressed();
 			break;
 			
@@ -138,10 +139,10 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			//fills info about this version, based on tags from parent dir
 			tvVersion.setText(lib.getTags(versions.get(i)));
 			Button bProperties = (Button) item.findViewById(R.id.bProperties);
-			Button bPlay = (Button) item.findViewById(R.id.bPlay);
+			ImageButton ibPlay = (ImageButton) item.findViewById(R.id.ibPlay);
 			item.setTag(versions.get(i));
 			bProperties.setOnClickListener(this);
-			bPlay.setOnClickListener(this);
+			ibPlay.setOnClickListener(this);
 			linLayout.addView(item);
 	    };
 	};

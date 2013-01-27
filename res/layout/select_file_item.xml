@@ -6,12 +6,12 @@
 
     <ImageView
         android:id="@+id/ivPic"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_launcher" />
+        android:scaleType="center"
+        android:src="@drawable/ic_folder" />
     
     <TextView
         android:id="@+id/tvName"
