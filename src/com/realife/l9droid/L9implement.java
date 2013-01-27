@@ -507,7 +507,7 @@ public class L9implement extends L9 {
 		if (PicMode!=0) {
 			waitPictureToDraw();
 		};
-		if (bm!=null) lib.pictureSaveFromBitmap(name, bm);
+		if ((bm!=null) && (PicMode!=0)) lib.pictureSaveFromBitmap(name, bm);
 		else lib.deleteFile(name);
 	}
 
