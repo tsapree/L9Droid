@@ -501,7 +501,7 @@ public class L9implement extends L9 {
 		String name;
 		
 		name=lib.changeFileExtension(path, "log");
-		lib.SaveLogFromSpannableArrayAdapter(name, th.lvAdapter);
+		lib.SaveLogFromSpannableArrayAdapter(name, th.lvAdapter, th.logStrId);
 		
 		name=lib.changeFileExtension(path, "png");
 		if (PicMode!=0) waitPictureToDraw();
@@ -522,7 +522,6 @@ public class L9implement extends L9 {
 		for (SpannableStringBuilder logStr:tempLog) {
 			h.add(lib.getSpannedString(logStr));
 		}
-		
 	};
 
 	void waitPictureToDraw() {

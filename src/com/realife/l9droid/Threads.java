@@ -130,6 +130,7 @@ public class Threads {
 	    			break;
 	    		case MACT_REPLACE_LOG:
 	    			logStringCapacitor=null;
+	    			logStrId=-1;
 	    			lvAdapter.clear();
 	    			if (l9.tempLog!=null) {
 		    			for (int i=0;i<l9.tempLog.size();i++) lvAdapter.add(l9.tempLog.get(i));

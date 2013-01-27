@@ -480,12 +480,13 @@ public class Library {
 		} else return new SpannableStringBuilder(wrappedString);
 	}
 	
-	public boolean SaveLogFromSpannableArrayAdapter(String path, ArrayAdapter<SpannableStringBuilder> adapter) {
+	public boolean SaveLogFromSpannableArrayAdapter(String path, ArrayAdapter<SpannableStringBuilder> adapter, int strid) {
 		ArrayList<String> log=new ArrayList<String>();
     	if (adapter!=null) 
     		for (int i=0; i<adapter.getCount();i++) {
     			log.add((wrapSpans(adapter.getItem(i))));
     		};
+    	if (strid==-1) log.add("");
 		return fileSaveFromStringArray(path, log);
 	}
 	
