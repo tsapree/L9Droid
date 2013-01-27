@@ -62,6 +62,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	EditText etCmd;
 	Button bSpace;
 	Button bEnter;
+	Button bMenu;
 
 	ListView lvMain;
 	ListView lvHistory;
@@ -75,7 +76,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     
 	boolean killThreadsOnDestroyActivity=true;
 	
-	boolean pictureZoomHeight = true; //TODO: вынести в настройки
+	boolean pictureZoomHeight = false; //TODO: вынести в настройки
 	
 	int prevAppHeight = 0;
 	int prevAppWidth = 0;
@@ -98,6 +99,8 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         bSpace.setOnClickListener(this);
     	bEnter = (Button) findViewById(R.id.bEnter);
     	bEnter.setOnClickListener(this);
+    	bMenu = (Button) findViewById(R.id.bMenu);
+    	bMenu.setOnClickListener(this);
         
         etCmd = (EditText) findViewById(R.id.etCmd);
         etCmd.setHint("Enter your command");
@@ -358,6 +361,9 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 			break;
 		case R.id.bEnter:
 			mt.keyPressed='\r';
+			break;
+		case R.id.bMenu:
+			openOptionsMenu();
 			break;
 		}
 	}

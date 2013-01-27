@@ -137,6 +137,7 @@ public class Threads {
 	    			break;
 	    		case MACT_GFXOFF:
 		    		menuPicturesEnabled=false;
+	    			l9.bm=null;
 	    			bm=null;
 	    			activity.ivScreen.setImageBitmap(bm);
 	    			activity.ivScreen.setVisibility(View.GONE);
