@@ -364,6 +364,7 @@ But when you qualify for the end-game by finding all of the treasures, it is ano
 	    <game name="Snowball">
 			<title>Snowball</title>
 			<about>Snowball is a big adventure game. It has over 7,000 locations and has taken 9 months to produce. It's probably unique among adventures in having a realistic, planned background and being set aboard a starship that could actually work.
+
 You play Kim Kimberley, secret agent extraordinary.
 Your mission: to safeguard the interstar transport, Snowball 9, as a last resort following catastrophic accident or sabotage.
 Thus when your modified freezer-coffin wakes you with the Snowball still in transit, you know that something must be very wrong. You're weakened and disorientated from lengthy hibernation, but the fate of two million passengers is in your hands!</about>
@@ -373,15 +374,24 @@ Additional expertise: Ian Buxton.</authors>
 	    </game>
 	    <game name="Return to Eden">
 			<title>Return to Eden</title>
-			<about></about>
-			<authors></authors>
+			<about>Return to Eden is Level 9 Computing's sixth adventure and has taken the usual enormously long time to produce. It's the second Silicon Dream adventure and starts where Snowball left off (though you don't need to have played Snowball first).
+
+You play Kim Kimberley and have just saved the interstar transport. Snowball 9, from disaster. Unfortunately the control room vidcams show a different story. Kim seems to enter, hurl a bomb and the room is engulfed in flames. The evidence is damning.
+Forced to flee, you just reach a stratoglider life-boat before the waldroids close in. And one hour later you become the first human to land on planet Eden.
+Snowball 9 is in orbit, crewed by people who believe you to be a murderer. The only civilisation on Eden is a robot city far to the east. And the planet is reportedly populated by furiouslyhostile beings of every kind: only ceaseless vigilance and hitech weaponry prevent them over-running the city.
+Now you know enough to start. Good luck!</about>
+			<authors>Written by: Nick Austin and Chris Queen.
+Pictures by: Tim Noyce</authors>
 			<path tags="V2 S48" files="sna/v2/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V3 S48" files="sna/v3/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Worm in Paradise">
 			<title>Worm in Paradise</title>
-			<about></about>
-			<authors></authors>
+			<about>The Worm in Paradise is Level 9's nineth adventure and concludes the Silicon Dreams Trilogy. It takes place on the planet Eden, 100 years after the time of Snowball and Return to Eden (though you don't need to have played either of these first).
+
+You are a citizen of Enoch megapolis of Eden. Unfortunately, when the game starts, you can remember nothing more. It is most odd. Good Luck!</about>
+			<authors>Written by: Pete, Mike and Nick Austin.
+Pictures: James Horsler.</authors>
 			<path tags="V3 S48" files="sna/v3/worm.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
@@ -437,7 +447,8 @@ Additional expertise: Ian Buxton.</authors>
 		<game name="Emerald Isle">
 			<title>Emerald Isle</title>
 			<about>Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</about>
-			<authors>Written by: Shaun D. Abbott\nPictures by: James Horsler</authors>
+			<authors>Written by: Shaun D. Abbott
+Pictures by: James Horsler</authors>
 			<path tags="V2 S48" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 		</game>
 		<game name="Erik the Viking">
