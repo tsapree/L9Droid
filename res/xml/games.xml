@@ -339,22 +339,24 @@ L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are we
 	<category name="The Middle-Earth Trilogy / Jewels Of Darkness">
 	    <game name="Colossal Adventure">
 			<title>Colossal Adventure</title>
-			<about></about>
-			<authors></authors>
+			<about>Colossal Adventure is a complete, full scale version of the original classic mainframe game "Adventure", possibly the most popular and addictive computer game ever produced. You will encounter all of the creatures, treasures and locations that you will have seen hinted at in readers' letters to computer magazines.
+
+But when you qualify for the end-game by finding all of the treasures, it is another matter entirely. The standard end-game is rather limited, with only two locations, so we have added a complete new, unique end-game to Colossal Adventure: with over 70 locations! Don't feel let down when you've solved the first part of the game - the play continues!!</about>
+			<authors>Pete, Mike and Nick Austin, based on the original "Adventure" by Willie Crowther and Don Woods</authors>
 			<path tags="V3 S48" files="sna/v3/colossal.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adventure Quest">
 			<title>Adventure Quest</title>
-			<about></about>
-			<authors></authors>
+			<about>Adventure Quest is a full scale adventure game with 225 individually described locations. You will have to solve a very large number of problems on your journey to the Black Tower and (perhaps) victory.</about>
+			<authors>Pete, Mike and Nick Austin</authors>
 			<path tags="V3 S48" files="sna/v3/advquest.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			
 <!-- dont work, why?		<path tags="BBC" files="qdata">http://bbc.nvg.org/sw/Level9/AdventureQuest.zip</path> -->
 		</game>
 		<game name="Dungeon Adventure">
 			<title>Dungeon Adventure</title>
-			<about></about>
-			<authors></authors>
+			<about>Dungeon Adventure is a full scale adventure game with well over 200 individually described locations, 700 messages, about 100 objects etc etc. You will have to solve a very large number of puzzles while collecting the treasures left by the Demon Lord!</about>
+			<authors>Pete, Mike and Nick Austin</authors>
 			<path tags="V3 S48" files="sna/v3/dungeon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
@@ -362,6 +364,7 @@ L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are we
 	    <game name="Snowball">
 			<title>Snowball</title>
 			<about>Snowball is a big adventure game. It has over 7,000 locations and has taken 9 months to produce. It's probably unique among adventures in having a realistic, planned background and being set aboard a starship that could actually work.
+
 You play Kim Kimberley, secret agent extraordinary.
 Your mission: to safeguard the interstar transport, Snowball 9, as a last resort following catastrophic accident or sabotage.
 Thus when your modified freezer-coffin wakes you with the Snowball still in transit, you know that something must be very wrong. You're weakened and disorientated from lengthy hibernation, but the fate of two million passengers is in your hands!</about>
@@ -371,98 +374,167 @@ Additional expertise: Ian Buxton.</authors>
 	    </game>
 	    <game name="Return to Eden">
 			<title>Return to Eden</title>
-			<about></about>
-			<authors></authors>
+			<about>Return to Eden is Level 9 Computing's sixth adventure and has taken the usual enormously long time to produce. It's the second Silicon Dream adventure and starts where Snowball left off (though you don't need to have played Snowball first).
+
+You play Kim Kimberley and have just saved the interstar transport. Snowball 9, from disaster. Unfortunately the control room vidcams show a different story. Kim seems to enter, hurl a bomb and the room is engulfed in flames. The evidence is damning.
+Forced to flee, you just reach a stratoglider life-boat before the waldroids close in. And one hour later you become the first human to land on planet Eden.
+Snowball 9 is in orbit, crewed by people who believe you to be a murderer. The only civilisation on Eden is a robot city far to the east. And the planet is reportedly populated by furiouslyhostile beings of every kind: only ceaseless vigilance and hitech weaponry prevent them over-running the city.
+Now you know enough to start. Good luck!</about>
+			<authors>Written by: Nick Austin and Chris Queen.
+Pictures by: Tim Noyce</authors>
 			<path tags="V2 S48" files="sna/v2/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V3 S48" files="sna/v3/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Worm in Paradise">
 			<title>Worm in Paradise</title>
-			<about></about>
-			<authors></authors>
+			<about>The Worm in Paradise is Level 9's nineth adventure and concludes the Silicon Dreams Trilogy. It takes place on the planet Eden, 100 years after the time of Snowball and Return to Eden (though you don't need to have played either of these first).
+
+You are a citizen of Enoch megapolis of Eden. Unfortunately, when the game starts, you can remember nothing more. It is most odd. Good Luck!</about>
+			<authors>Written by: Pete, Mike and Nick Austin.
+Pictures: James Horsler.</authors>
 			<path tags="V3 S48" files="sna/v3/worm.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Time And Magik Trilogy">
 	    <game name="Lords of Time">
 			<title>Lords of Time</title>
-			<about></about>
-			<authors></authors>
+			<about>Lords of Time is a full scale adventure game, with well over 200 locations, 750 messages, about 80 objects etc etc. You will have to solve a large number of puzzles in order to collect the objects needed to defeat the Evil Timelords.</about>
+			<authors>Written by: Sue Gazzard.
+Additional expertise: Ian Buxton.</authors>
 			<path tags="V1 S48" files="sna/v1/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V2 S48" files="sna/v2/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V4 S48" files="sna/v4/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Red Moon">
 			<title>Red Moon</title>
-			<about></about>
-			<authors></authors>
+			<about>The game, Red Moon, re-enacts a tale from the time where Magik still worked and when mythical monsters guarded fabulous treasure.
+
+You have the use of many weapons and a dozen different magical spells to help you rescue the Red Moon Crystal, only source of Magik in the land.</about>
+			<authors>Game Design: David Williamson, Pete Austin
+Implementation: Simon Aspinall, Pete Austin
+Pictures: James Horsler</authors>
 			<path tags="V2 S48" files="sna/v2/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V4 S48" files="sna/v4/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Price of Magik">
 			<title>The Price of Magik</title>
-			<about></about>
-			<authors></authors>
+			<about>Rummaging in the attic, you discover a wrinkled balloon with tiny white writing, too small to make out. Intrigued, you blow and the balloon swells like a red globe. Then it bursts.
+
+As the echos fade, you re-open your eyes and look in astonishment upon a bleak landscape of mist and swamp. Writing glimmers in the darkness: "Welcome to the House of the Red Moon."
+
+This is a game about magic. At the start you know absolutely nothing about its methods and powers, except that there are 18 spells to learn. To win, you must know everything.</about>
+			<authors>Original idea: David Williamson
+Game Design: Pete Austin
+Implementation: Mike Austin
+Pictures: James Horsler</authors>
 			<path tags="V3 S48" files="sna/v3/price.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Gnome Ranger Series">
 	    <game name="Gnome Ranger">
 			<title>Gnome Ranger</title>
-			<about></about>
-			<authors></authors>        
+			<about>When Ingrid the Sloane Gnome is banished to the wilderness by her exasperated familym the monsters don't know what's hit them!
+
+Gnome Ranger is a magical 3-part adventure from Level 9, using their KAOS adventure system and featuring:
+- new multi-player puzzles, needing co-operation to solve;
+- characters with their own goals and lives; 
+- high level commands to make your life easier. 
+</about>
+			<authors>Written by: Pete Austin
+Pictures by: Joan Lamb</authors>        
 	    </game>
 	    <game name="Ingrids Back">
 			<title>Gnome Ranger II Ingrid\'s Back</title>
-			<about></about>
-			<authors></authors>        
+			<about>"Ingrid's Back" starts with Ingrid's return to Little Moaning, and tells how she stopped the plans of Jasper Quickbuck, money-grabbing lord of Ridley's Manor, to steamroll the gnome-belt village for an estate of yuppie homes.
+Ingrid Bottomlow's Second Gnettlefield Journal is an introduction. Then, part 1 of the game describes Ingrid's attempts to get her fellow gnomes to sign a petition against the planned eviction. The next part concerns the defence of the Gnettlefield farm and finally, in part 3, Ingrid infiltrates the manor.</about>
+			<authors>Written by: Pete Austin (game design) and Graham Jones (game programming and text).
+Game text polishing: Peter McBride.
+Graphics by Dicon Peeke.
+Additional programming by Mike Austin, Nick Austin, John Jones-Steele and Mike Bryant.
+Pictures by: Joan Lamb</authors>        
 	    </game>
 	</category>
 	<category name="The Adrian Mole Series">
 	    <game name="Adrian Mole 1">
 			<title>The Secret Diary of Adrian Mole Aged 13 &#190;</title>
-			<about></about>
-			<authors></authors>
+			<about>I learned today that I am to be the subject of a computer game. The object of the game is to make me popular with everyone, which sounds dead brilliant. Apparently they´ve written an enormous programme containing 200 kilos of text, which Brainbox Henderson says is a lot. Now everyone else can have or go at coping with all the problems that beset me over an entire year of my life.</about>
+			<authors>Game Design: Pete Austin
+Programmed by: Pete Austin
+Pictures: James Horsler
+Based on The Adrian Mole Diaries by Sue Townsend</authors>
 			<path tags="V3 S48" files="sna/v3/mole2.sna,sna/v3/mole3.sna,sna/v3/mole1.sna,sna/v3/mole4.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adrian Mole 2">
 			<title>The Growing Pains of Adrian Mole</title>
-			<about></about>
-			<authors></authors>        
+			<about>Whether you have read Sue Townsend's best-selling books or not, you should have no trouble guiding Adrian through the trials and tribulations of school and family life! Knowing the books won't necessarily give you an advantage: in the game, familiar scenes may well have a new twist There are a number of random elements included so each game may be different. Adrian's view of the world is unique and entertaining and you help make decisions about all aspects of his life. He is surrounded by colourful characters and you will need to consider carefully the best way to impress them! Your ultimate aim is to make Adrian as popular as possible with everyone and at regular points in the game your score will appear as an indication of how well you are doing. (You could, of course, play it the other way and try to make Adrian as unpopular as possible!)</about>
+			<authors>Game Design: Pete Austin
+Programmed by: Pete Austin
+Pictures: Joan Lamb
+Additional text and story lines for the game by Pete Austin
+Based on The Adrian Mole Diaries by SueTownsend</authors>        
 	    </game>
 	</category>
 	<category name="Individual Games">
 		<game name="Emerald Isle">
 			<title>Emerald Isle</title>
 			<about>Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</about>
-			<authors>Written by: Shaun D. Abbott\nPictures by: James Horsler</authors>
+			<authors>Written by: Shaun D. Abbott
+Pictures by: James Horsler</authors>
 			<path tags="V2 S48" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 		</game>
 		<game name="Erik the Viking">
 			<title>The Saga of Erik the Viking</title>
-			<about></about>
-			<authors></authors>
+			<about>A visually dramatic text adventure with over 200 locations. Based on the book by Terry Jones.
+
+Travel as Erik the Viking, in search of the evil Dogfighters. Explore authentic Viking settlements and seek help from Wizards, Dragons and Giants in strange lands.</about>
+			<authors>Game design: Pete Austin
+Programmed by: Pete Austin
+Artist: Joan Lamb
+Adventure system: Mike Austin
+Graphics system: Ian Buxton, Mike Austin</authors>
 			<path tags="V2 S48" files="sna/v2/erik.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>        
 	    </game>
 	    <game name="The Archers">
 			<title>The Archers</title>
-			<about></about>
-			<authors></authors>        
+			<about>As a trainee scriptwriter on the Archers radio
+programme, you must make plot decisions for four
+major characters: Jack Woolley, Elizabeth Archer,
+Eddie Grundy and Nelson Gabriel. But beware, the
+plot has its own momentum, and events can easily
+get out of hand.</about>
+			<authors>Written by: Pete Austin.
+Pictures by Joan Lamb.</authors>        
 	    </game>
 	    <game name="Knight Orc">
 			<title>Knight Orc</title>
-			<about></about>
-			<authors></authors>        
+			<about>Knight Orc is Level 9's innovative and fun-packed adventure. Set in three parts, it casts you as an oppressed orc in a magical world where all is not as it first seems. For generations humans have been persecuting orcs, and now it's time to get your own back.
+			    Knight Orc is a challenging game which is truly interactive. Each character leads its own life in the game, and their actions can affect you and the outcome of the adventure. Communication with other characters, learning spells and solving puzzles are all a vital part of the game if you are to escape the mystical world and take revenge on humankind.</about>
+			<authors>Idea, design and text Pete Austin
+Game programming Mike Austin
+Adventure System Mike and Nick Austin and John Jones Steele
+Map and Testing Andrew Deeley
+Testing Paul Coppins
+Original Paintings Godfrey Dowson
+Additional artwork Neil Strudwick and Stuart Lee</authors>        
 	    </game>
 	    <game name="Lancelot">
 			<title>Lancelot</title>
-			<about></about>
-			<authors></authors>        
+			<about>Travel back to the Age of Chivalry when knights were bold, galloping across the countryside and rescuing damsels in distress. Level 9 recreate the time of wizards and the Knights of the Round Table in their greatest adventure yet. Lancelot is a three-part adventure, spanning the complete saga from the foundation of the Order to its finest hour - the quest for the Holy Grail. Guide Lancelot through his many exploits at Camelot, battle with wayward knights, and win the love of Guinever and Elaine. The challenge which has fascinated treasure hunters through the centuries is now yours - and you´ll need all your strength, wit and valour to achieve your goal.</about>
+			<authors>Written by: Christina Erskin.
+Pictures by Joan Lamb, Neil Scrimgeour, Dicken Peeke, Nusarath Jahan.
+Systems: Mike and Nick Austin, John Jones-Steele, Mike Bryant</authors>        
 	    </game>
 	    <game name="Scapeghost">
 			<title>Scapeghost</title>
-			<about></about>
-			<authors></authors>        
+			<about>Alan Chance was on an undercover mission, trying to infiltrate a drugs gang. All was going well, but then something or someone alerted the gangsters and they killed Alan and escaped, taking his colleague Sarah as a hostage. His fellow police falsely blame a mistake of Alan's for tipping off the criminals.
+
+Alan has three nights as a ghost to disprove this false accusation, clear his name and gain revenge. Use his detective skills and growing spirit powers to delay the gangsters, track down their new hideout and bring them to Justice.</about>
+			<authors>Original idea: Sandra Sharkey, Pete Gerrard.
+Game design etc.: Pete Austin.
+Game programming: Graham Jones.
+Game text: Graham Jones, Pete Austin, Peter McBride.
+Cover Picture: Godfrey Dowson.
+Computer Art: Dicon Peeke.</authors>        
 	    </game>
 	</category>
 </games>
