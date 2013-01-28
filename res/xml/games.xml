@@ -398,23 +398,35 @@ Pictures: James Horsler.</authors>
 	<category name="The Time And Magik Trilogy">
 	    <game name="Lords of Time">
 			<title>Lords of Time</title>
-			<about></about>
-			<authors></authors>
+			<about>Lords of Time is a full scale adventure game, with well over 200 locations, 750 messages, about 80 objects etc etc. You will have to solve a large number of puzzles in order to collect the objects needed to defeat the Evil Timelords.</about>
+			<authors>Written by: Sue Gazzard.
+Additional expertise: Ian Buxton.</authors>
 			<path tags="V1 S48" files="sna/v1/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V2 S48" files="sna/v2/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V4 S48" files="sna/v4/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Red Moon">
 			<title>Red Moon</title>
-			<about></about>
-			<authors></authors>
+			<about>The game, Red Moon, re-enacts a tale from the time where Magik still worked and when mythical monsters guarded fabulous treasure.
+
+You have the use of many weapons and a dozen different magical spells to help you rescue the Red Moon Crystal, only source of Magik in the land.</about>
+			<authors>Game Design: David Williamson, Pete Austin
+Implementation: Simon Aspinall, Pete Austin
+Pictures: James Horsler</authors>
 			<path tags="V2 S48" files="sna/v2/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V4 S48" files="sna/v4/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Price of Magik">
 			<title>The Price of Magik</title>
-			<about></about>
-			<authors></authors>
+			<about>Rummaging in the attic, you discover a wrinkled balloon with tiny white writing, too small to make out. Intrigued, you blow and the balloon swells like a red globe. Then it bursts.
+
+As the echos fade, you re-open your eyes and look in astonishment upon a bleak landscape of mist and swamp. Writing glimmers in the darkness: "Welcome to the House of the Red Moon."
+
+This is a game about magic. At the start you know absolutely nothing about its methods and powers, except that there are 18 spells to learn. To win, you must know everything.</about>
+			<authors>Original idea: David Williamson
+Game Design: Pete Austin
+Implementation: Mike Austin
+Pictures: James Horsler</authors>
 			<path tags="V3 S48" files="sna/v3/price.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
