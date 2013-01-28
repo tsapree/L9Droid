@@ -484,29 +484,57 @@ Pictures by: James Horsler</authors>
 		</game>
 		<game name="Erik the Viking">
 			<title>The Saga of Erik the Viking</title>
-			<about></about>
-			<authors></authors>
+			<about>A visually dramatic text adventure with over 200 locations. Based on the book by Terry Jones.
+
+Travel as Erik the Viking, in search of the evil Dogfighters. Explore authentic Viking settlements and seek help from Wizards, Dragons and Giants in strange lands.</about>
+			<authors>Game design: Pete Austin
+Programmed by: Pete Austin
+Artist: Joan Lamb
+Adventure system: Mike Austin
+Graphics system: Ian Buxton, Mike Austin</authors>
 			<path tags="V2 S48" files="sna/v2/erik.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>        
 	    </game>
 	    <game name="The Archers">
 			<title>The Archers</title>
-			<about></about>
-			<authors></authors>        
+			<about>As a trainee scriptwriter on the Archers radio
+programme, you must make plot decisions for four
+major characters: Jack Woolley, Elizabeth Archer,
+Eddie Grundy and Nelson Gabriel. But beware, the
+plot has its own momentum, and events can easily
+get out of hand.</about>
+			<authors>Written by: Pete Austin.
+Pictures by Joan Lamb.</authors>        
 	    </game>
 	    <game name="Knight Orc">
 			<title>Knight Orc</title>
-			<about></about>
-			<authors></authors>        
+			<about>Knight Orc is Level 9's innovative and fun-packed adventure. Set in three parts, it casts you as an oppressed orc in a magical world where all is not as it first seems. For generations humans have been persecuting orcs, and now it's time to get your own back.
+			    Knight Orc is a challenging game which is truly interactive. Each character leads its own life in the game, and their actions can affect you and the outcome of the adventure. Communication with other characters, learning spells and solving puzzles are all a vital part of the game if you are to escape the mystical world and take revenge on humankind.</about>
+			<authors>Idea, design and text Pete Austin
+Game programming Mike Austin
+Adventure System Mike and Nick Austin and John Jones Steele
+Map and Testing Andrew Deeley
+Testing Paul Coppins
+Original Paintings Godfrey Dowson
+Additional artwork Neil Strudwick and Stuart Lee</authors>        
 	    </game>
 	    <game name="Lancelot">
 			<title>Lancelot</title>
-			<about></about>
-			<authors></authors>        
+			<about>Travel back to the Age of Chivalry when knights were bold, galloping across the countryside and rescuing damsels in distress. Level 9 recreate the time of wizards and the Knights of the Round Table in their greatest adventure yet. Lancelot is a three-part adventure, spanning the complete saga from the foundation of the Order to its finest hour - the quest for the Holy Grail. Guide Lancelot through his many exploits at Camelot, battle with wayward knights, and win the love of Guinever and Elaine. The challenge which has fascinated treasure hunters through the centuries is now yours - and you´ll need all your strength, wit and valour to achieve your goal.</about>
+			<authors>Written by: Christina Erskin.
+Pictures by Joan Lamb, Neil Scrimgeour, Dicken Peeke, Nusarath Jahan.
+Systems: Mike and Nick Austin, John Jones-Steele, Mike Bryant</authors>        
 	    </game>
 	    <game name="Scapeghost">
 			<title>Scapeghost</title>
-			<about></about>
-			<authors></authors>        
+			<about>Alan Chance was on an undercover mission, trying to infiltrate a drugs gang. All was going well, but then something or someone alerted the gangsters and they killed Alan and escaped, taking his colleague Sarah as a hostage. His fellow police falsely blame a mistake of Alan's for tipping off the criminals.
+
+Alan has three nights as a ghost to disprove this false accusation, clear his name and gain revenge. Use his detective skills and growing spirit powers to delay the gangsters, track down their new hideout and bring them to Justice.</about>
+			<authors>Original idea: Sandra Sharkey, Pete Gerrard.
+Game design etc.: Pete Austin.
+Game programming: Graham Jones.
+Game text: Graham Jones, Pete Austin, Peter McBride.
+Cover Picture: Godfrey Dowson.
+Computer Art: Dicon Peeke.</authors>        
 	    </game>
 	</category>
 </games>
