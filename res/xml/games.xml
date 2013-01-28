@@ -433,26 +433,45 @@ Pictures: James Horsler</authors>
 	<category name="The Gnome Ranger Series">
 	    <game name="Gnome Ranger">
 			<title>Gnome Ranger</title>
-			<about></about>
-			<authors></authors>        
+			<about>When Ingrid the Sloane Gnome is banished to the wilderness by her exasperated familym the monsters don't know what's hit them!
+
+Gnome Ranger is a magical 3-part adventure from Level 9, using their KAOS adventure system and featuring:
+- new multi-player puzzles, needing co-operation to solve;
+- characters with their own goals and lives; 
+- high level commands to make your life easier. 
+</about>
+			<authors>Written by: Pete Austin
+Pictures by: Joan Lamb</authors>        
 	    </game>
 	    <game name="Ingrids Back">
 			<title>Gnome Ranger II Ingrid\'s Back</title>
-			<about></about>
-			<authors></authors>        
+			<about>"Ingrid's Back" starts with Ingrid's return to Little Moaning, and tells how she stopped the plans of Jasper Quickbuck, money-grabbing lord of Ridley's Manor, to steamroll the gnome-belt village for an estate of yuppie homes.
+Ingrid Bottomlow's Second Gnettlefield Journal is an introduction. Then, part 1 of the game describes Ingrid's attempts to get her fellow gnomes to sign a petition against the planned eviction. The next part concerns the defence of the Gnettlefield farm and finally, in part 3, Ingrid infiltrates the manor.</about>
+			<authors>Written by: Pete Austin (game design) and Graham Jones (game programming and text).
+Game text polishing: Peter McBride.
+Graphics by Dicon Peeke.
+Additional programming by Mike Austin, Nick Austin, John Jones-Steele and Mike Bryant.
+Pictures by: Joan Lamb</authors>        
 	    </game>
 	</category>
 	<category name="The Adrian Mole Series">
 	    <game name="Adrian Mole 1">
 			<title>The Secret Diary of Adrian Mole Aged 13 &#190;</title>
-			<about></about>
-			<authors></authors>
+			<about>I learned today that I am to be the subject of a computer game. The object of the game is to make me popular with everyone, which sounds dead brilliant. Apparently they´ve written an enormous programme containing 200 kilos of text, which Brainbox Henderson says is a lot. Now everyone else can have or go at coping with all the problems that beset me over an entire year of my life.</about>
+			<authors>Game Design: Pete Austin
+Programmed by: Pete Austin
+Pictures: James Horsler
+Based on The Adrian Mole Diaries by Sue Townsend</authors>
 			<path tags="V3 S48" files="sna/v3/mole2.sna,sna/v3/mole3.sna,sna/v3/mole1.sna,sna/v3/mole4.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adrian Mole 2">
 			<title>The Growing Pains of Adrian Mole</title>
-			<about></about>
-			<authors></authors>        
+			<about>Whether you have read Sue Townsend's best-selling books or not, you should have no trouble guiding Adrian through the trials and tribulations of school and family life! Knowing the books won't necessarily give you an advantage: in the game, familiar scenes may well have a new twist There are a number of random elements included so each game may be different. Adrian's view of the world is unique and entertaining and you help make decisions about all aspects of his life. He is surrounded by colourful characters and you will need to consider carefully the best way to impress them! Your ultimate aim is to make Adrian as popular as possible with everyone and at regular points in the game your score will appear as an indication of how well you are doing. (You could, of course, play it the other way and try to make Adrian as unpopular as possible!)</about>
+			<authors>Game Design: Pete Austin
+Programmed by: Pete Austin
+Pictures: Joan Lamb
+Additional text and story lines for the game by Pete Austin
+Based on The Adrian Mole Diaries by SueTownsend</authors>        
 	    </game>
 	</category>
 	<category name="Individual Games">
