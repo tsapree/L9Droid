@@ -339,22 +339,24 @@ L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are we
 	<category name="The Middle-Earth Trilogy / Jewels Of Darkness">
 	    <game name="Colossal Adventure">
 			<title>Colossal Adventure</title>
-			<about></about>
-			<authors></authors>
+			<about>Colossal Adventure is a complete, full scale version of the original classic mainframe game "Adventure", possibly the most popular and addictive computer game ever produced. You will encounter all of the creatures, treasures and locations that you will have seen hinted at in readers' letters to computer magazines.
+
+But when you qualify for the end-game by finding all of the treasures, it is another matter entirely. The standard end-game is rather limited, with only two locations, so we have added a complete new, unique end-game to Colossal Adventure: with over 70 locations! Don't feel let down when you've solved the first part of the game - the play continues!!</about>
+			<authors>Pete, Mike and Nick Austin, based on the original "Adventure" by Willie Crowther and Don Woods</authors>
 			<path tags="V3 S48" files="sna/v3/colossal.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adventure Quest">
 			<title>Adventure Quest</title>
-			<about></about>
-			<authors></authors>
+			<about>Adventure Quest is a full scale adventure game with 225 individually described locations. You will have to solve a very large number of problems on your journey to the Black Tower and (perhaps) victory.</about>
+			<authors>Pete, Mike and Nick Austin</authors>
 			<path tags="V3 S48" files="sna/v3/advquest.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			
 <!-- dont work, why?		<path tags="BBC" files="qdata">http://bbc.nvg.org/sw/Level9/AdventureQuest.zip</path> -->
 		</game>
 		<game name="Dungeon Adventure">
 			<title>Dungeon Adventure</title>
-			<about></about>
-			<authors></authors>
+			<about>Dungeon Adventure is a full scale adventure game with well over 200 individually described locations, 700 messages, about 100 objects etc etc. You will have to solve a very large number of puzzles while collecting the treasures left by the Demon Lord!</about>
+			<authors>Pete, Mike and Nick Austin</authors>
 			<path tags="V3 S48" files="sna/v3/dungeon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
