@@ -27,7 +27,7 @@
         android:layout_alignBaseline="@+id/bProperties"
         android:layout_alignBottom="@+id/bProperties"
         android:layout_toLeftOf="@+id/bProperties"
-        android:layout_toRightOf="@+id/imageView1"
+        android:layout_toRightOf="@+id/ivMark"
         android:text="Atari/C-64/Speccy/CPC " />
 
     <ImageView

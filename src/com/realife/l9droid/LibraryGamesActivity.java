@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.SimpleExpandableListAdapter;
 
@@ -31,8 +32,8 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.library_games);
 		
-		Button bBack = (Button) findViewById(R.id.bBack);
-	    bBack.setOnClickListener(this);
+	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
+	    ivBack.setOnClickListener(this);
 		
 		Library lib=Library.getInstance();
 		
@@ -112,7 +113,7 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 	}
 	
 	public void onClick(View v) {
-		if (v.getId()==R.id.bBack) {
+		if (v.getId()==R.id.ivBack) {
 			onBackPressed();
 		};
 	}

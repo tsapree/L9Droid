@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -40,8 +41,8 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 		lvFiles.setOnItemClickListener(this);
 		lvFiles.setOnItemLongClickListener(this);
 		
-		Button bBack = (Button) findViewById(R.id.bBack);
-	    bBack.setOnClickListener(this);
+	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
+	    ivBack.setOnClickListener(this);
 
 	}
 
@@ -78,7 +79,7 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 	}
 
 	public void onClick(View v) {
-		if (v.getId()==R.id.bBack) {
+		if (v.getId()==R.id.ivBack) {
 			onBackPressed();
 		};
 	}

@@ -14,7 +14,7 @@
             android:id="@+id/tvDownload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/bBack"
+            android:layout_toRightOf="@+id/ivBack"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
@@ -29,20 +29,19 @@
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/tvGameName"
             android:layout_below="@+id/tvDownload"
-            android:layout_toRightOf="@+id/bBack"
+            android:layout_toRightOf="@+id/ivBack"
             android:padding="5dp"
             android:textColor="#999999"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/bBack"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="16dp"
+            android:layout_height="48dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:text="&lt;" />
+            android:scaleType="center"
+            android:src="@drawable/ic_back" />
 
     </RelativeLayout>
 

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,8 +45,8 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		
 		tvGameName.setText(gi.getTitle().toUpperCase());
 		
-		Button bBack = (Button) findViewById(R.id.bBack);
-	    bBack.setOnClickListener(this);
+	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
+	    ivBack.setOnClickListener(this);
 		
 		FillSourcesInfo();
 	    
@@ -79,7 +80,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	};
 	
 	public void onClick(View v) {
-		if (v.getId()==R.id.bBack) {
+		if (v.getId()==R.id.ivBack) {
 			onBackPressed();
 			return;
 		};
