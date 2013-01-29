@@ -135,6 +135,8 @@ public class Threads {
 	    			if (l9.tempLog!=null) {
 		    			for (int i=0;i<l9.tempLog.size();i++) lvAdapter.add(l9.tempLog.get(i));
 	    			};
+	    			logStrId=lvAdapter.getCount()-1;
+	    			logStringCapacitor=null;
 	    			break;
 	    		case MACT_GFXOFF:
 		    		menuPicturesEnabled=false;

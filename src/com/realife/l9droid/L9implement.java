@@ -135,36 +135,6 @@ public class L9implement extends L9 {
 		while (L9State==L9StateRunning || L9State==L9StateCommandReady) RunGame();
 	};
 	
-	boolean os_save_file(byte[] buff) {
-		String path="Saves/"+save_prefix+".sav";
-
-		path=lib.getAbsolutePath(path);
-		path=lib.unifyFile(path);
-		save_piclog(path);
-		return lib.fileSaveFromArray(path,buff);
-	};
-	
-	byte[] os_load_file() {
-		th.choosing_restore_filename=true;
-		mHandler.sendEmptyMessage(Threads.MACT_L9SELECTFILENAMETORESTORE);
-		try {
-			while (th.choosing_restore_filename) {
-				TimeUnit.MILLISECONDS.sleep(100);
-			};
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String path=th.choosed_restore_filename;//"Saves/1.sav";
-		if ((path==null) || (path.length()<1)) return null;
-		path=lib.getAbsolutePath(path);
-		load_piclog(path,th.history);
-		mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);
-		return lib.fileLoadToArray(path);
-	};
-	
-	
-
 	byte[] os_open_script_file() {
 		byte script[] = {'u','n','f','a','s',' ','p','a','r','a','\r',
 				'u','\r',
@@ -467,6 +437,34 @@ public class L9implement extends L9 {
 		return key;
 	};
 	
+	boolean os_save_file(byte[] buff) {
+		String path="Saves/"+save_prefix+".sav";
+
+		path=lib.getAbsolutePath(path);
+		path=lib.unifyFile(path);
+		save_piclog(path);
+		return lib.fileSaveFromArray(path,buff);
+	};
+	
+	byte[] os_load_file() {
+		th.choosing_restore_filename=true;
+		mHandler.sendEmptyMessage(Threads.MACT_L9SELECTFILENAMETORESTORE);
+		try {
+			while (th.choosing_restore_filename) {
+				TimeUnit.MILLISECONDS.sleep(100);
+			};
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String path=th.choosed_restore_filename;//"Saves/1.sav";
+		if ((path==null) || (path.length()<1)) return null;
+		path=lib.getAbsolutePath(path);
+		load_piclog(path,th.history);
+		mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);
+		return lib.fileLoadToArray(path);
+	};
+	
 	boolean restore_autosave(String path) {
 
 		if (path==null) return false;
@@ -477,10 +475,11 @@ public class L9implement extends L9 {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
 			load_piclog(path,th.history);
-			th.lvAdapter.clear();
-			for (int i=0; i<tempLog.size();i++) th.lvAdapter.add(tempLog.get(i));
-			th.logStrId=th.lvAdapter.getCount()-1;
-			th.logStringCapacitor=null;
+			mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);
+			//th.lvAdapter.clear();
+			//for (int i=0; i<tempLog.size();i++) th.lvAdapter.add(tempLog.get(i));
+			//th.logStrId=th.lvAdapter.getCount()-1;
+			//th.logStringCapacitor=null;
 			return true;
 		};
 		return false;
