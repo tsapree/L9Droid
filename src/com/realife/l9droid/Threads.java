@@ -86,8 +86,8 @@ public class Threads {
 		    	case MACT_L9WORKING:
 		    		menuHashEnabled=false;
 		    		//activity.bCmd.setText("...");
-		    		activity.bCmdSetText("...");
-		    		activity.bCmd.setEnabled(false);
+		    		//activity.bCmdSetText("...");
+		    		activity.ibCmd.setEnabled(false);
 		    		break;
 		    	case MACT_L9WAITFORCOMMAND:
 		    		activity.outLogFlush(false);
@@ -95,18 +95,18 @@ public class Threads {
 		    		activity.etCmd.requestFocus();
 		    		menuHashEnabled=true;
 		    		//activity.bCmd.setText("Do");
-		    		activity.bCmdSetText("Do");
-		    		activity.bCmd.setEnabled(true);
+		    		//activity.bCmdSetText("Do");
+		    		activity.ibCmd.setEnabled(true);
 		    		activity.bSpace.setVisibility(View.INVISIBLE);
 		    		activity.bEnter.setVisibility(View.INVISIBLE);
-		    		activity.bCmd.setVisibility(View.VISIBLE);
+		    		activity.ibCmd.setVisibility(View.VISIBLE);
 		    		activity.etCmd.setVisibility(View.VISIBLE);
 		    		activity.etCmd.requestFocus();
 		    		break;
 		    	case MACT_L9WAITFORCHAR:
 		    		activity.bSpace.setVisibility(View.VISIBLE);
 		    		activity.bEnter.setVisibility(View.VISIBLE);
-		    		activity.bCmd.setVisibility(View.INVISIBLE);
+		    		activity.ibCmd.setVisibility(View.INVISIBLE);
 		    		activity.etCmd.setVisibility(View.INVISIBLE);
 		    		if (!activity.bEnter.isFocused())
 		    			activity.bSpace.requestFocusFromTouch();
@@ -114,8 +114,8 @@ public class Threads {
 		    		break;	
 		    	case MACT_L9WAITBEFORESCRIPT:
 		    		//activity.bCmd.setText("<!>");
-		    		activity.bCmdSetText("<!>");
-		    		activity.bCmd.setEnabled(false);
+		    		//activity.bCmdSetText("<!>");
+		    		activity.ibCmd.setEnabled(false);
 		    		break;
 		    	case MACT_L9SELECTFILENAMETORESTORE:
 		    		activity.selectFileToRestore();

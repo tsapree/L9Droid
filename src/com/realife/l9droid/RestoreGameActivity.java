@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -28,8 +29,8 @@ public class RestoreGameActivity extends Activity implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.restore_game);
 		
-		Button bBack = (Button) findViewById(R.id.bBack);
-	    bBack.setOnClickListener(this);
+	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
+	    ivBack.setOnClickListener(this);
 
 		lib = Library.getInstance();
 		String gamepath=getIntent().getStringExtra("gamepath");
@@ -57,7 +58,7 @@ public class RestoreGameActivity extends Activity implements OnItemClickListener
 	};
 	
 	public void onClick(View v) {
-		if (v.getId()==R.id.bBack) {
+		if (v.getId()==R.id.ivBack) {
 			onBackPressed();
 		};
 	}

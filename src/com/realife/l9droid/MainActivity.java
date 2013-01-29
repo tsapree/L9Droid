@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -58,11 +59,12 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	
 	View activityRootView;
 	
-	Button bCmd;
+	ImageButton ibCmd;
+	ImageButton ibMenu;
 	EditText etCmd;
+	
 	Button bSpace;
 	Button bEnter;
-	Button bMenu;
 
 	ListView lvMain;
 	ListView lvHistory;
@@ -92,15 +94,16 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
         ivScreen=(ImageView) findViewById(R.id.ivPicture);
         ivScreen.setOnClickListener(this);
                        
-        bCmd = (Button) findViewById(R.id.bCmd);
-        bCmd.setOnClickListener(this);
+        ibCmd = (ImageButton) findViewById(R.id.ibCmd);
+        ibCmd.setOnClickListener(this);
+    	ibMenu = (ImageButton) findViewById(R.id.ibMenu);
+    	ibMenu.setOnClickListener(this);
+        
         
         bSpace = (Button) findViewById(R.id.bSpace);
         bSpace.setOnClickListener(this);
     	bEnter = (Button) findViewById(R.id.bEnter);
     	bEnter.setOnClickListener(this);
-    	bMenu = (Button) findViewById(R.id.bMenu);
-    	bMenu.setOnClickListener(this);
         
         etCmd = (EditText) findViewById(R.id.etCmd);
         etCmd.setHint("Enter your command");
@@ -345,16 +348,15 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	//@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.bCmd: // кнопка ввода команды
+		case R.id.ibCmd: // кнопка ввода команды
 			if (etCmd.length()>0) {
 				postCommand();
 			} else {
 				toggleCommandsHistory();
 			}
 			break;
-		case R.id.ivPicture:
-			if (mt!=null && mt.l9!=null) 
-				mt.l9.waitPictureToDraw(); 
+		case R.id.ibMenu:
+			openOptionsMenu();
 			break;
 		case R.id.bSpace:
 			mt.keyPressed=' ';
@@ -362,8 +364,9 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		case R.id.bEnter:
 			mt.keyPressed='\r';
 			break;
-		case R.id.bMenu:
-			openOptionsMenu();
+		case R.id.ivPicture:
+			if (mt!=null && mt.l9!=null) 
+				mt.l9.waitPictureToDraw(); 
 			break;
 		}
 	}
@@ -457,7 +460,7 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	}
 
 	public void afterTextChanged(Editable arg0) {
-		bCmdSetText();
+		ibCmdSet();
 	}
 
 	public void beforeTextChanged(CharSequence s, int start, int count,
@@ -477,10 +480,10 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 	void setVisibilityCommandsHistory(boolean show) {
 		if (show) {
 			lvHistory.setVisibility(View.VISIBLE);
-			bCmdSetText();
+			ibCmdSet();
 		} else {
 			lvHistory.setVisibility(View.GONE);
-			bCmdSetText();
+			ibCmdSet();
 		};
 	}
 	
@@ -488,24 +491,13 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
 		return lvHistory.getVisibility()==View.VISIBLE;
 	};
 	
-	void bCmdSetText() {
-		bCmdSetText(null);
-	};
-		
-	void bCmdSetText(String txt) {
-		String label=null;
+	void ibCmdSet() {
 		if ((etCmd==null) || (lvHistory==null)) return;
-		
-		if (txt==null) {
-			label=(String)(bCmd.getTag());
-		} else {
-			label=txt;
-			bCmd.setTag(txt);
-		};
-		if (etCmd.getText().length()>0) bCmd.setText(label);
+		if (etCmd.getText().length()>0) ibCmd.setImageResource(R.drawable.ic_do); //bCmd.setText(label);
 		else {
-			if (lvHistory.getVisibility()==View.VISIBLE) bCmd.setText(">");
-			else bCmd.setText("<");
+			if (lvHistory.getVisibility()==View.VISIBLE) ibCmd.setImageResource(R.drawable.ic_history_hide); //bCmd.setText(">");
+			else ibCmd.setImageResource(R.drawable.ic_history_show); //bCmd.setText("<");
+			
 		};
 	};
 
