@@ -98,6 +98,41 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			if ((p!=null) && (p.getTag()!=null)) {
 				Toast.makeText(this, "Path: "+p.getTag(), Toast.LENGTH_SHORT).show();
 			};
+			View w = p.findViewById(R.id.rlMarks);
+			if (w.getVisibility()==View.GONE) w.setVisibility(View.VISIBLE);
+			else w.setVisibility(View.GONE);
+			break;
+		case R.id.ibInstalled:
+			p.setVisibility(View.GONE);
+			p = (View)p.getParent();
+			((ImageView)p.findViewById(R.id.ivMark)).setImageResource(Library.MARK_PICTURES_RESID[Library.MARK_INSTALLED]);
+			if ((p!=null) && (p.getTag()!=null)) {
+				lib.setMark((String)p.getTag(), Library.MARK_INSTALLED);
+			};
+			break;
+		case R.id.ibRateDown:
+			p.setVisibility(View.GONE);
+			p = (View)p.getParent();
+			((ImageView)p.findViewById(R.id.ivMark)).setImageResource(Library.MARK_PICTURES_RESID[Library.MARK_RATE_DOWN]);
+			if ((p!=null) && (p.getTag()!=null)) {
+				lib.setMark((String)p.getTag(), Library.MARK_RATE_DOWN);
+			};
+			break;
+		case R.id.ibRateUp:
+			p.setVisibility(View.GONE);
+			p = (View)p.getParent();
+			((ImageView)p.findViewById(R.id.ivMark)).setImageResource(Library.MARK_PICTURES_RESID[Library.MARK_RATE_UP]);
+			if ((p!=null) && (p.getTag()!=null)) {
+				lib.setMark((String)p.getTag(), Library.MARK_RATE_UP);
+			};
+			break;
+		case R.id.ibDone:
+			p.setVisibility(View.GONE);
+			p = (View)p.getParent();
+			((ImageView)p.findViewById(R.id.ivMark)).setImageResource(Library.MARK_PICTURES_RESID[Library.MARK_COMPLETED]);
+			if ((p!=null) && (p.getTag()!=null)) {
+				lib.setMark((String)p.getTag(), Library.MARK_COMPLETED);
+			};
 			break;
 		case R.id.bInstall:
 			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
@@ -107,26 +142,10 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		case R.id.ivBack:
 			onBackPressed();
 			break;
-			
-			/*
-			for (int n=0;n<gi.getNumberOfPaths();n++) {
-				String downloadedPath = lib.downloadFileToCache(gi.getPath(n));
-				if (downloadedPath!=null) {
-					Toast.makeText(this, "Downloaded ok: "+downloadedPath, Toast.LENGTH_SHORT).show();
-					if (lib.unzipFile(downloadedPath, gi.getFiles(n), gi.getId()+" "+gi.getTags(n))) {
-					//if (lib.unzipFile(downloadedPath, "SNA/V3/", "Return to Eden V3 S48")) { //check ability to extract all files in directory
-						Toast.makeText(this, "UnZipped well!", Toast.LENGTH_SHORT).show();
-						fillInfo();
-					} else Toast.makeText(this, "UnZip error!", Toast.LENGTH_SHORT).show();
-				}
-				else Toast.makeText(this, "Download error!", Toast.LENGTH_SHORT).show();
-			};
-			*/
 		}
 	};
 	
 	private void fillInfo() {
-		lib.requestPaths();
 	    ArrayList<String> versions = lib.getInstalledVersions(game);
 		
 	    //Заполняю информацию о инсталлированных версиях
@@ -143,9 +162,24 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			item.setTag(versions.get(i));
 			bProperties.setOnClickListener(this);
 			ibPlay.setOnClickListener(this);
+			
+			ImageView ivMark = (ImageView) item.findViewById(R.id.ivMark);
+			ivMark.setImageResource(Library.MARK_PICTURES_RESID[lib.getMark(versions.get(i))]);
+
+			ImageButton ibDelete = (ImageButton) item.findViewById(R.id.ibDelete);
+			ibDelete.setOnClickListener(this);
+			ImageButton ibInstalled = (ImageButton) item.findViewById(R.id.ibInstalled);
+			ibInstalled.setOnClickListener(this);
+			ImageButton ibRateDown = (ImageButton) item.findViewById(R.id.ibRateDown);
+			ibRateDown.setOnClickListener(this);
+			ImageButton ibRateUp = (ImageButton) item.findViewById(R.id.ibRateUp);
+			ibRateUp.setOnClickListener(this);
+			ImageButton ibDone = (ImageButton) item.findViewById(R.id.ibDone);
+			ibDone.setOnClickListener(this);
+
 			linLayout.addView(item);
 	    };
 	};
 	
+};
 	
-}

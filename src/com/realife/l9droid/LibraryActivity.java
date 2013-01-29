@@ -1,5 +1,7 @@
 package com.realife.l9droid;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +17,7 @@ import android.widget.ListView;
 public class LibraryActivity extends Activity implements OnMenuItemClickListener {
 	
 	ListView lvMain;
-	String[] paths;
+	ArrayList<String> paths;
 	Library lib; //TODO: временно - свой экземпляр для доступа к библиотеке
 	
 	@Override
@@ -63,7 +65,7 @@ public class LibraryActivity extends Activity implements OnMenuItemClickListener
 		      public void onItemClick(AdapterView<?> parent, View view,
 		          int position, long id) {
 		    	  Intent intent = new Intent();
-		    	  intent.putExtra("opengame",/*view.toString()*/ paths[position]);
+		    	  intent.putExtra("opengame",/*view.toString()*/ paths.get(position));
 		    	  setResult(RESULT_OK,intent);
 		    	  finish();
 		      }

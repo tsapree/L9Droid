@@ -41,14 +41,15 @@
         android:src="@drawable/ic_installed" />
 
         <RelativeLayout
-            android:id="@+id/rl2"
+            android:id="@+id/rlMarks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/ibPlay" >
+            android:layout_below="@+id/ibPlay"
+            android:visibility="gone" >
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/ibDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -57,7 +58,7 @@
                 android:src="@drawable/ic_delete" />
 
             <ImageButton
-                android:id="@+id/imageButton5"
+                android:id="@+id/ibInstalled"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -66,29 +67,29 @@
                 android:src="@drawable/ic_installed" />
 
             <ImageButton
-                android:id="@+id/imageButton2"
+                android:id="@+id/ibRateDown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/imageButton5"
+                android:layout_toRightOf="@+id/ibInstalled"
                 android:background="@android:drawable/btn_default_small"
                 android:src="@drawable/ic_rate_down" />
 
             <ImageButton
-                android:id="@+id/imageButton1"
+                android:id="@+id/ibRateUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/imageButton2"
+                android:layout_toRightOf="@+id/ibRateDown"
                 android:background="@android:drawable/btn_default_small"
                 android:src="@drawable/ic_rate_up" />
 
             <ImageButton
-                android:id="@+id/imageButton6"
+                android:id="@+id/ibDone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/imageButton1"
+                android:layout_toRightOf="@+id/ibRateUp"
                 android:background="@android:drawable/btn_default_small"
                 android:src="@drawable/ic_done" />
 

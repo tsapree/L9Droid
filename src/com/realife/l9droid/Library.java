@@ -48,6 +48,7 @@ public class Library {
 	
 	final String LIBDIR_SD = "L9Droid";
 	final String FILE_NOMEDIA=".nomedia";
+	final String FILE_MARK=".mark";
 	
 	public static final String ATTR_NAME = "name";
 	public static final String ATTR_DATE = "date";
@@ -61,9 +62,27 @@ public class Library {
 	public static final int TYPE_FOLDER = 1;
 	public static final int TYPE_FILE = 2;
 	
+	final String MARK_LABEL_RATE_DOWN = "BAD";
+	final String MARK_LABEL_RATE_UP = "GOOD";
+	final String MARK_LABEL_COMPLETED = "DONE";
+
+	public static final int MARK_NOT_INSTALLED = 0;
+	public static final int MARK_INSTALLED = 1;
+	public static final int MARK_RATE_DOWN = 2;
+	public static final int MARK_RATE_UP = 3;
+	public static final int MARK_COMPLETED = 4;
+	
+	public static final int MARK_PICTURES_RESID[] = {
+		R.drawable.ic_back, 	//MARK_NOT_INSTALLED = 0;
+		R.drawable.ic_installed,//MARK_INSTALLED = 1;
+		R.drawable.ic_rate_down,//MARK_RATE_DOWN = 2;
+		R.drawable.ic_rate_up,	//MARK_RATE_UP = 3;
+		R.drawable.ic_done		//MARK_COMPLETED = 4;
+	};
+	
 	Handler h;
 	String GameFullPathName;
-	String paths[];
+	private ArrayList<String> paths;
 
 	String tags[][]={
 			{"V1","A-Code V1"},
@@ -100,7 +119,6 @@ public class Library {
 	
 	//TODO: вызываю извне этот метод, лучше убрать и вызывать из конструктора
 	boolean prepareLibrary(Activity act) {
-		paths=null;
 		//getting sdcard path
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
@@ -126,8 +144,7 @@ public class Library {
 	}
 	
 	public void requestPaths() {
-		int paths_num=0;
-		String[] temppaths=new String[300];
+		paths = new ArrayList<String>();
 		File sdPath = android.os.Environment.getExternalStorageDirectory();
 		sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/");
 		File[] pathdirs=sdPath.listFiles();
@@ -137,14 +154,9 @@ public class Library {
 				if (files!=null) 
 					for (int j=0;j<files.length; j++)
 						if (files[j].isFile()) {
-							temppaths[paths_num++]=files[j].getAbsolutePath();
+							paths.add(files[j].getAbsolutePath());
 						}
 			};
-		};
-		//TODO: temppaths-lame! kill it!
-		if (paths_num>0) {
-			paths=new String[paths_num];
-			for (int i=0; i<paths_num; i++) paths[i]=temppaths[i];
 		};
 	};
 	
@@ -160,7 +172,7 @@ public class Library {
     }
 
 	
-	String[] getPaths() {
+    ArrayList<String> getPaths() {
 		return paths;
 	};
 	
@@ -217,14 +229,14 @@ public class Library {
 				OutputStream out = new FileOutputStream(sdFile);
 				out.write(buff);
 				out.close();
-				sendUserMessage("Saved: "+path);
+				//sendUserMessage("Saved: "+path);
 				return true;
 			} catch (FileNotFoundException e) {
 				//TODO: e.printStackTrace();
 			} catch (IOException e) {
 				//TODO: e.printStackTrace();
 			}
-			sendUserMessage("ERROR save: "+path);
+			//sendUserMessage("ERROR save: "+path);
 		};
 		return false;
 	}
@@ -504,9 +516,9 @@ public class Library {
 		if (paths==null) requestPaths();
 		ArrayList<String> p=new ArrayList<String>();
 		if (paths!=null) {
-			for (int i=0;i<paths.length;i++) {
-				if (paths[i].toLowerCase().contains(gameName.toLowerCase())) {
-					p.add(paths[i]);
+			for (int i=0;i<paths.size();i++) {
+				if (paths.get(i).toLowerCase().contains(gameName.toLowerCase())) {
+					p.add(paths.get(i));
 				};
 			};
 		};
@@ -524,6 +536,48 @@ public class Library {
 			};
 		}
 		return r;
+	}
+	
+	public int getMark(String path) {
+		int mark=MARK_NOT_INSTALLED;
+		File f = new File(path);
+		if (f.isFile()) f=f.getParentFile();
+		if (f.isDirectory()) {
+			mark=MARK_INSTALLED;
+			ArrayList<String> m = fileLoadToStringArray(f.getAbsolutePath()+"/" + FILE_MARK);
+			if (m!=null && m.size()>0) {
+				String first=m.get(0);
+				if (first.equalsIgnoreCase(MARK_LABEL_RATE_DOWN)) mark=MARK_RATE_DOWN;
+				if (first.equalsIgnoreCase(MARK_LABEL_RATE_UP)) mark=MARK_RATE_UP;
+				if (first.equalsIgnoreCase(MARK_LABEL_COMPLETED)) mark=MARK_COMPLETED;
+			};
+		};
+		return mark;
+	}
+	
+	void setMark(String path, int mark) {
+		File f = new File(path);
+		if (f.isFile()) f=f.getParentFile();
+		if (f.isDirectory()) {
+			String filename = f.getAbsolutePath()+"/"+FILE_MARK;
+			ArrayList<String> m = new ArrayList<String>();
+			switch (mark) {
+			case MARK_RATE_DOWN:
+				m.add(MARK_LABEL_RATE_DOWN);
+				break;
+			case MARK_RATE_UP:
+				m.add(MARK_LABEL_RATE_UP);
+				break;
+			case MARK_COMPLETED:
+				m.add(MARK_LABEL_COMPLETED);
+				break;
+			};
+			if (m.size()<1) {
+				deleteFile(filename);
+			} else {
+				fileSaveFromStringArray(filename, m);
+			}
+		};
 	}
 	
 	//получить список игр, с указанием короткого имени, названи€ игры и категории
