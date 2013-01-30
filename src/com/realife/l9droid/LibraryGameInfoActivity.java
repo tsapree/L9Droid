@@ -94,7 +94,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		  	  	finish();
 			};
 			break;
-		case R.id.bProperties:
+		case R.id.ibMenu:
 			if ((p!=null) && (p.getTag()!=null)) {
 				Toast.makeText(this, "Path: "+p.getTag(), Toast.LENGTH_SHORT).show();
 			};
@@ -157,11 +157,13 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			TextView tvVersion = (TextView) item.findViewById(R.id.tvVersion);
 			//fills info about this version, based on tags from parent dir
 			tvVersion.setText(lib.getTags(versions.get(i)));
-			Button bProperties = (Button) item.findViewById(R.id.bProperties);
+			
 			ImageButton ibPlay = (ImageButton) item.findViewById(R.id.ibPlay);
 			item.setTag(versions.get(i));
-			bProperties.setOnClickListener(this);
 			ibPlay.setOnClickListener(this);
+			
+			ImageButton ibMenu = (ImageButton) item.findViewById(R.id.ibMenu);
+			ibMenu.setOnClickListener(this);
 			
 			ImageView ivMark = (ImageView) item.findViewById(R.id.ivMark);
 			ivMark.setImageResource(Library.MARK_PICTURES_RESID[lib.getMark(versions.get(i))]);

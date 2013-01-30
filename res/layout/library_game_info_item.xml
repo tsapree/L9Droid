@@ -12,87 +12,88 @@
         android:contentDescription="Play"
         android:src="@drawable/ic_play" />
 
-    <Button
-        android:id="@+id/bProperties"
+    <ImageButton
+        android:id="@+id/ibMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ibPlay"
+        android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/ibPlay"
-        android:text="..." />
-
-    <TextView
-        android:id="@+id/tvVersion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/bProperties"
-        android:layout_alignBottom="@+id/bProperties"
-        android:layout_toLeftOf="@+id/bProperties"
-        android:layout_toRightOf="@+id/ivMark"
-        android:text="Atari/C-64/Speccy/CPC " />
+        android:src="@drawable/ic_menu_vertical" />
 
     <ImageView
         android:id="@+id/ivMark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/bProperties"
+        android:layout_alignBottom="@+id/ibMenu"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/bProperties"
+        android:layout_alignParentTop="true"
         android:scaleType="center"
         android:src="@drawable/ic_installed" />
 
-        <RelativeLayout
-            android:id="@+id/rlMarks"
+    <TextView
+        android:id="@+id/tvVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ibMenu"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/ibMenu"
+        android:layout_toRightOf="@+id/ivMark"
+        android:gravity="center_vertical"
+        android:text="Atari/C-64/Speccy/CPC " />
+    
+    <RelativeLayout
+        android:id="@+id/rlMarks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ibPlay"
+        android:visibility="gone" >
+
+        <ImageButton
+            android:id="@+id/ibDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@android:drawable/btn_default_small"
+            android:src="@drawable/ic_delete" />
+
+        <ImageButton
+            android:id="@+id/ibInstalled"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/ibPlay"
-            android:visibility="gone" >
+            android:layout_alignParentTop="true"
+            android:background="@android:drawable/btn_default_small"
+            android:src="@drawable/ic_installed" />
 
-            <ImageButton
-                android:id="@+id/ibDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:background="@android:drawable/btn_default_small"
-                android:src="@drawable/ic_delete" />
+        <ImageButton
+            android:id="@+id/ibRateDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/ibInstalled"
+            android:background="@android:drawable/btn_default_small"
+            android:src="@drawable/ic_rate_down" />
 
-            <ImageButton
-                android:id="@+id/ibInstalled"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:background="@android:drawable/btn_default_small"
-                android:src="@drawable/ic_installed" />
+        <ImageButton
+            android:id="@+id/ibRateUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/ibRateDown"
+            android:background="@android:drawable/btn_default_small"
+            android:src="@drawable/ic_rate_up" />
 
-            <ImageButton
-                android:id="@+id/ibRateDown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/ibInstalled"
-                android:background="@android:drawable/btn_default_small"
-                android:src="@drawable/ic_rate_down" />
+        <ImageButton
+            android:id="@+id/ibDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/ibRateUp"
+            android:background="@android:drawable/btn_default_small"
+            android:src="@drawable/ic_done" />
+    </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/ibRateUp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/ibRateDown"
-                android:background="@android:drawable/btn_default_small"
-                android:src="@drawable/ic_rate_up" />
-
-            <ImageButton
-                android:id="@+id/ibDone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/ibRateUp"
-                android:background="@android:drawable/btn_default_small"
-                android:src="@drawable/ic_done" />
-
-        </RelativeLayout>
-    
 </RelativeLayout>
