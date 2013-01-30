@@ -341,6 +341,22 @@ public class Library {
 		sendUserMessage("ERROR delete: "+path);
 		return false;
 	}
+	
+	boolean deleteFolder(String path) {
+		File f = new File (path);
+		if (!f.isDirectory()) return false;
+		for (File f1 : f.listFiles()) {
+			if (f1.isDirectory()) deleteFolder(f1.getAbsolutePath());
+			else deleteFile(f1.getAbsolutePath());
+		};
+		return true;
+	}
+	
+	String getFolder(String path) {
+		File f=new File(path);
+		if (f.isDirectory()) return path;
+		else return f.getParent();
+	}
 
 	//returns:
 	//	if (relativePath='/****') absolute path = relativePath
@@ -509,6 +525,10 @@ public class Library {
 			for (int i=0; i<log.size();i++)
 				array.add(unwrapSpans(log.get(i)));
 		return array;
+	}
+	
+	public void invalidateInstalledVersions() {
+		paths=null;
 	}
 	
 	//вернуть список путей с именами запускаемых файлов, соответствующих игре gameName

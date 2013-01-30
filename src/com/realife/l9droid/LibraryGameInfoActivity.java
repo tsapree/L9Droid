@@ -3,6 +3,8 @@ package com.realife.l9droid;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	
 	String game;
 	GameInfo gi;
+	String pathToDelete;
 	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    ivBack.setOnClickListener(this);
 
 		game=getIntent().getStringExtra("selectedgame");
+		pathToDelete=null;
 	    
 		tvGameName = (TextView)findViewById(R.id.tvGameName);
 		tvCategory = (TextView)findViewById(R.id.tvCategory);
@@ -134,6 +138,29 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 				lib.setMark((String)p.getTag(), Library.MARK_COMPLETED);
 			};
 			break;
+		case R.id.ibDelete:
+			p.setVisibility(View.GONE);
+			p = (View)p.getParent();
+			if ((p!=null) && (p.getTag()!=null)) {
+				pathToDelete=(String)p.getTag();
+				new AlertDialog.Builder(this)
+				   .setIcon(android.R.drawable.ic_dialog_alert)
+				   .setTitle("Deleting Game")
+		           .setMessage("Are you sure you want to delete this game?")
+		           .setCancelable(true)
+		           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		               public void onClick(DialogInterface dialog, int id) {
+		                    //CustomTabActivity.this.finish();
+		            	   String path=lib.getFolder(pathToDelete);
+		            	   lib.deleteFolder(path);
+		            	   lib.invalidateInstalledVersions();
+		            	   fillInfo();
+		               }
+		           })
+		           .setNegativeButton("No", null)
+		           .show();
+			};
+			break;
 		case R.id.bInstall:
 			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
 			intent.putExtra("selectedgame", game);
@@ -178,6 +205,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			ibRateUp.setOnClickListener(this);
 			ImageButton ibDone = (ImageButton) item.findViewById(R.id.ibDone);
 			ibDone.setOnClickListener(this);
+		
 
 			linLayout.addView(item);
 	    };
