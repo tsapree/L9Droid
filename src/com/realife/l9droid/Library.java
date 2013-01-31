@@ -349,7 +349,7 @@ public class Library {
 			if (f1.isDirectory()) deleteFolder(f1.getAbsolutePath());
 			else deleteFile(f1.getAbsolutePath());
 		};
-		return true;
+		return f.delete();
 	}
 	
 	String getFolder(String path) {
