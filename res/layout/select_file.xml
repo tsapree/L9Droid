@@ -44,6 +44,14 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tvFolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f0f0f0"
+        android:padding="5dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
     <ListView
         android:id="@+id/lvFiles"
         android:layout_width="match_parent"

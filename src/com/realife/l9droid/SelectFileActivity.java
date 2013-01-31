@@ -11,15 +11,16 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 public class SelectFileActivity extends Activity implements OnItemClickListener, OnItemLongClickListener, OnClickListener {
 	Library lib;
 	
 	ListView lvFiles;
+	TextView tvFolder;
 	
 	ArrayList<Map<String, Object>> data;
 	SimpleAdapter sAdapter;
@@ -30,7 +31,15 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 
 		lib = Library.getInstance();
 		
-		data=lib.getFilesInFolder("/mnt/sdcard/l9droid/Snowball V3 S48");	//TODO: исправить
+		String folder;
+		String sdState = android.os.Environment.getExternalStorageState();
+		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED))
+			folder = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+		else folder = "/";
+		data=lib.getFilesInFolder(folder);
+		
+		tvFolder = (TextView) findViewById(R.id.tvFolder);
+		tvFolder.setText(folder);
 		
 		String[] from = { Library.ATTR_NAME, Library.ATTR_DATE, Library.ATTR_IMAGE, Library.ATTR_SIZE };
 		int[] to = { R.id.tvName, R.id.tvDate, R.id.ivPic, R.id.tvSize };
@@ -65,6 +74,7 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 	};
 	
 	void showFolderContent(String path) {
+		tvFolder.setText(path);
 		data.clear();
 		data.addAll(lib.getFilesInFolder(path));
 		sAdapter.notifyDataSetChanged();
