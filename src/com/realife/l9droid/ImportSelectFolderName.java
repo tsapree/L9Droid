@@ -49,6 +49,7 @@ public class ImportSelectFolderName extends Activity implements OnClickListener 
 			if (to.length()>0) {
 				if (lib.importFile(fileName, to)) Toast.makeText(this, String.format("Imported: FROM=%s TO=%s",fileName,to), Toast.LENGTH_LONG).show();
 				else Toast.makeText(this, String.format("Import fault: FROM=%s TO=%s",fileName,to), Toast.LENGTH_LONG).show();
+				lib.invalidateInstalledVersions();
 				finish();
 			};
 			break;

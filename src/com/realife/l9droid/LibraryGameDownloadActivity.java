@@ -208,6 +208,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    @Override
 	    protected void onPostExecute(Void result) {
 	      super.onPostExecute(result);
+	      lib.invalidateInstalledVersions();
 	      if (v!=null) {
 	    	  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
 	    	  tv.setText("Download&Install complete");
