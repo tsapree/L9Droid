@@ -1,6 +1,8 @@
 package com.realife.l9droid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,6 +30,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	
 	String game;
 	GameInfo gi;
+	DownloadInstallFileTask mt;
 	
 	boolean cancelPressed=false;
 	
@@ -98,17 +101,39 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 				};
 				
 				//Toast.makeText(this, "download pressed: "+gi.getPath(index), Toast.LENGTH_SHORT).show();
-				DownloadInstallFileTask mt = new DownloadInstallFileTask(p);
+				mt = new DownloadInstallFileTask(p);
 			    mt.execute(gi.getPath(index),gi.getFiles(index), gi.getId()+" "+gi.getTags(index));
 			    
 			    break;
 			case R.id.bCancel:
-				cancelPressed=true;
+				showCancelDialog();
 				break;
 			}
 			
 		};
 	};
+	
+	public void onBackPressed() {
+		if (mt!=null && !mt.isCancelled()) {
+			showCancelDialog();
+		} else super.onBackPressed();
+	}
+	
+	private void showCancelDialog() {
+		new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_alert)
+		.setTitle("Canceling...")
+		.setMessage("Are you sure you want to cancel?")
+		.setCancelable(true)
+		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int id) {
+		//CustomTabActivity.this.finish();
+			cancelPressed=true;
+			}
+		})
+		.setNegativeButton("No", null)
+		.show();
+	}
 	
 	class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 
@@ -216,6 +241,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    	  pbProgress.setVisibility(View.INVISIBLE);
 	      }
 	      FillSourcesInfo();
+	      mt=null;
 	    }
 	  }
 	
