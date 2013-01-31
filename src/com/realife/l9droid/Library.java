@@ -46,9 +46,11 @@ public class Library {
 
 	private static Library lib_instance;
 	
-	final String LIBDIR_SD = "L9Droid";
-	final String FILE_NOMEDIA=".nomedia";
-	final String FILE_MARK=".mark";
+	final static String LIBDIR_SD = "L9Droid";
+	final static String FILE_NOMEDIA=".nomedia";
+	final static String FILE_MARK=".mark";
+	final static String DIR_CACHE="_cache";
+	final static String DIR_SAVES="Saves";
 	
 	public static final String ATTR_NAME = "name";
 	public static final String ATTR_DATE = "date";
@@ -804,7 +806,7 @@ public class Library {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/_cache/" + folder + "/" + filename;
+			dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 			File fdst=new File(dst);
 			if (fdst.exists()) return dst; //если уже файл скачан ранее, вернуть путь
 		};
@@ -834,7 +836,7 @@ public class Library {
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 				File sdPath = android.os.Environment.getExternalStorageDirectory();
-				dst=sdPath.getAbsolutePath() + "/" + LIBDIR_SD + "/_cache/" + folder + "/" + filename;
+				dst=sdPath.getAbsolutePath() + "/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 				
 				fdst=new File(dst);
 				dir=fdst.getParentFile();
@@ -971,7 +973,7 @@ public class Library {
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdpath=new File(path);
 			if (sdpath.isFile()) sdpath=sdpath.getParentFile();
-			sdpath = new File(sdpath.getAbsolutePath()+"/Saves");
+			sdpath = new File(sdpath.getAbsolutePath()+"/"+DIR_SAVES);
 			if (sdpath.isDirectory()) {
 				File[] f = sdpath.listFiles(new SavedGamesFilter());
 				for (int i=0; i<f.length;i++) {

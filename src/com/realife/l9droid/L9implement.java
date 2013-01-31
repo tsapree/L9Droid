@@ -438,7 +438,7 @@ public class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		String path="Saves/"+save_prefix+".sav";
+		String path=Library.DIR_SAVES+"/"+save_prefix+".sav";
 
 		path=lib.getAbsolutePath(path);
 		path=lib.unifyFile(path);
@@ -457,7 +457,7 @@ public class L9implement extends L9 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String path=th.choosed_restore_filename;//"Saves/1.sav";
+		String path=th.choosed_restore_filename;
 		if ((path==null) || (path.length()<1)) return null;
 		path=lib.getAbsolutePath(path);
 		load_piclog(path,th.history);

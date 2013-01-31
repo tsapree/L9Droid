@@ -24,14 +24,14 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	TextView tvAbout;
 	TextView tvAuthors;
 	
+	ImageButton ibAdd;
+	
 	//http://ifarchive.org/if-archive/games/spectrum/level9.zip
 	//level9.zip/SNA/V3/COLOSSAL.SNA
 	//Colossal Adventure S48/COLOSSAL.SNA
 	//L9DROID/CACHE/LKFBFHH/level9.zip
 	
 	Library lib;
-	
-	Button bInstall;
 	
 	String game;
 	GameInfo gi;
@@ -43,8 +43,8 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 
 	    setContentView(R.layout.library_game_info);
 	    
-	    bInstall=(Button) findViewById(R.id.bInstall);
-	    bInstall.setOnClickListener(this);
+	    ibAdd = (ImageButton) findViewById(R.id.ibAdd);
+	    ibAdd.setOnClickListener(this);
 	    
 	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
 	    ivBack.setOnClickListener(this);
@@ -78,7 +78,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    	((TextView)findViewById(R.id.tvAuthorsLabel)).setVisibility(View.GONE);
 	    	((TextView)findViewById(R.id.tvAboutLabel)).setVisibility(View.GONE);
 	    	tvAuthors.setVisibility(View.GONE);
-	    	bInstall.setVisibility(View.GONE);
+	    	ibAdd.setVisibility(View.GONE);
 	    	
 	    } else {
 			tvAuthors.setText(gi.getAuthors());
@@ -161,7 +161,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		           .show();
 			};
 			break;
-		case R.id.bInstall:
+		case R.id.ibAdd:
 			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
 			intent.putExtra("selectedgame", game);
 			startActivity(intent);

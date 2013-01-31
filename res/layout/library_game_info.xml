@@ -13,9 +13,9 @@
             android:id="@+id/tvGameName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/bInstall"
-            android:layout_toRightOf="@+id/ivBack"
-            android:paddingLeft="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/tvCategory"
+            android:paddingLeft="21dp"
             android:paddingRight="5dp"
             android:paddingTop="5dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -26,33 +26,36 @@
             android:id="@+id/tvCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignRight="@+id/tvGameName"
+            android:layout_alignParentLeft="true"
             android:layout_below="@+id/tvGameName"
-            android:layout_toRightOf="@+id/ivBack"
-            android:padding="5dp"
+            android:layout_toLeftOf="@+id/ibAdd"
+            android:paddingBottom="5dp"
+            android:paddingLeft="21dp"
+            android:paddingRight="5dp"
             android:textColor="#999999"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/bInstall"
-            style="?android:attr/buttonStyleSmall"
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:paddingRight="32dp"
+            android:scaleType="center"
+            android:src="@drawable/ic_back" />
+
+        <ImageButton
+            android:id="@+id/ibAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
-            android:text="Install" />
-
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="16dp"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
-            android:scaleType="center"
-            android:src="@drawable/ic_back" />
+            android:background="@android:drawable/btn_default_small"
+            android:src="@drawable/ic_install" />
 
     </RelativeLayout>
 
