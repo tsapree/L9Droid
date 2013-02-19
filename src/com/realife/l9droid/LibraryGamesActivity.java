@@ -18,13 +18,13 @@ import android.widget.SimpleExpandableListAdapter;
 public class LibraryGamesActivity extends Activity implements OnChildClickListener, OnClickListener {
 
 	// коллекция для категорий
-	ArrayList<Map<String, String>> categories;
+	ArrayList<Map<String, Object>> categories;
 	// коллекция для элементов одной группы игр
-	ArrayList<Map<String, String>> gameItems;
+	ArrayList<Map<String, Object>> gameItems;
 	// общая коллекция для коллекций элементов
-	ArrayList<ArrayList<Map<String, String>>> games;
+	ArrayList<ArrayList<Map<String, Object>>> games;
 	// список аттрибутов группы или элемента
-	Map<String, String> m;
+	Map<String, Object> m;
 	ExpandableListView elGames;
 	
 	@Override
@@ -37,9 +37,9 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		
 		Library lib=Library.getInstance();
 		
-		categories = new ArrayList<Map<String, String>>();
+		categories = new ArrayList<Map<String, Object>>();
 		// создаем коллекцию для коллекций элементов 
-		games = new ArrayList<ArrayList<Map<String, String>>>(); 
+		games = new ArrayList<ArrayList<Map<String, Object>>>(); 
 		
 		ArrayList<GameInfo> gameList=lib.getGameList(this);
 		String prevCategory=null;
@@ -47,22 +47,23 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		String categoryFrom[] = new String[] {"category"};
 		int categoryTo[] = new int[] {R.id.text1/*android.R.id.text1*/};
 
-		String gameFrom[] = new String[] {"game"};
-		int gameTo[] = new int[] {R.id.text1/*android.R.id.text1*/};
+		String gameFrom[] = new String[] {"game"/*,"mark"*/};
+		int gameTo[] = new int[] {R.id.text1,/*R.id.ivMark*/};
 		
 		for (GameInfo gi: gameList) {
 			if (!gi.getCategory().equals(prevCategory)) {
 				if (prevCategory!=null) games.add(gameItems);
 				prevCategory=gi.getCategory();
 				//добавить категорию в список
-				m = new HashMap<String, String>();
+				m = new HashMap<String, Object>();
 				m.put("category", prevCategory);
 				categories.add(m);
-				gameItems = new ArrayList<Map<String, String>>();
+				gameItems = new ArrayList<Map<String, Object>>();
 			};
-			m = new HashMap<String, String>();
+			m = new HashMap<String, Object>();
 			m.put("game", gi.getTitle());
 			m.put("id", gi.getId());
+			m.put("mark", Library.MARK_PICTURES_RESID[gi.getHighestMark()]);
 			gameItems.add(m);
 		};
 		if (prevCategory!=null) games.add(gameItems);

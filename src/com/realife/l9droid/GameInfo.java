@@ -13,7 +13,7 @@ public class GameInfo {
 	private ArrayList<String> tags;
 	private ArrayList<String> files;
 	
-	
+	private int highest_mark=0;
 	
 	String getCategory()  { return (category!=null)?category:""; }
 	String getId()  { return (id!=null)?id:""; }
@@ -26,11 +26,14 @@ public class GameInfo {
 	String getTags(int n) {return (String) ((tags!=null)?tags.get(n):0); };
 	String getFiles(int n) {return (String) ((files!=null)?files.get(n):0); };
 	
+	int getHighestMark() {return highest_mark; };
+	
 	void setCategory(String s) { category = s; }
 	void setId(String s) { id = s; }
 	void setTitle(String s) { title = s; }
 	void setAbout(String s) { about = s; }
 	void setAuthors(String s) { author = s; }
+	void setHighestMark(int m) { highest_mark = m; };
 
 	void addPath(String str) {
 		if (paths==null) paths=new ArrayList<String>();
