@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,6 +99,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		  	  	finish();
 			};
 			break;
+		case R.id.ibStop:
+			showStopGameDialog();  //TODO: вывести предупреждение об остановке игры и остановить при согласии
+			break;
 		case R.id.ibMenu:
 			if ((p!=null) && (p.getTag()!=null)) {
 				Toast.makeText(this, "Path: "+p.getTag(), Toast.LENGTH_SHORT).show();
@@ -172,6 +176,24 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		}
 	};
 	
+	private void showStopGameDialog() {
+		new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_alert)
+		.setTitle("Stop game")
+		.setMessage("Are you sure you want to stop playing game? All current progress will be lost.")
+		.setCancelable(true)
+		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int id) {
+		//CustomTabActivity.this.finish();
+			//TODO: stop game!
+			fillInfo();
+			//cancelPressed=true;
+			}
+		})
+		.setNegativeButton("No", null)
+		.show();
+	}
+	
 	private void fillInfo() {
 	    ArrayList<String> versions = lib.getInstalledVersions(game);
 		
@@ -188,6 +210,9 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			ImageButton ibPlay = (ImageButton) item.findViewById(R.id.ibPlay);
 			item.setTag(versions.get(i));
 			ibPlay.setOnClickListener(this);
+			
+			ImageButton ibStop = (ImageButton) item.findViewById(R.id.ibStop);
+			ibStop.setOnClickListener(this);
 			
 			ImageButton ibMenu = (ImageButton) item.findViewById(R.id.ibMenu);
 			ibMenu.setOnClickListener(this);
@@ -206,7 +231,13 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			ImageButton ibDone = (ImageButton) item.findViewById(R.id.ibDone);
 			ibDone.setOnClickListener(this);
 		
-
+			if (lib.getGamePath()!=null && lib.getGamePath().equalsIgnoreCase(versions.get(i))) {
+				ibPlay.setVisibility(View.INVISIBLE);
+				ibStop.setVisibility(View.VISIBLE);
+				tvVersion.setTypeface(Typeface.DEFAULT_BOLD);
+				ibDelete.setVisibility(View.GONE);
+			};
+			
 			linLayout.addView(item);
 	    };
 	};

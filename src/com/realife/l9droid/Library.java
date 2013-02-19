@@ -83,7 +83,7 @@ public class Library {
 	};
 	
 	Handler h;
-	String GameFullPathName;
+	private String GameFullPathName;
 	private ArrayList<String> paths;
 
 	String tags[][]={
@@ -184,9 +184,11 @@ public class Library {
 		return resbuff;
 	}
 	
-	void setPath(String path) {
+	void setGamePath(String path) {
 		GameFullPathName=path;
 	}
+	
+	String getGamePath() {return GameFullPathName;}; 
 	
 	byte[] fileLoadRelativeToArray(String relativePath) {
 		return fileLoadToArray(getAbsolutePath(relativePath));

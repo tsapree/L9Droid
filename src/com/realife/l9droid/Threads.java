@@ -191,7 +191,7 @@ public class Threads {
 		l9=new L9implement(lib,h,this);
 		if (gamepath==null) return;
 		
-        lib.setPath(gamepath);
+        lib.setGamePath(gamepath);
         String picturefilename=l9.findPictureFile(gamepath);
         if (l9.LoadGame(gamepath, picturefilename)!=true) {
         	l9=null;
@@ -276,6 +276,7 @@ public class Threads {
 		g=null;
 		l9=null;
 		needToQuit=false;
+		lib.setGamePath(null);
 	};
 	
 }
