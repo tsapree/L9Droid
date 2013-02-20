@@ -635,6 +635,13 @@ public class Library {
 						}
 					}
 					gi.setCategory(currentCategory);
+					
+					ArrayList<String> versions = getInstalledVersions(gi.getId());
+					for (String v: versions) {
+						int m=getMark(v);
+						if (gi.getHighestMark()<m) gi.setHighestMark(m);
+					};
+					
 					rez.add(gi);
 					//break;
 

@@ -47,8 +47,8 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		String categoryFrom[] = new String[] {"category"};
 		int categoryTo[] = new int[] {R.id.text1/*android.R.id.text1*/};
 
-		String gameFrom[] = new String[] {"game"/*,"mark"*/};
-		int gameTo[] = new int[] {R.id.text1,/*R.id.ivMark*/};
+		String gameFrom[] = new String[] {"game","mark"};
+		int gameTo[] = new int[] {R.id.text1,R.id.ivMark};
 		
 		for (GameInfo gi: gameList) {
 			if (!gi.getCategory().equals(prevCategory)) {
@@ -68,16 +68,15 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		};
 		if (prevCategory!=null) games.add(gameItems);
 	
-		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+		//SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+		ExpAdapter adapter = new ExpAdapter(
 				this,
 				categories,
 				R.layout.library_games_category_item,
-				//android.R.layout.simple_expandable_list_item_1,
 				categoryFrom,
 				categoryTo,
 				games,
 				R.layout.library_games_game_item,
-				//android.R.layout.simple_list_item_1,
 				gameFrom,
 				gameTo);
       
