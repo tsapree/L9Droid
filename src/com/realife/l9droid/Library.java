@@ -361,6 +361,11 @@ public class Library {
 		if (f.isDirectory()) return path;
 		else return f.getParent();
 	}
+	
+	String getFileNameWithoutPath (String path) {
+		File f=new File(path);
+		return f.getName();	
+	}
 
 	//returns:
 	//	if (relativePath='/****') absolute path = relativePath
@@ -687,7 +692,8 @@ public class Library {
 	            	for (int i=0;i<parser.getAttributeCount();i++) {
 	            		if (parser.getAttributeName(i).equals("name")) currentGame=parser.getAttributeValue(i);
 	            	};
-	            	if (!currentGame.equalsIgnoreCase(gameName)) continue;
+	            	//if (!currentGame.equalsIgnoreCase(gameName)) continue;
+	            	if (!gameName.toLowerCase().startsWith(currentGame.toLowerCase())) continue;
 	            	while (parser.next() != XmlPullParser.END_TAG) {
 	                    if (parser.getEventType() != XmlPullParser.START_TAG) {
 	                        continue;

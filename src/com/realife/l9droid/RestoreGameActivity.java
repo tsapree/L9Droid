@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -46,6 +45,11 @@ public class RestoreGameActivity extends Activity implements OnItemClickListener
 		lvStates = (ListView) findViewById(R.id.lvStates);
 		lvStates.setAdapter(sAdapter);
 		lvStates.setOnItemClickListener(this);
+		
+		GameInfo gi=lib.getGameInfo(this,lib.getFileNameWithoutPath(lib.getFolder(gamepath)));
+		TextView tvGameName = (TextView)findViewById(R.id.tvGameName);
+		tvGameName.setText(gi.getTitle().toUpperCase());
+		
 
 	}
 
