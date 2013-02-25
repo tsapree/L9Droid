@@ -25,7 +25,7 @@
 		<item>20. Very big</item>
 		<item>22. Huge</item>
 	</string-array>
-	<string-array name="">
+	<string-array name="pic_palette_entries">
         <item>Amiga</item>
         <item>Spectrum</item>
     </string-array>

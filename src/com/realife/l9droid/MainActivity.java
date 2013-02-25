@@ -71,14 +71,13 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
    
 	ImageView ivScreen;
 	int MaxPictureHeightInPercent = 30; 
-    
+	boolean pictureZoomHeight = false; //TODO: вынести в настройки
+	
 	String command;
     
 	static Threads mt;
     
 	boolean killThreadsOnDestroyActivity=true;
-	
-	boolean pictureZoomHeight = false; //TODO: вынести в настройки
 	
 	int prevAppHeight = 0;
 	int prevAppWidth = 0;
@@ -207,6 +206,14 @@ public class MainActivity extends Activity implements OnClickListener, TextWatch
     	};
     	//etCmd.setTypeface(tf);
     	//etCmd.setTextSize(fontSize);
+    
+    	if (sp.getString("picpalette","Amiga").equalsIgnoreCase("Amiga")) 
+    		mt.l9.L9SetPalette(0);
+    	else
+    		mt.l9.L9SetPalette(1);
+    	mt.l9.repaintPicture();
+    	pictureZoomHeight = sp.getBoolean("piczoom", false);
+    	updatePictureSize();
     	
     	mt.activityPaused=false;
     	super.onResume();

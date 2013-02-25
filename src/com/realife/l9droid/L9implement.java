@@ -206,9 +206,14 @@ public class L9implement extends L9 {
 	};
 
 
+	void L9SetPalette(int p) {
+		iPicturesPalette=p;
+		L9UpdatePalette();
+	}
+	
 	void L9UpdatePalette() {
 		for (int i=0;i<4;i++) {
-			if (iPicturesPalette==0)
+			if (iPicturesPalette!=0)
 				 SelectedPalette[i]=PaletteSpectrum[L9PaletteIndexes[i]];
 			else SelectedPalette[i]=PaletteAmiga[L9PaletteIndexes[i]];
 		};
@@ -369,9 +374,14 @@ public class L9implement extends L9 {
 					else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
 			};
 		} else {
-			if (flgNeedToRepaint) j++;
-			flgNeedToRepaint=false;
+			//было:
+			//			if (flgNeedToRepaint) j++;
+			//			flgNeedToRepaint=false;
+			//
 		};
+
+		if (flgNeedToRepaint) j++;
+		flgNeedToRepaint=false;
 		
 		if (j!=0) {
 			//draw to bitmap
@@ -385,6 +395,10 @@ public class L9implement extends L9 {
 		}
 		picDrawed=(j==0);
 		return j!=0;
+	};
+	
+	void repaintPicture() {
+		flgNeedToRepaint=true;
 	};
 	
 	String findPictureFile(String filename) {
