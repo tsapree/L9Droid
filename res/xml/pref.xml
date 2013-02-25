@@ -6,4 +6,22 @@
 			<CheckBoxPreference android:key="fontbold" android:title="Bold" android:dependency="fontcustom"/>
 			<ListPreference android:dependency="fontcustom" android:key="fontsize" android:entryValues="@array/pref_font_size_entries" android:entries="@array/pref_font_size_entries" android:title="Size"/>
 		</PreferenceCategory>
+		<PreferenceCategory android:title="Game Log">
+			<EditTextPreference android:key="logcolorbackground" android:title="Background color"/>
+		    
+		</PreferenceCategory>
+		<PreferenceCategory android:title="Picture">
+			<CheckBoxPreference android:title="Enabled" android:key="picenable" /><ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pic_palette_entries" android:entryValues="@array/pic_palette_entries" android:dependency="picenable" android:dialogTitle="Select palette"/>
+			
+			<EditTextPreference android:key="picdelay" android:title="Update delay" android:dependency="picenable" android:dialogTitle="Enter picture update speed"/>
+			<EditTextPreference android:key="picmaxheight" android:title="Max height in percent"/>
+			<CheckBoxPreference android:title="Zoom to fit width" android:key="piczoom"/>
+		    
+		</PreferenceCategory>
+		<PreferenceCategory android:title="System">
+			<EditTextPreference android:title="Save prefix" android:key="syssaveprefix"/>
+			<EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay"/>
+		    
+		</PreferenceCategory>
+
 	</PreferenceScreen>
