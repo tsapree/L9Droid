@@ -80,7 +80,7 @@ public class L9implement extends L9 {
 	int L9_FillColour1;
 	int L9_FillColour2;
 	
-	String save_prefix="game";
+	//String save_prefix="game";
 	
 	L9implement( Library l, Handler h, Threads t) {
 		lib=l;
@@ -452,7 +452,7 @@ public class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		String path=Library.DIR_SAVES+"/"+save_prefix+".sav";
+		String path=Library.DIR_SAVES+"/"+th.activity.pref_syssaveprefix+".sav";
 
 		path=lib.getAbsolutePath(path);
 		path=lib.unifyFile(path);

@@ -793,7 +793,7 @@ public class Library {
 		String filename;
 		String ext;
 		int filenameAt = file.lastIndexOf('/');
-		if (filenameAt<0) filenameAt=0;
+		if (filenameAt<0) filenameAt=0; else filenameAt++;
 		int extAt = file.lastIndexOf('.');
 		if (extAt<filenameAt) {
 			filename=file;
@@ -805,7 +805,7 @@ public class Library {
 		if (extAt==filenameAt) i++;
 
 		do {
-			uF=(i==0)?file:String.format("%s%d%s", filename, i, ext);
+			uF=(i==0&&(filename.length()>0))?file:String.format("%s%d%s", filename, i, ext);
 			i++;
 			f = new File(uF);
 		} while (f.isFile());

@@ -57,6 +57,9 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	Typeface tfDefault=null;
 	float fontSizeDefault=0;
 	
+	String	pref_syssaveprefix = "state";
+	int		pref_sysscriptdelay = 2;
+	
 	View activityRootView;
 	
 	ImageButton ibCmd;
@@ -207,6 +210,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	//etCmd.setTypeface(tf);
     	//etCmd.setTextSize(fontSize);
     
+    	//TODO: переделать, косяк - если l9 еще-уже нет, будет ошибка.
     	if (sp.getString("picpalette","Amiga").equalsIgnoreCase("Amiga")) 
     		mt.l9.L9SetPalette(0);
     	else
@@ -214,6 +218,9 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	mt.l9.repaintPicture();
     	pictureZoomHeight = sp.getBoolean("picstretch", false);
     	updatePictureSize();
+    	
+    	pref_syssaveprefix = sp.getString("syssaveprefix","state");
+    	pref_sysscriptdelay = sp.getInt("sysscriptdelay", 2);
     	
     	mt.activityPaused=false;
     	super.onResume();
