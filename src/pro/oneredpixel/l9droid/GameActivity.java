@@ -71,7 +71,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
    
 	ImageView ivScreen;
 	int MaxPictureHeightInPercent = 30; 
-	boolean pictureZoomHeight = false; //TODO: вынести в настройки
+	boolean pictureZoomHeight = false;
 	
 	String command;
     
@@ -105,7 +105,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	bEnter.setOnClickListener(this);
         
         etCmd = (EditText) findViewById(R.id.etCmd);
-        etCmd.setHint("Enter your command");
+        etCmd.setHint("Enter command");
         etCmd.addTextChangedListener(this);
         etCmd.setOnEditorActionListener(this);
         etCmd.setText("");
@@ -212,7 +212,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	else
     		mt.l9.L9SetPalette(1);
     	mt.l9.repaintPicture();
-    	pictureZoomHeight = sp.getBoolean("piczoom", false);
+    	pictureZoomHeight = sp.getBoolean("picstretch", false);
     	updatePictureSize();
     	
     	mt.activityPaused=false;

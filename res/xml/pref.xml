@@ -12,11 +12,11 @@
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
 			<CheckBoxPreference android:title="Enabled" android:key="picenable" />
-			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pic_palette_entries" android:entryValues="@array/pic_palette_entries" android:dependency="picenable" android:dialogTitle="Select palette"/>
+			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pic_palette_entries" android:entryValues="@array/pic_palette_entries" android:dependency="picenable" android:dialogTitle="Select palette" android:defaultValue="Amiga"/>
 			
 			<EditTextPreference android:key="picdelay" android:title="Update delay" android:dependency="picenable" android:dialogTitle="Enter picture update speed"/>
 			<EditTextPreference android:key="picmaxheight" android:title="Max height in percent" android:dependency="picenable"/>
-			<CheckBoxPreference android:title="Stretch" android:key="piczoom" android:dependency="picenable"/>
+			<CheckBoxPreference android:title="Stretch" android:key="picstretch" android:dependency="picenable" android:defaultValue="false"/>
 		    
 		</PreferenceCategory>
 		<PreferenceCategory android:title="System">
