@@ -220,7 +220,13 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	updatePictureSize();
     	
     	pref_syssaveprefix = sp.getString("syssaveprefix","state");
-    	pref_sysscriptdelay = sp.getInt("sysscriptdelay", 2);
+    	try {
+    	pref_sysscriptdelay = Integer.valueOf(sp.getString("sysscriptdelay", "2"));
+    	} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	if (pref_sysscriptdelay<0 || pref_sysscriptdelay>30 ) pref_sysscriptdelay=2;
     	
     	mt.activityPaused=false;
     	super.onResume();

@@ -247,7 +247,11 @@ public class Threads {
 		        	} else if (l9.L9State==l9.L9StateWaitBeforeScriptCommand) {
 		        		h.sendEmptyMessage(MACT_L9WAITBEFORESCRIPT);
 		        		try {
-							TimeUnit.MILLISECONDS.sleep(1000);
+		        			int w = activity.pref_sysscriptdelay;
+		        			while (w-->0) {
+		        				//TODO: сделать возможность прервать исполнение скрипта во время ожидания
+		        				TimeUnit.MILLISECONDS.sleep(1000);
+		        			};
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
