@@ -1,4 +1,4 @@
-package com.realife.l9droid;
+package pro.oneredpixel.l9droid;
 
 import android.app.Activity;
 import android.content.Intent;

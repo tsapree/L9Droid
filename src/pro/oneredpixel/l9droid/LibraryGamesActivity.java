@@ -1,4 +1,4 @@
-package com.realife.l9droid;
+package pro.oneredpixel.l9droid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,11 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.ImageView;
 import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.SimpleExpandableListAdapter;
+import android.widget.ImageView;
 
 public class LibraryGamesActivity extends Activity implements OnChildClickListener, OnClickListener {
 

@@ -11,7 +11,7 @@
 //layout-файлы меняйте, как вам нужно.
 //Делал поверхностно, возможны баги. Потестируйте.
 
-package com.realife.l9droid;
+package pro.oneredpixel.l9droid;
 
 import java.io.IOException;
 import java.io.InputStream;

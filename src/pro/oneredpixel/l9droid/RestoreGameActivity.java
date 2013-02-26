@@ -1,4 +1,4 @@
-package com.realife.l9droid;
+package pro.oneredpixel.l9droid;
 
 import java.util.ArrayList;
 import java.util.Map;

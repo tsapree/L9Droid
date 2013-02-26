@@ -38,7 +38,7 @@
 
 //java(android) version started: 01.09.2012
 
-package com.realife.l9droid;
+package pro.oneredpixel.l9droid;
 
 //char		16 bit
 //byte		signed 8 bit	->	L9BYTE		unsigned 8 bit quantity

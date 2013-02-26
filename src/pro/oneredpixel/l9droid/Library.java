@@ -1,4 +1,4 @@
-package com.realife.l9droid;
+package pro.oneredpixel.l9droid;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,6 +27,7 @@ import java.util.zip.ZipFile;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import pro.oneredpixel.l9droid.LibraryGameDownloadActivity.DownloadInstallFileTask;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -39,8 +40,6 @@ import android.text.format.Time;
 import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
-import com.realife.l9droid.LibraryGameDownloadActivity.DownloadInstallFileTask;
 
 public class Library {
 
