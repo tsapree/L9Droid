@@ -11,12 +11,12 @@
 		    
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
-			<CheckBoxPreference android:title="Enabled" android:key="picenable" />
-			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pic_palette_entries" android:entryValues="@array/pic_palette_entries" android:dependency="picenable" android:dialogTitle="Select palette" android:defaultValue="Amiga"/>
+			<CheckBoxPreference android:title="Enabled" android:key="picenable" android:summary="Set to enable drawing pictures in some games"/>
+			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pic_palette_entries" android:entryValues="@array/pic_palette_entries" android:dependency="picenable" android:dialogTitle="Select palette" android:defaultValue="Amiga" android:summary="Amiga or Spectrum palette available"/>
 			
-			<EditTextPreference android:key="picdelay" android:title="Update delay" android:dependency="picenable" android:dialogTitle="Enter picture update speed"/>
-			<EditTextPreference android:key="picmaxheight" android:title="Max height in percent" android:dependency="picenable"/>
-			<CheckBoxPreference android:title="Stretch" android:key="picstretch" android:dependency="picenable" android:defaultValue="false"/>
+			<EditTextPreference android:key="picdelay" android:title="Update delay" android:dependency="picenable" android:dialogTitle="Enter picture update speed" android:summary="Used to create more athmospheric drawn"/>
+			<EditTextPreference android:key="picmaxheight" android:title="Height" android:dependency="picenable" android:summary="Set maximum height in percent"/>
+			<CheckBoxPreference android:title="Stretch" android:key="picstretch" android:dependency="picenable" android:defaultValue="false" android:summary="Set to stretch picture"/>
 		    
 		</PreferenceCategory>
 		<PreferenceCategory android:title="System">
