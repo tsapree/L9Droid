@@ -25,7 +25,7 @@ public class Threads {
 	public final static int MACT_FLUSH=11;
 	public final static int MACT_REPLACE_LOG=12;
 	
-	MainActivity activity;
+	GameActivity activity;
 	Library lib;
     Handler h;
     Thread t,g;
@@ -53,7 +53,7 @@ public class Threads {
 	boolean choosing_restore_filename;
 	String choosed_restore_filename;
 
-    void link(MainActivity m) {
+    void link(GameActivity m) {
     	activity=m;
     	activity.ivScreen.setImageBitmap(bm);
     }

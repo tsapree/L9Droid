@@ -32,7 +32,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnClickListener, TextWatcher,
+public class GameActivity extends Activity implements OnClickListener, TextWatcher,
 		OnEditorActionListener,
 
 		OnMenuItemClickListener,
