@@ -59,6 +59,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	
 	String	pref_syssaveprefix = "state";
 	int		pref_sysscriptdelay = 2;
+	int		pref_picspeed = 10;
+	int		pref_picmaxheight = 30;
+	boolean	pref_picstretch = false;
+	boolean pref_picpaletteamiga = true;
 	
 	View activityRootView;
 	
@@ -73,8 +77,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	ListView lvHistory;
    
 	ImageView ivScreen;
-	int MaxPictureHeightInPercent = 30; 
-	boolean pictureZoomHeight = false;
+	//boolean pictureZoomHeight = false;
 	
 	String command;
     
@@ -136,10 +139,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	        
 	    } else mt.link(this);
         lvMain.setAdapter(mt.lvAdapter);
-        //lvMain.setSelection(lvMain.getAdapter().getCount()-1);
         
         lvHistory.setAdapter(mt.lvHistoryAdapter);
-        //lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
         lvHistory.setOnItemClickListener(this);
         lvHistory.setOnItemLongClickListener(this);
         
@@ -167,10 +168,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     		if (bmWidth==160 && bmHeight ==128) bmWidth*=2;
     		if (bmWidth>maxWidth) bmWidth=maxWidth;
     		int maxHeight = bmHeight * activityRootView.getWidth() / bmWidth ;
-    		int h = activityRootView.getHeight() * MaxPictureHeightInPercent / 100;
+    		int h = activityRootView.getHeight() * pref_picmaxheight / 100;
     		if (h>maxHeight) h=maxHeight;
     		int w = bmWidth * h / bmHeight;
-    		if (pictureZoomHeight) w=maxWidth;
+    		if (pref_picstretch) w=maxWidth;
     		ivScreen.getLayoutParams().height=h;
     		ivScreen.getLayoutParams().width=w;
     		ivScreen.requestLayout();
@@ -209,27 +210,45 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	};
     	//etCmd.setTypeface(tf);
     	//etCmd.setTextSize(fontSize);
-    
-    	//TODO: переделать, косяк - если l9 еще-уже нет, будет ошибка.
-    	if (sp.getString("picpalette","Amiga").equalsIgnoreCase("Amiga")) 
-    		mt.l9.L9SetPalette(0);
-    	else
-    		mt.l9.L9SetPalette(1);
-    	mt.l9.repaintPicture();
-    	pictureZoomHeight = sp.getBoolean("picstretch", false);
+
+    	pref_picspeed = check_bounds(val(sp.getString("picspeed", "10"),10),1,255,10);
+    	pref_picmaxheight = check_bounds(val(sp.getString("picmaxheight", "30"),30),5,70,30);
+    	pref_picstretch = sp.getBoolean("picstretch", false);
+    	
+    	pref_picpaletteamiga = sp.getString("picpalette","Amiga").equalsIgnoreCase("Amiga"); 
+    	if (mt!=null && mt.l9!=null) {
+    		mt.l9.L9UpdatePalette();
+    		mt.l9.repaintPicture();
+    	}
     	updatePictureSize();
     	
     	pref_syssaveprefix = sp.getString("syssaveprefix","state");
-    	try {
-    	pref_sysscriptdelay = Integer.valueOf(sp.getString("sysscriptdelay", "2"));
-    	} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	if (pref_sysscriptdelay<0 || pref_sysscriptdelay>30 ) pref_sysscriptdelay=2;
+    	pref_sysscriptdelay = check_bounds(val(sp.getString("sysscriptdelay", "2"),2), 0, 30, 2);
     	
     	mt.activityPaused=false;
     	super.onResume();
+    }
+    
+    int val(String s, int default_value) {
+    	int i;
+    	try {
+    		i = Integer.valueOf(s);
+        	} catch (NumberFormatException e) {
+    			i=default_value;
+    		}
+    	return i;
+    };
+    
+    int range(int val, int min, int max) {
+    	int r = val;
+    	if (r>max) r=max;
+    	if (r<min) r=min;
+    	return r;
+    }
+    
+    int check_bounds(int val, int min, int max, int default_value) {
+    	if (val>=min && val<=max) return val;
+    	else return default_value;
     }
     
     protected void onPause() {

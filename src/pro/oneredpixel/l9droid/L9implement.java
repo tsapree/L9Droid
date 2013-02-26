@@ -37,7 +37,6 @@ public class L9implement extends L9 {
 	int PicWidth=0;
 	int PicHeight=0;
 	int PicMode;
-	int iPicturesSpeed=10;
 	
 	int iPicturesPalette=0;
 	
@@ -205,17 +204,11 @@ public class L9implement extends L9 {
 		};
 	};
 
-
-	void L9SetPalette(int p) {
-		iPicturesPalette=p;
-		L9UpdatePalette();
-	}
-	
 	void L9UpdatePalette() {
 		for (int i=0;i<4;i++) {
-			if (iPicturesPalette!=0)
-				 SelectedPalette[i]=PaletteSpectrum[L9PaletteIndexes[i]];
-			else SelectedPalette[i]=PaletteAmiga[L9PaletteIndexes[i]];
+			if (th.activity.pref_picpaletteamiga)
+				 SelectedPalette[i]=PaletteAmiga[L9PaletteIndexes[i]];
+			else SelectedPalette[i]=PaletteSpectrum[L9PaletteIndexes[i]];
 		};
 	};
 	
@@ -368,8 +361,8 @@ public class L9implement extends L9 {
 				fastShowPic=false;
 				while ((L9Fill_Step()>0) || RunGraphics()) j++;
 			} else {
-				//Красивая прорисовка Fill. 
-				for (int i=0; i<iPicturesSpeed; i++)
+				int steps = th.activity.pref_picspeed;
+				for (int i=0; i<steps; i++)
 					if (L9Fill_Step()>0) j++;
 					else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
 			};
