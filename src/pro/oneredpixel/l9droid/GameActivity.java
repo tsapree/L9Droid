@@ -215,6 +215,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		}
 		mt.lvAdapter.textcolor = pref_logtextcolor;
 		mt.lvAdapter.backgroundcolor = pref_logbackgroundcolor;
+		activityRootView.setBackgroundColor(pref_logbackgroundcolor); 
 		mt.lvAdapter.textsize = pref_logtextsize;
 		mt.lvAdapter.textstyle = (pref_logtextitalic?Typeface.ITALIC:0)|(pref_logtextbold?Typeface.BOLD:0);
     	mt.lvAdapter.notifyDataSetChanged();
