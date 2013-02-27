@@ -24,16 +24,17 @@
 
 		</ListView>
        
-		<ListView android:id="@+id/lvHistory"
-			android:layout_width="100dp"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_below="@+id/ivPicture"
-			android:background="#eeeeee"
-			android:paddingLeft="5dp"
-			android:stackFromBottom="true"
-			android:transcriptMode="alwaysScroll"
-			android:visibility="visible">
+		<ListView
+		    android:id="@+id/lvHistory"
+		    android:layout_width="100dp"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_below="@+id/ivPicture"
+		    android:paddingLeft="5dp"
+		    android:stackFromBottom="true"
+		    android:transcriptMode="alwaysScroll"
+		    android:visibility="visible" >
+
 		</ListView>
 	</RelativeLayout>
 

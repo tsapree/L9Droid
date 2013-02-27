@@ -54,8 +54,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     
 	SharedPreferences sp;
 	
-	int		pref_logtextcolor=0;
-	int		pref_logcommandcolor=0xFF00;
+	int		pref_logtextcolor=0xFF000000;
+	int		pref_logcommandcolor=0xFF0000FF;
 	int		pref_logbackgroundcolor=0xFFFFFFFF;
 	int		pref_logtextsize = 13;
 	int		pref_logtexttypeface; //	"@array/pref_font_typeface_entries"
@@ -82,7 +82,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	ListView lvHistory;
    
 	ImageView ivScreen;
-	//boolean pictureZoomHeight = false;
 	
 	String command;
     
@@ -218,6 +217,9 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		activityRootView.setBackgroundColor(pref_logbackgroundcolor); 
 		mt.lvAdapter.textsize = pref_logtextsize;
 		mt.lvAdapter.textstyle = (pref_logtextitalic?Typeface.ITALIC:0)|(pref_logtextbold?Typeface.BOLD:0);
+		
+		mt.lib.refreshLogCommandsColor(mt.lvAdapter, pref_logcommandcolor);
+		
     	mt.lvAdapter.notifyDataSetChanged();
 
 		//preferences: picture
@@ -481,7 +483,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	
 	void outUserInputToLog(String str) {
 		SpannableStringBuilder text = new SpannableStringBuilder(str);
-        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+        ForegroundColorSpan style = new ForegroundColorSpan(pref_logcommandcolor); 
         text.setSpan(style, 0, text.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         if (mt.logStringCapacitor==null) mt.logStringCapacitor=new SpannableStringBuilder();
         mt.logStringCapacitor.append(text);

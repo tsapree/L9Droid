@@ -501,7 +501,7 @@ public class Library {
 	}
 	
 	//развернуть spans из тэгов {}
-	private SpannableStringBuilder unwrapSpans(String wrappedString) {
+	private SpannableStringBuilder unwrapSpans(String wrappedString, int color) {
 		
 		int size=wrappedString.length();
 		int i=wrappedString.indexOf('{', 0);
@@ -510,7 +510,7 @@ public class Library {
 			SpannableStringBuilder text = new SpannableStringBuilder(wrappedString.subSequence(0, i).toString()
 					+wrappedString.subSequence(i+1, j).toString()
 					+wrappedString.subSequence(j+1, size).toString());
-	        ForegroundColorSpan style = new ForegroundColorSpan(Color.rgb(0, 0, 255)); 
+	        ForegroundColorSpan style = new ForegroundColorSpan(color); 
 	        text.setSpan(style, i, j-1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 	        return text; 
 		} else return new SpannableStringBuilder(wrappedString);
@@ -526,13 +526,35 @@ public class Library {
 		return fileSaveFromStringArray(path, log);
 	}
 	
-	public ArrayList<SpannableStringBuilder> LoadLogToSpannableArrayList(String path) {
+	public ArrayList<SpannableStringBuilder> LoadLogToSpannableArrayList(String path, int color) {
 		ArrayList<String> log=fileLoadToStringArray(path);
 		ArrayList<SpannableStringBuilder> array=new ArrayList<SpannableStringBuilder>();
 		if (log!=null) 
 			for (int i=0; i<log.size();i++)
-				array.add(unwrapSpans(log.get(i)));
+				array.add(unwrapSpans(log.get(i),color));
 		return array;
+	}
+	
+	//TODO: тяжеловатое решение, пробегает по логу и переформировывает строки каждый раз по выходу из настроек и перевороту экрана, часто!
+	public void refreshLogCommandsColor(ArrayAdapter<SpannableStringBuilder> adapter, int newColor) {
+		SpannableStringBuilder s;
+		SpannableStringBuilder s1;
+		ForegroundColorSpan style=new ForegroundColorSpan(newColor);
+		//String c;
+		for (int i=0;i<adapter.getCount();i++) {
+			s=adapter.getItem(i);
+			ForegroundColorSpan f[]=s.getSpans(0, s.length(), ForegroundColorSpan.class);
+			for (ForegroundColorSpan fcs:f) {
+				fcs.wrap(style);
+			}
+			//c=wrapSpans(s);
+			//s1=unwrapSpans(c,newColor);
+			//s.clear();
+			//s.clearSpans();
+			
+			
+			//s.append(s1);
+		};
 	}
 	
 	public void invalidateInstalledVersions() {

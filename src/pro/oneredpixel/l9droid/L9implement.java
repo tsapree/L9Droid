@@ -523,7 +523,7 @@ public class L9implement extends L9 {
 		if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
 		
 		name=lib.changeFileExtension(path, "log");
-		tempLog=lib.LoadLogToSpannableArrayList(name);
+		tempLog=lib.LoadLogToSpannableArrayList(name,th.activity.pref_logcommandcolor);
 		h.clear();
 		for (SpannableStringBuilder logStr:tempLog) {
 			h.add(lib.getSpannedString(logStr));
