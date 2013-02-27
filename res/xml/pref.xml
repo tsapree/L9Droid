@@ -2,7 +2,7 @@
 	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 		<PreferenceCategory android:title="Game Log">
 			<EditTextPreference android:key="logtextcolor" android:title="Text color" android:defaultValue="#00000000" />
-			<EditTextPreference android:key="logcommandcolor" android:title="Commands color" android:defaultValue="#0000FF00" android:summary="User entered commands color"/><EditTextPreference android:key="logbackgroundcolor" android:title="Background color" android:defaultValue="#00FFFFFF"/>
+			<EditTextPreference android:key="logcommandcolor" android:title="Commands color" android:defaultValue="#000000FF" android:summary="User entered commands color"/><EditTextPreference android:key="logbackgroundcolor" android:title="Background color" android:defaultValue="#00FFFFFF"/>
 			<EditTextPreference android:title="Text size" android:key="logtextsize" android:defaultValue="13"/>
 			<ListPreference android:key="logtexttypeface" android:title="Text typeface" android:entries="@array/pref_font_typeface_entries" android:entryValues="@array/pref_font_typeface_entries" android:defaultValue="Normal"/>
 			<CheckBoxPreference android:key="logtextbold" android:title="Text bold" android:defaultValue="false"/>

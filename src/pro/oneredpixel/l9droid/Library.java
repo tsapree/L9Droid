@@ -462,8 +462,8 @@ public class Library {
 	}
 	
 	//завернуть spans в тэги {}
+	//TODO: посмотреть на решение по поиску спэнов в refreshLogCommandsColor(), там получилось лучше
 	private String wrapSpans(SpannableStringBuilder spannedStr) {
-		//ForegroundColorSpan a[]=spannedString.getSpans(0, 1, ForegroundColorSpan.class);
 		String result=new String();
 		SpannableStringBuilder spannedString=new SpannableStringBuilder(" ");
 		spannedString.append(spannedStr);//исправление особенности nextSpanTransition, который не видит 
@@ -535,25 +535,18 @@ public class Library {
 		return array;
 	}
 	
-	//TODO: тяжеловатое решение, пробегает по логу и переформировывает строки каждый раз по выходу из настроек и перевороту экрана, часто!
 	public void refreshLogCommandsColor(ArrayAdapter<SpannableStringBuilder> adapter, int newColor) {
 		SpannableStringBuilder s;
-		SpannableStringBuilder s1;
 		ForegroundColorSpan style=new ForegroundColorSpan(newColor);
-		//String c;
 		for (int i=0;i<adapter.getCount();i++) {
 			s=adapter.getItem(i);
 			ForegroundColorSpan f[]=s.getSpans(0, s.length(), ForegroundColorSpan.class);
 			for (ForegroundColorSpan fcs:f) {
-				fcs.wrap(style);
+				int start = s.getSpanStart(fcs);
+				int end = s.getSpanEnd(fcs);
+				s.clearSpans();
+				s.setSpan(style, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 			}
-			//c=wrapSpans(s);
-			//s1=unwrapSpans(c,newColor);
-			//s.clear();
-			//s.clearSpans();
-			
-			
-			//s.append(s1);
 		};
 	}
 	
