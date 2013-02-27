@@ -138,8 +138,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	        mt.create();
 	        String lastGame = sPref.getString("lastgame", null);
 	        mt.startGame(lastGame,true);
-	        if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
-	        else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
+	        //if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
+	        //else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
 	        
 	    } else mt.link(this);
 	    
@@ -214,7 +214,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		}
 		mt.lvAdapter.textcolor = pref_logtextcolor;
 		mt.lvAdapter.backgroundcolor = pref_logbackgroundcolor;
-		activityRootView.setBackgroundColor(pref_logbackgroundcolor); 
+		activityRootView.setBackgroundColor(pref_logbackgroundcolor);
+		lvMain.setCacheColorHint(pref_logbackgroundcolor);
 		mt.lvAdapter.textsize = pref_logtextsize;
 		mt.lvAdapter.textstyle = (pref_logtextitalic?Typeface.ITALIC:0)|(pref_logtextbold?Typeface.BOLD:0);
 		

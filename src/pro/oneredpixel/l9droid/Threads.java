@@ -137,6 +137,7 @@ public class Threads {
 	    			if (l9.tempLog!=null) {
 		    			for (int i=0;i<l9.tempLog.size();i++) lvAdapter.add(l9.tempLog.get(i));
 	    			};
+	    			lib.refreshLogCommandsColor(lvAdapter, activity.pref_logcommandcolor);
 	    			logStrId=lvAdapter.getCount()-1;
 	    			logStringCapacitor=null;
 	    			break;

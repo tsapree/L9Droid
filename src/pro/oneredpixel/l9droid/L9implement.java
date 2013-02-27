@@ -483,10 +483,6 @@ public class L9implement extends L9 {
 			codeptr=acodeptr+workspace.codeptr;
 			load_piclog(path,th.history);
 			mHandler.sendEmptyMessage(Threads.MACT_REPLACE_LOG);
-			//th.lvAdapter.clear();
-			//for (int i=0; i<tempLog.size();i++) th.lvAdapter.add(tempLog.get(i));
-			//th.logStrId=th.lvAdapter.getCount()-1;
-			//th.logStringCapacitor=null;
 			return true;
 		};
 		return false;

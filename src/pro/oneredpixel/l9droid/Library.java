@@ -126,7 +126,7 @@ public class Library {
 			File sdPath = android.os.Environment.getExternalStorageDirectory();
 			sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD);
 			if (!sdPath.isDirectory()) {
-				Toast.makeText(act, "Creating library", Toast.LENGTH_LONG).show();
+				//Toast.makeText(act, "Creating library", Toast.LENGTH_LONG).show();
 				sdPath.mkdirs();
 				File sdFile = new File(sdPath, FILE_NOMEDIA);
 			    try {	        
@@ -211,8 +211,8 @@ public class Library {
 		      e.printStackTrace();
 		    }
 
-		    if (buff!=null) sendUserMessage("Loaded: "+absolutePath);
-		    else sendUserMessage("ERROR load: "+absolutePath);
+		    //if (buff!=null) sendUserMessage("Loaded: "+absolutePath);
+		    //else sendUserMessage("ERROR load: "+absolutePath);
 		    
 		};
 		return buff;
@@ -263,8 +263,8 @@ public class Library {
 		} catch (IOException e) {
 			//TODO: e.printStackTrace();
 		}
-	    if (buff!=null) sendUserMessage("Loaded strings: "+absolutePath);
-	    else sendUserMessage("ERROR load strings: "+absolutePath);
+	    //if (buff!=null) sendUserMessage("Loaded strings: "+absolutePath);
+	    //else sendUserMessage("ERROR load strings: "+absolutePath);
 	    return buff;
 	};
 	
@@ -284,14 +284,14 @@ public class Library {
 					bw.write(buff.get(i)+"\n");
 				bw.close();
 				
-				sendUserMessage("Saved strings: "+absolutePath);
+				//sendUserMessage("Saved strings: "+absolutePath);
 				return true;
 			} catch (FileNotFoundException e) {
 				//TODO: e.printStackTrace();
 			} catch (IOException e) {
 				//TODO: e.printStackTrace();
 			}
-			sendUserMessage("ERROR save strings: "+absolutePath);
+			//sendUserMessage("ERROR save strings: "+absolutePath);
 		};
 		return false;		
 	}
@@ -311,14 +311,14 @@ public class Library {
 				OutputStream out = new FileOutputStream(sdFile);
 				bm.compress(Bitmap.CompressFormat.PNG, 100, out);
 				out.close();
-				sendUserMessage("Saved: "+path);
+				//sendUserMessage("Saved: "+path);
 				return true;
 			} catch (FileNotFoundException e) {
 				//TODO: e.printStackTrace();
 			} catch (IOException e) {
 				//TODO: e.printStackTrace();
 			}
-			sendUserMessage("ERROR save: "+path);
+			//sendUserMessage("ERROR save: "+path);
 		};
 		return false;
 	}
@@ -326,8 +326,8 @@ public class Library {
 	Bitmap pictureLoadToBitmap(String path) {
 		Bitmap b=BitmapFactory.decodeFile(path);
 		if (b!=null) b=b.copy(Bitmap.Config.ARGB_8888,true); //i need mutable bitmap for draw on it
-		if (b!=null) sendUserMessage("Loaded: "+path);
-		else sendUserMessage("ERROR load: "+path);
+		//if (b!=null) sendUserMessage("Loaded: "+path);
+		//else sendUserMessage("ERROR load: "+path);
 		return b;
 	}
 	
@@ -337,11 +337,11 @@ public class Library {
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdFile = new File(path);
 			if (sdFile.delete()) {
-				sendUserMessage("Deleted: "+path);
+				//sendUserMessage("Deleted: "+path);
 				return true;
 			}
 		};
-		sendUserMessage("ERROR delete: "+path);
+		//sendUserMessage("ERROR delete: "+path);
 		return false;
 	}
 	
