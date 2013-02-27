@@ -58,9 +58,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	int		pref_logcommandcolor=0xFF0000FF;
 	int		pref_logbackgroundcolor=0xFFFFFFFF;
 	int		pref_logtextsize = 13;
-	int		pref_logtexttypeface; //	"@array/pref_font_typeface_entries"
+	int		pref_logtexttypeface;
 	boolean pref_logtextbold = false;
 	boolean pref_logtextitalic = false;
+	int		pref_loglimit = 0;
 	
 	String	pref_syssaveprefix = "state";
 	int		pref_sysscriptdelay = 2;
@@ -198,6 +199,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		pref_logtextsize = check_bounds(val(sp.getString("logtextsize", "13"),13),5,30,13);
 		pref_logtextbold = sp.getBoolean("logtextbold", false);
 		pref_logtextitalic = sp.getBoolean("logtextitalic", false);
+		pref_loglimit = check_bounds(val(sp.getString("loglimit", "0"),0),0,2048,0);
 		
 		String ft[]=getResources().getStringArray(R.array.pref_font_typeface_entries);
 		String fss=sp.getString("logtexttypeface", ft[0]);
@@ -497,6 +499,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 				mt.lvAdapter.getItem(mt.logStrId).append(mt.logStringCapacitor);
 			} else {
 				mt.lvAdapter.add(mt.logStringCapacitor);
+				limitlvAdapter();
 			}
 			mt.logStringCapacitor=null;
 			if (finishThisString) mt.logStrId=-1;
@@ -504,6 +507,15 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 			mt.lvAdapter.notifyDataSetChanged();
 			//lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 		};
+	}
+	
+	void limitlvAdapter() {
+		if (pref_loglimit>0) {
+			while (mt.lvAdapter.getCount()>pref_loglimit) {
+				mt.lvAdapter.remove(mt.lvAdapter.getItem(0));
+			};
+			mt.lvAdapter.notifyDataSetChanged();
+		}
 	}
 	
 	void postCommand() {

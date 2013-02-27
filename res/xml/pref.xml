@@ -7,6 +7,7 @@
 			<ListPreference android:key="logtexttypeface" android:title="Text typeface" android:entries="@array/pref_font_typeface_entries" android:entryValues="@array/pref_font_typeface_entries" android:defaultValue="Normal"/>
 			<CheckBoxPreference android:key="logtextbold" android:title="Text bold" android:defaultValue="false"/>
 			<CheckBoxPreference android:key="logtextitalic" android:title="Text italic" android:defaultValue="false"/>
+			<EditTextPreference android:key="loglimit" android:title="Limit of strings" android:summary="Maximum count of strings in log, 0 for unlimited" android:defaultValue="0"/>
 			
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
