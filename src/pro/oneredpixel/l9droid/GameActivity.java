@@ -62,13 +62,18 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	boolean pref_logtextbold = false;
 	boolean pref_logtextitalic = false;
 	int		pref_loglimit = 0;
+
+	int		pref_histtextsize = 13;
+	int		pref_histwidth = 25;
 	
-	String	pref_syssaveprefix = "state";
-	int		pref_sysscriptdelay = 2;
 	int		pref_picspeed = 10;
 	int		pref_picmaxheight = 30;
 	boolean	pref_picstretch = false;
 	boolean pref_picpaletteamiga = true;
+
+	
+	String	pref_syssaveprefix = "state";
+	int		pref_sysscriptdelay = 2;
 	
 	View activityRootView;
 	
@@ -218,13 +223,22 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		mt.lvAdapter.backgroundcolor = pref_logbackgroundcolor;
 		activityRootView.setBackgroundColor(pref_logbackgroundcolor);
 		lvMain.setCacheColorHint(pref_logbackgroundcolor);
+		etCmd.setBackgroundColor(pref_logbackgroundcolor);
+
 		mt.lvAdapter.textsize = pref_logtextsize;
 		mt.lvAdapter.textstyle = (pref_logtextitalic?Typeface.ITALIC:0)|(pref_logtextbold?Typeface.BOLD:0);
 		
 		mt.lib.refreshLogCommandsColor(mt.lvAdapter, pref_logcommandcolor);
-		
     	mt.lvAdapter.notifyDataSetChanged();
 
+		pref_histtextsize = check_bounds(val(sp.getString("histtextsize", "13"),13),5,30,13);;
+		pref_histwidth = check_bounds(val(sp.getString("sysscriptdelay", "25"),25), 10, 50, 25);
+		mt.lvHistoryAdapter.textcolor = pref_logcommandcolor;
+		mt.lvHistoryAdapter.backgroundcolor = pref_logbackgroundcolor;
+		lvHistory.setCacheColorHint(pref_logbackgroundcolor);
+		mt.lvHistoryAdapter.textsize = pref_histtextsize;
+		
+		
 		//preferences: picture
     	pref_picspeed = check_bounds(val(sp.getString("picspeed", "10"),10),1,255,10);
     	pref_picmaxheight = check_bounds(val(sp.getString("picmaxheight", "30"),30),5,70,30);

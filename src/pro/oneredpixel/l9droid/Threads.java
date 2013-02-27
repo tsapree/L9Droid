@@ -47,7 +47,7 @@ public class Threads {
 	int logStrId=-1;
 	
 	History history;
-	ArrayAdapter<String> lvHistoryAdapter;
+	CustomisableListAdapter<String> lvHistoryAdapter;
 	
 	char keyPressed=0;
 	
@@ -70,7 +70,7 @@ public class Threads {
 		//lvAdapter = new ArrayAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
 	    lvAdapter = new CustomisableListAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
 		history=new History();
-		lvHistoryAdapter = new ArrayAdapter<String>(activity, R.layout.history_list_item, history.getHistory());
+		lvHistoryAdapter = new CustomisableListAdapter<String>(activity, R.layout.history_list_item, history.getHistory());
 
 		//lvHistoryAdapter.add("unfas para");
 		

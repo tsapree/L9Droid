@@ -10,6 +10,10 @@
 			<EditTextPreference android:key="loglimit" android:title="Limit of strings" android:summary="Maximum count of strings in log, 0 for unlimited" android:defaultValue="0"/>
 			
 		</PreferenceCategory>
+		<PreferenceCategory android:title="Commands history">
+			<EditTextPreference android:title="Text size" android:key="histtextsize" android:defaultValue="13"/>
+			<EditTextPreference android:title="Width" android:key="histwidth" android:defaultValue="13" android:summary="Set history width in percent"/>
+		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
 			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pref_pic_palette_entries" android:entryValues="@array/pref_pic_palette_entries" android:dialogTitle="Select palette" android:defaultValue="Amiga" android:summary="Amiga or Spectrum palette"/>
 			<EditTextPreference android:key="picspeed" android:title="Speed" android:dialogTitle="Enter picture update speed" android:summary="Used to create more athmospheric drawn" android:defaultValue="10"/>
@@ -20,4 +24,5 @@
 			<EditTextPreference android:title="Save file prefix" android:key="syssaveprefix" android:defaultValue="state"/>
 			<EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay" android:summary="Delay before apply next command" android:defaultValue="2"/>
 		</PreferenceCategory>
+		
 	</PreferenceScreen>
