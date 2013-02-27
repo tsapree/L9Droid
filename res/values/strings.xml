@@ -3,29 +3,13 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">L9Droid</string>
-    <string name="pref_font_bold">Font Bold</string>
-    <string name="pref_font_size">Font Size</string>
-    <string-array name="pref_font_entries">
+    <string-array name="pref_font_typeface_entries">
         <item>Normal</item>
         <item>Monospace</item>
         <item>Sans serif</item>
         <item>Serif</item>
     </string-array>
-    <string-array name="pref_font_values">
-        <item>DEFAULT</item>
-        <item>MONOSPACE</item>
-        <item>SANS_SERIF</item>
-        <item>SERIF</item>
-    </string-array>
-    <string-array name="pref_font_size_entries">
-        <item>12. Very small</item>
-        <item>14. Small</item>
-        <item>16. Medium</item>
-        <item>18. Big</item>
-		<item>20. Very big</item>
-		<item>22. Huge</item>
-	</string-array>
-	<string-array name="pic_palette_entries">
+	<string-array name="pref_pic_palette_entries">
         <item>Amiga</item>
         <item>Spectrum</item>
     </string-array>

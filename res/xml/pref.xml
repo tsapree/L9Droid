@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-		<PreferenceCategory android:title="Font">
-			<CheckBoxPreference android:title="Custom Settings" android:key="fontcustom"/>    
-			<ListPreference android:title="Typeface" android:key="fontface" android:entries="@array/pref_font_entries" android:entryValues="@array/pref_font_values" android:defaultValue="Monospace" android:dependency="fontcustom"/>
-			<CheckBoxPreference android:key="fontbold" android:title="Bold" android:dependency="fontcustom"/>
-			<ListPreference android:dependency="fontcustom" android:key="fontsize" android:entryValues="@array/pref_font_size_entries" android:entries="@array/pref_font_size_entries" android:title="Size"/>
-		</PreferenceCategory>
 		<PreferenceCategory android:title="Game Log">
-			<EditTextPreference android:key="logcolorbackground" android:title="Background color"/>
-		    
+			<EditTextPreference android:key="logtextcolor" android:title="Text color" android:defaultValue="#00000000" />
+			<EditTextPreference android:key="logcommandcolor" android:title="Commands color" android:defaultValue="#0000FF00" android:summary="User entered commands color"/><EditTextPreference android:key="logbackgroundcolor" android:title="Background color" android:defaultValue="#00FFFFFF"/>
+			<EditTextPreference android:title="Text size" android:key="logtextsize" android:defaultValue="13"/>
+			<ListPreference android:key="logtexttypeface" android:title="Text typeface" android:entries="@array/pref_font_typeface_entries" android:entryValues="@array/pref_font_typeface_entries" android:defaultValue="Normal"/>
+			<CheckBoxPreference android:key="logtextbold" android:title="Text bold" android:defaultValue="false"/>
+			<CheckBoxPreference android:key="logtextitalic" android:title="Text italic" android:defaultValue="false"/>
+			
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
-			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pic_palette_entries" android:entryValues="@array/pic_palette_entries" android:dialogTitle="Select palette" android:defaultValue="Amiga" android:summary="Amiga or Spectrum palette"/>
-			
+			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pref_pic_palette_entries" android:entryValues="@array/pref_pic_palette_entries" android:dialogTitle="Select palette" android:defaultValue="Amiga" android:summary="Amiga or Spectrum palette"/>
 			<EditTextPreference android:key="picspeed" android:title="Speed" android:dialogTitle="Enter picture update speed" android:summary="Used to create more athmospheric drawn" android:defaultValue="10"/>
 			<EditTextPreference android:key="picmaxheight" android:title="Height" android:summary="Set maximum height in percent" android:defaultValue="30"/>
 			<CheckBoxPreference android:title="Stretch" android:key="picstretch" android:defaultValue="false" android:summary="Set to stretch picture"/>
-		    
 		</PreferenceCategory>
 		<PreferenceCategory android:title="System">
 			<EditTextPreference android:title="Save file prefix" android:key="syssaveprefix" android:defaultValue="state"/>
 			<EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay" android:summary="Delay before apply next command" android:defaultValue="2"/>
-		    
 		</PreferenceCategory>
-
 	</PreferenceScreen>

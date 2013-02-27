@@ -53,9 +53,14 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	private final static int RESTOREGAMEACTIVITY_RESULT = 2;
     
 	SharedPreferences sp;
-	Typeface tf;
-	Typeface tfDefault=null;
-	float fontSizeDefault=0;
+	
+	int		pref_logtextcolor=0;
+	int		pref_logcommandcolor=0xFF00;
+	int		pref_logbackgroundcolor=0xFFFFFFFF;
+	int		pref_logtextsize = 13;
+	int		pref_logtexttypeface; //	"@array/pref_font_typeface_entries"
+	boolean pref_logtextbold = false;
+	boolean pref_logtextitalic = false;
 	
 	String	pref_syssaveprefix = "state";
 	int		pref_sysscriptdelay = 2;
@@ -138,6 +143,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	        else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
 	        
 	    } else mt.link(this);
+	    
         lvMain.setAdapter(mt.lvAdapter);
         
         lvHistory.setAdapter(mt.lvHistoryAdapter);
@@ -184,33 +190,36 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	    return mt;
 	};
 	
-    protected void onResume() {
-    	float fontSize=14;
-    	if (tfDefault==null) tfDefault=etCmd.getTypeface();
-    	if (fontSizeDefault==0) fontSizeDefault=etCmd.getTextSize();
-    	//String listValue = sp.getString("list", "не выбрано");
-    	//tvInfo.setText("«начение списка - " + listValue);
-    	//tf=Typeface.create(Typeface.DEFAULT, (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
-    	
-    	if (sp.getBoolean("fontcustom", false)) {
-    		tf=Typeface.create(sp.getString("fontface", "DEFAULT"), (sp.getBoolean("fontbold", false)?(Typeface.BOLD):(Typeface.NORMAL)));
-    		//TODO: ”ѕ–ќ—“»“№! до невозможности т€желое решение! 
-    		int s;
-    		String fsa[]=getResources().getStringArray(R.array.pref_font_size_entries);
-    		String fss=sp.getString("fontsize", fsa[3]);
-    		for (s=0;s<fsa.length;s++)
-    			if (fss.equals(fsa[s])) {
-    				fontSize=12+s*2;
-    				break;
-    			};
-    		
-    	} else {
-    		tf=tfDefault;
-    		fontSize=fontSizeDefault;
-    	};
-    	//etCmd.setTypeface(tf);
-    	//etCmd.setTextSize(fontSize);
+	protected void onResume() {
 
+		//preferences: log
+		pref_logtextcolor = color(sp.getString("logtextcolor", "#00000000"),Color.BLACK);
+		pref_logcommandcolor = color(sp.getString("logcommandcolor", "#0000FF00"),Color.BLUE);
+		pref_logbackgroundcolor = color(sp.getString("logbackgroundcolor", "#00FFFFFF"),Color.WHITE);
+		pref_logtextsize = check_bounds(val(sp.getString("logtextsize", "13"),13),5,30,13);
+		pref_logtextbold = sp.getBoolean("logtextbold", false);
+		pref_logtextitalic = sp.getBoolean("logtextitalic", false);
+		
+		String ft[]=getResources().getStringArray(R.array.pref_font_typeface_entries);
+		String fss=sp.getString("logtexttypeface", ft[0]);
+		pref_logtexttypeface=0;
+		for (String t: ft) {
+			if (t.equalsIgnoreCase(fss)) break;
+			pref_logtexttypeface++;
+		};
+		switch (pref_logtexttypeface) {
+		case 1:  mt.lvAdapter.texttypeface = Typeface.MONOSPACE;	break;
+		case 2:  mt.lvAdapter.texttypeface = Typeface.SERIF;		break;
+		case 3:  mt.lvAdapter.texttypeface = Typeface.SANS_SERIF;	break;
+		default: mt.lvAdapter.texttypeface = Typeface.DEFAULT;		break;
+		}
+		mt.lvAdapter.textcolor = pref_logtextcolor;
+		mt.lvAdapter.backgroundcolor = pref_logbackgroundcolor;
+		mt.lvAdapter.textsize = pref_logtextsize;
+		mt.lvAdapter.textstyle = (pref_logtextitalic?Typeface.ITALIC:0)|(pref_logtextbold?Typeface.BOLD:0);
+    	mt.lvAdapter.notifyDataSetChanged();
+
+		//preferences: picture
     	pref_picspeed = check_bounds(val(sp.getString("picspeed", "10"),10),1,255,10);
     	pref_picmaxheight = check_bounds(val(sp.getString("picmaxheight", "30"),30),5,70,30);
     	pref_picstretch = sp.getBoolean("picstretch", false);
@@ -222,17 +231,31 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	}
     	updatePictureSize();
     	
+    	//preferences: system
     	pref_syssaveprefix = sp.getString("syssaveprefix","state");
     	pref_sysscriptdelay = check_bounds(val(sp.getString("sysscriptdelay", "2"),2), 0, 30, 2);
+
     	
     	mt.activityPaused=false;
     	super.onResume();
     }
     
+    int color(String s, int default_color) {
+    	int c;
+    	try {
+    		//i = Integer.valueOf(s);
+    		c=Color.parseColor(s);
+        	} catch (IllegalArgumentException e) {
+    			c=default_color;
+    		};
+    	return c | 0xFF000000;
+    }
+    
     int val(String s, int default_value) {
     	int i;
     	try {
-    		i = Integer.valueOf(s);
+    		//i = Integer.valueOf(s);
+    		i=Integer.decode(s);
         	} catch (NumberFormatException e) {
     			i=default_value;
     		}

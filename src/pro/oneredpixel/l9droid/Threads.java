@@ -41,7 +41,8 @@ public class Threads {
     
     static boolean gfx_ready=false;
     
-	ArrayAdapter<SpannableStringBuilder> lvAdapter;
+	//ArrayAdapter<SpannableStringBuilder> lvAdapter;
+    CustomisableListAdapter<SpannableStringBuilder> lvAdapter;
 	SpannableStringBuilder logStringCapacitor=null;
 	int logStrId=-1;
 	
@@ -66,7 +67,8 @@ public class Threads {
 		lib=Library.getInstance();
 	    lib.prepareLibrary(activity);
 	    
-		lvAdapter = new ArrayAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
+		//lvAdapter = new ArrayAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
+	    lvAdapter = new CustomisableListAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
 		history=new History();
 		lvHistoryAdapter = new ArrayAdapter<String>(activity, R.layout.history_list_item, history.getHistory());
 
