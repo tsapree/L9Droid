@@ -1,10 +1,13 @@
 package pro.oneredpixel.l9droid;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,18 +28,24 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 	ArrayList<Map<String, Object>> data;
 	SimpleAdapter sAdapter;
 	
+	String folder;
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.select_file);
 
 		lib = Library.getInstance();
 		
-		String folder;
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED))
-			folder = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
-		else folder = "/";
+        SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+        folder = sPref.getString("selectfileactivity_folder", null);
+        if (folder==null || (!(new File(folder)).exists())) {
+			String sdState = android.os.Environment.getExternalStorageState();
+			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED))
+				folder = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+			else folder = "/";
+        };
 		data=lib.getFilesInFolder(folder);
+
 		
 		tvFolder = (TextView) findViewById(R.id.tvFolder);
 		tvFolder.setText(folder);
@@ -79,6 +88,7 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 		data.addAll(lib.getFilesInFolder(path));
 		sAdapter.notifyDataSetChanged();
 		lvFiles.setSelection(0);
+		folder = path;
 	}
 	
 	void selectFolder(String filename) {
@@ -93,5 +103,14 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
 			onBackPressed();
 		};
 	}
+	
+	protected void onDestroy() {
+		super.onDestroy();
+		SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+		Editor ed = sPref.edit();
+		ed.putString("selectfileactivity_folder", folder);
+		ed.commit();
+	}
+	
 
 }
