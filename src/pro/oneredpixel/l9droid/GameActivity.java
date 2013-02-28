@@ -30,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 public class GameActivity extends Activity implements OnClickListener, TextWatcher,
 		OnEditorActionListener,
@@ -80,13 +79,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	ImageButton ibCmd;
 	ImageButton ibMenu;
 	EditText etCmd;
-	
 	Button bSpace;
 	Button bEnter;
-
 	ListView lvMain;
 	ListView lvHistory;
-   
 	ImageView ivScreen;
 	
 	String command;
@@ -94,6 +90,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	static Threads mt;
     
 	boolean killThreadsOnDestroyActivity=true;
+	
+	boolean needToExitApp = false;
 	
 	int prevAppHeight = 0;
 	int prevAppWidth = 0;
@@ -266,6 +264,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	
     	mt.activityPaused=false;
     	super.onResume();
+    	
+    	if (needToExitApp) finish();
     }
     
     int color(String s, int default_color) {
@@ -315,8 +315,14 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		
 		//Log.d("l9droid", "need to stop application");
 		if (killThreadsOnDestroyActivity && mt.l9!=null) {
-			ed.putString("lastgame", mt.l9.LastGame);
-			mt.destroy(true);
+			if (mt.lib.getGamePath()!=null) {
+				ed.putString("lastgame", mt.l9.LastGame);
+				mt.destroy(true);
+			} else {
+				ed.remove("lastgame");
+				mt.destroy(false);
+			}
+
 		}
 		
 		ed.commit();
@@ -430,6 +436,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 				break;
 			}
 		};
+		if (mt.lib.getGamePath()==null) needToExitApp=true;
 	}
     
     // some text

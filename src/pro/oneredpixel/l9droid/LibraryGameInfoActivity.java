@@ -99,7 +99,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			};
 			break;
 		case R.id.ibStop:
-			showStopGameDialog();  //TODO: вывести предупреждение об остановке игры и остановить при согласии
+			showStopGameDialog();
 			break;
 		case R.id.ibMenu:
 			if ((p!=null) && (p.getTag()!=null)) {
@@ -183,10 +183,8 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		.setCancelable(true)
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
-		//CustomTabActivity.this.finish();
-			//TODO: stop game!
+			lib.resetGamePath();
 			fillInfo();
-			//cancelPressed=true;
 			}
 		})
 		.setNegativeButton("No", null)

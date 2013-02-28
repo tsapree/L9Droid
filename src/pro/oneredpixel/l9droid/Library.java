@@ -191,7 +191,8 @@ public class Library {
 		GameFullPathName=path;
 	}
 	
-	String getGamePath() {return GameFullPathName;}; 
+	String getGamePath() {return GameFullPathName;};
+	void resetGamePath() { GameFullPathName = null; };
 	
 	byte[] fileLoadRelativeToArray(String relativePath) {
 		return fileLoadToArray(getAbsolutePath(relativePath));
