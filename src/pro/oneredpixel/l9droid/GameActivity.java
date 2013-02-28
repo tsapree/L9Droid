@@ -64,7 +64,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	int		pref_loglimit = 0;
 
 	int		pref_histtextsize = 13;
-	int		pref_histwidth = 25;
+	int		pref_histwidth = 25; //in percent
 	
 	int		pref_picspeed = 10;
 	int		pref_picmaxheight = 30;
@@ -160,6 +160,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
             public void onGlobalLayout() {
             	int viewHeight = activityRootView.getHeight();
             	int viewWidth = activityRootView.getWidth();
+            	if ((viewHeight!=prevAppHeight) || (viewWidth != prevAppWidth)) {
+            		lvHistory.getLayoutParams().width = viewWidth*pref_histwidth/100;
+            		lvHistory.requestLayout();
+            	};
             	if (((viewHeight!=prevAppHeight) || (viewWidth != prevAppWidth) ) && ivScreen!=null) {
                 	prevAppHeight = viewHeight;
                 	prevAppWidth = viewWidth;
@@ -223,7 +227,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		mt.lvAdapter.backgroundcolor = pref_logbackgroundcolor;
 		activityRootView.setBackgroundColor(pref_logbackgroundcolor);
 		lvMain.setCacheColorHint(pref_logbackgroundcolor);
-		etCmd.setBackgroundColor(pref_logbackgroundcolor);
 
 		mt.lvAdapter.textsize = pref_logtextsize;
 		mt.lvAdapter.textstyle = (pref_logtextitalic?Typeface.ITALIC:0)|(pref_logtextbold?Typeface.BOLD:0);
@@ -232,12 +235,16 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	mt.lvAdapter.notifyDataSetChanged();
 
 		pref_histtextsize = check_bounds(val(sp.getString("histtextsize", "13"),13),5,30,13);;
-		pref_histwidth = check_bounds(val(sp.getString("sysscriptdelay", "25"),25), 10, 50, 25);
+		pref_histwidth = check_bounds(val(sp.getString("histwidth", "25"),25), 10, 50, 25);
+		
 		mt.lvHistoryAdapter.textcolor = pref_logcommandcolor;
 		mt.lvHistoryAdapter.backgroundcolor = pref_logbackgroundcolor;
 		lvHistory.setCacheColorHint(pref_logbackgroundcolor);
 		mt.lvHistoryAdapter.textsize = pref_histtextsize;
+		mt.lvHistoryAdapter.notifyDataSetChanged();
 		
+   		lvHistory.getLayoutParams().width = activityRootView.getWidth()*pref_histwidth/100;
+   		lvHistory.requestLayout();
 		
 		//preferences: picture
     	pref_picspeed = check_bounds(val(sp.getString("picspeed", "10"),10),1,255,10);
