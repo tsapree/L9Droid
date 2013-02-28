@@ -39,15 +39,15 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		OnItemClickListener,
 		OnItemLongClickListener {
 
-    private final static int MENU_ITEM_SETTINGS = 2;
-    private final static int MENU_ITEM_SAVE_STATE = 4;
-    private final static int MENU_ITEM_RESTORE_STATE = 5;
-    private final static int MENU_ITEM_PICTURES = 6;
-    private final static int MENU_ITEM_WORDS = 7;
-    private final static int MENU_ITEM_PLAY_SCRIPT = 8;
-    private final static int MENU_ITEM_LIBRARY = 9;
-    private final static int MENU_ITEM_HISTORY = 10;
-    private final static int MENU_ITEM_CLOSEAPP = 11;
+    private final static int MENU_ITEM_SETTINGS = 1;
+    private final static int MENU_ITEM_SAVE_STATE = 2;
+    private final static int MENU_ITEM_RESTORE_STATE = 3;
+    private final static int MENU_ITEM_PICTURES = 4;
+    private final static int MENU_ITEM_WORDS = 5;
+    private final static int MENU_ITEM_PLAY_SCRIPT = 6;
+    private final static int MENU_ITEM_LIBRARY = 7;
+    private final static int MENU_ITEM_HISTORY = 8;
+    private final static int MENU_ITEM_CLOSEAPP = 9;
 
 	private final static int LIBRARYACTIVITY_RESULT = 1;
 	private final static int RESTOREGAMEACTIVITY_RESULT = 2;
@@ -150,9 +150,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	        	GameInfo gi=mt.lib.getGameInfo(this,mt.lib.getFileNameWithoutPath(mt.lib.getFolder(mt.lib.getGamePath())));
 	        	Toast.makeText(this, gi.getTitle(), Toast.LENGTH_SHORT).show();
 	        }
-	        
-	        //if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
-	        //else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
 	        
 	    } else mt.link(this);
 	    
@@ -322,7 +319,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		Editor ed = sPref.edit();
 		ed.putBoolean("showhistory", getVisibilityCommandsHistory());
 		
-		//Log.d("l9droid", "need to stop application");
 		if (killThreadsOnDestroyActivity && mt.l9!=null) {
 			if (mt.lib.getGamePath()!=null) {
 				ed.putString("lastgame", mt.l9.LastGame);
@@ -413,7 +409,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// если пришло ОК
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 			case LIBRARYACTIVITY_RESULT: 
@@ -424,9 +419,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 				mt.lvAdapter.clear();
 				mt.lvHistoryAdapter.clear();
 				mt.startGame(newGame,false);
-			//	if (mt.l9!=null) {
-			//		Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
-			//	} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
 				etCmd.setText("");
 				break;
 			case RESTOREGAMEACTIVITY_RESULT: //restore game activity
@@ -492,12 +484,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (bSpace.getVisibility()==View.VISIBLE) {
 			if (keyCode==KeyEvent.KEYCODE_SPACE) {
-			//if (keyCode==KeyEvent.KEYCODE_1) {
 				mt.keyPressed=' ';
 				return true;
 			}
 			else if (keyCode==KeyEvent.KEYCODE_ENTER) {				
-			//else if (keyCode==KeyEvent.KEYCODE_2) {
 				mt.keyPressed='\r';
 				return true;
 			}
@@ -540,7 +530,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 			if (finishThisString) mt.logStrId=-1;
 			else mt.logStrId=lvMain.getAdapter().getCount()-1;
 			mt.lvAdapter.notifyDataSetChanged();
-			//lvMain.setSelection(lvMain.getAdapter().getCount()-1);
 		};
 	}
 	
@@ -559,7 +548,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     
 			mt.history.add(etCmd.getText().toString());
 			mt.lvHistoryAdapter.notifyDataSetChanged();
-			//lvHistory.setSelection(lvHistory.getAdapter().getCount()-1);
 			
 			command=etCmd.getText().toString();
 			etCmd.setText("");
