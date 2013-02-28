@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
 public class GameActivity extends Activity implements OnClickListener, TextWatcher,
 		OnEditorActionListener,
@@ -145,7 +146,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	        if (mt.lib.getGamePath()==null) {
 	        	Intent intent=new Intent(this, LibraryGamesActivity.class);
 				startActivityForResult(intent, LIBRARYACTIVITY_RESULT);
-	        };
+	        } else {
+	        	GameInfo gi=mt.lib.getGameInfo(this,mt.lib.getFileNameWithoutPath(mt.lib.getFolder(mt.lib.getGamePath())));
+	        	Toast.makeText(this, gi.getTitle(), Toast.LENGTH_SHORT).show();
+	        }
 	        
 	        //if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
 	        //else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
