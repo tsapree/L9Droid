@@ -39,7 +39,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		OnItemClickListener,
 		OnItemLongClickListener {
 
-    private final static int MENU_ITEM_LIBRARY_FILES = 1;
     private final static int MENU_ITEM_SETTINGS = 2;
     private final static int MENU_ITEM_SAVE_STATE = 4;
     private final static int MENU_ITEM_RESTORE_STATE = 5;
@@ -364,8 +363,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
         mi.setIntent(new Intent(this, PrefActivity.class));
     	mi = menu.add(1, MENU_ITEM_PLAY_SCRIPT, 0,"Play Script");
     	mi.setOnMenuItemClickListener(this);
-    	mi = menu.add(0, MENU_ITEM_LIBRARY_FILES, 2, "Library Files");
-    	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_HISTORY, 3, "Commands History");
     	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_CLOSEAPP, 3, "Exit");
@@ -378,10 +375,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	public boolean onMenuItemClick(MenuItem arg0) {
 		Intent intent;
 		switch (arg0.getItemId()) {
-		case MENU_ITEM_LIBRARY_FILES: 
-			intent=new Intent(this, LibraryActivity.class);
-			startActivityForResult(intent, LIBRARYACTIVITY_RESULT);
-			break;
 		case MENU_ITEM_LIBRARY: 
 			intent=new Intent(this, LibraryGamesActivity.class);
 			startActivityForResult(intent, LIBRARYACTIVITY_RESULT);
