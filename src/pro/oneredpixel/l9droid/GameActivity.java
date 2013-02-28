@@ -410,9 +410,9 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 				mt.lvAdapter.clear();
 				mt.lvHistoryAdapter.clear();
 				mt.startGame(newGame,false);
-				if (mt.l9!=null) {
-					Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
-				} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
+			//	if (mt.l9!=null) {
+			//		Toast.makeText(this, "Started: "+newGame, Toast.LENGTH_SHORT).show();
+			//	} else Toast.makeText(this, "Fault start of: "+newGame, Toast.LENGTH_SHORT).show();
 				etCmd.setText("");
 				break;
 			case RESTOREGAMEACTIVITY_RESULT: //restore game activity

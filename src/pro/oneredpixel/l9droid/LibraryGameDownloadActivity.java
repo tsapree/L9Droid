@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LibraryGameDownloadActivity extends Activity implements OnClickListener {
 
@@ -31,6 +32,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	String game;
 	GameInfo gi;
 	DownloadInstallFileTask mt;
+	Activity activity;
 	
 	boolean cancelPressed=false;
 	
@@ -41,6 +43,9 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    setContentView(R.layout.library_game_download);
 	    
 	    lib = Library.getInstance();
+	    
+	    activity = this;
+	    
 	    game=getIntent().getStringExtra("selectedgame");
 	    gi=lib.getGameInfo(this,game);
 	    tvGameName = (TextView)findViewById(R.id.tvGameName);
@@ -52,11 +57,14 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    ivBack.setOnClickListener(this);
 		
 		FillSourcesInfo();
+		
+		if (!lib.checkIfSDCardPresent()) Toast.makeText(this, "No sdcard found", Toast.LENGTH_SHORT).show();
 	    
 	};
 	
 	void FillSourcesInfo() {
 		cancelPressed=false;
+		boolean sd = lib.checkIfSDCardPresent();
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llSources);
 		linLayout.removeAllViews();
 	    LayoutInflater ltInflater = getLayoutInflater();
@@ -67,15 +75,27 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			View item = ltInflater.inflate(R.layout.library_game_download_item, linLayout, false);
 			TextView tvVersion = (TextView) item.findViewById(R.id.tvLink);
 			//fills info about this version, based on tags from parent dir
-			tvVersion.setText(gi.getPath(i)+" "+gi.getTags(i));
+			tvVersion.setText(gi.getTags(i));
+			TextView tvStatus = (TextView) item.findViewById(R.id.tvStatus);
+			tvStatus.setVisibility(View.GONE);
+			ProgressBar pbProgress=(ProgressBar) item.findViewById(R.id.pbProgress);
+			pbProgress.setVisibility(View.GONE);
+			
 			Button bDownload = (Button) item.findViewById(R.id.bDownload);
 			bDownload.setOnClickListener(this);
+			bDownload.setVisibility(View.VISIBLE);
+			bDownload.setEnabled(sd);
 			Button bCancel = (Button) item.findViewById(R.id.bCancel);
 			bCancel.setOnClickListener(this);
+			bCancel.setVisibility(View.GONE);
 			if (lib.checkPathInLibrary(gi.getId()+" "+gi.getTags(i))) {
 				bDownload.setText("Installed");
 				bDownload.setEnabled(false);
-			} else if (lib.checkFileInCache(gi.getPath(i))!=null) bDownload.setText("Install");
+			} else if (lib.checkFileInCache(gi.getPath(i))!=null) {
+				bDownload.setText("Install");
+				tvStatus.setText("Archive found in cache");
+				tvStatus.setVisibility(View.VISIBLE);
+			};
 			
 			item.setTag(i);
 			linLayout.addView(item);
@@ -100,7 +120,6 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 					linLayout.getChildAt(i).findViewById(R.id.bDownload).setEnabled(false);
 				};
 				
-				//Toast.makeText(this, "download pressed: "+gi.getPath(index), Toast.LENGTH_SHORT).show();
 				mt = new DownloadInstallFileTask(p);
 			    mt.execute(gi.getPath(index),gi.getFiles(index), gi.getId()+" "+gi.getTags(index));
 			    
@@ -128,6 +147,12 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
 		//CustomTabActivity.this.finish();
+			if ((mt!=null) && (mt.v!=null)) {
+				TextView tv=(TextView)mt.v.findViewById(R.id.tvStatus);
+		    	  tv.setText("Aborting...");
+		    	  Button bCancel = (Button) mt.v.findViewById(R.id.bCancel);
+		    	  bCancel.setEnabled(false);
+			};
 			cancelPressed=true;
 			}
 		})
@@ -138,7 +163,10 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 
 		View v;
+		Activity act = null;
 		int operation=0;
+		String returnMessage = null;
+		String errorDescription = null;
 		
 		DownloadInstallFileTask(View view) {
 			v=view;
@@ -150,7 +178,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    	if (v!=null) {
 				TextView tvStatus=(TextView)v.findViewById(R.id.tvStatus);
 				ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
-				tvStatus.setText("Downloading:");
+				tvStatus.setText("Downloading...");
 				tvStatus.setVisibility(View.VISIBLE);
 				pbProgress.setIndeterminate(true);
 				pbProgress.setVisibility(View.VISIBLE);
@@ -158,31 +186,34 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		  		Button bDownload = (Button) v.findViewById(R.id.bDownload);
 				Button bCancel = (Button) v.findViewById(R.id.bCancel);
 	
-				bDownload.setVisibility(View.INVISIBLE);
+				bDownload.setVisibility(View.GONE);
 				bCancel.setVisibility(View.VISIBLE);  
 	    	}
 	    }
 
 	    @Override
 	    protected Void doInBackground(String... params) {
-	    	
+	    
 	    	String downloadedPath = lib.downloadFileToCache(params[0],this);
 	    	if (downloadedPath!=null) {
 	    		operation=1;
 				if (lib.unzipFile(downloadedPath, params[1], params[2],this)) {
-					//download goog, unzipped good
+					//download good, unzipped good
 				} else {
+					returnMessage = "Download OK, unzipped with error: "+errorDescription;
 					//download good, unzipped with error;
 				}
 			} else {
+				returnMessage = "Download error: "+errorDescription;
 				//download with error
 			};
-	    	
-	    /*
+
+			/*
 	      try {
 	        for (int i=0; i<10; i++) {
 	        	TimeUnit.SECONDS.sleep(1);
 	        	doProgressUpdate(i, 9);
+	        	if (cancelPressed) operation=-1;
 	        }
 	      } catch (InterruptedException e) {
 	        e.printStackTrace();
@@ -194,12 +225,13 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		        for (int i=0; i<10; i++) {
 		        	TimeUnit.SECONDS.sleep(1);
 		        	doProgressUpdate(i, 9);
+		        	if (cancelPressed) operation=-1;
 		        }
 		      } catch (InterruptedException e) {
 		        e.printStackTrace();
 		      }
-	      */
-	      
+		      */
+      
 	      
 	      return null;
 	    }
@@ -213,20 +245,36 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    protected void onProgressUpdate(Integer... values) {
 	      super.onProgressUpdate(values);
 	      if (v!=null) {
+		      ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
 	    	  if (operation==1) {
 	    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-		    	  tv.setText("Installing:");
+		    	  tv.setText("Installing...");
 		    	  operation=2;
 	    	  };
-	    	  ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
-	    	  if (values[1]>0) {
-	    		  pbProgress.setIndeterminate(false);
-	    		  pbProgress.setMax(values[1]);
-	    		  pbProgress.setProgress(values[0]);
+	    	  if (operation==-1) {
+	    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
+		    	  tv.setText("Aborting...");
+		    	  pbProgress.setIndeterminate(true);
 	    	  } else {
-	    		  pbProgress.setIndeterminate(true);
-	    		  //no info about file size, but downloading started
-	    	  }
+		    	  if (values[1]>0) {
+		    		  
+		    		  pbProgress.setIndeterminate(false);
+		    		  pbProgress.setMax(values[1]);
+		    		  pbProgress.setProgress(values[0]);
+	
+		    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
+		    		  if (operation==0) {
+		    			  tv.setText(String.format("Downloading %d / %d kB",values[0]/1024,values[1]/1024) );
+		    		  } else {
+		    			  tv.setText(String.format("Installing %d / %d kB",values[0]/1024,values[1]/1024) );
+		    		  }
+		    			  
+		    		  
+		    	  } else {
+		    		  pbProgress.setIndeterminate(true);
+		    		  //no info about file size, but downloading started
+		    	  }
+	    	  };
 	      }
 	    }
 	    
@@ -234,13 +282,15 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    protected void onPostExecute(Void result) {
 	      super.onPostExecute(result);
 	      lib.invalidateInstalledVersions();
-	      if (v!=null) {
+	      /*if (v!=null) {
 	    	  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-	    	  tv.setText("Download&Install complete");
+	    	  tv.setText("Install completed!");
 	    	  ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
-	    	  pbProgress.setVisibility(View.INVISIBLE);
+	    	  pbProgress.setVisibility(View.GONE);
 	      }
+	      */
 	      FillSourcesInfo();
+	      if (returnMessage!=null) Toast.makeText(activity, returnMessage, Toast.LENGTH_SHORT).show();
 	      mt=null;
 	    }
 	  }

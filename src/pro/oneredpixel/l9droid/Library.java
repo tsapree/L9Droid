@@ -118,6 +118,11 @@ public class Library {
 		}
 	}
 	
+	public boolean checkIfSDCardPresent() {
+		String sdState = android.os.Environment.getExternalStorageState();
+		return (sdState.equals(android.os.Environment.MEDIA_MOUNTED));
+	}
+	
 	//TODO: вызываю извне этот метод, лучше убрать и вызывать из конструктора
 	boolean prepareLibrary(Activity act) {
 		//getting sdcard path
@@ -887,6 +892,7 @@ public class Library {
 				} else {
 					connection = url.openConnection();
 				};
+				connection.setConnectTimeout(3000);
 				int filelenght=connection.getContentLength();
 				InputStream in = connection.getInputStream();
 				
@@ -906,18 +912,22 @@ public class Library {
 
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
+			d.errorDescription = e.toString();//.getMessage();
 			e.printStackTrace();
 			dst=null;
 			//return null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			d.errorDescription = e.toString();//.getMessage();
 			e.printStackTrace();
 			dst=null;
 			//return null;
 		}
+		if (cancelled) d.errorDescription = "Canceled";
 		if (cancelled || (dst==null)) { //если произошла отмена или ошибка
 			if ((fdst!=null) && (fdst.exists())) fdst.delete();
 			if ((dir!=null) && (dir.isDirectory())) dir.delete();
+			dst=null;
 		};
 		return dst;
 		
@@ -984,6 +994,7 @@ public class Library {
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			d.errorDescription = e.getMessage();
 			e.printStackTrace();
 			return false;
 		}
