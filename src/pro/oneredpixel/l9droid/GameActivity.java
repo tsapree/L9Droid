@@ -48,6 +48,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     private final static int MENU_ITEM_PLAY_SCRIPT = 8;
     private final static int MENU_ITEM_LIBRARY = 9;
     private final static int MENU_ITEM_HISTORY = 10;
+    private final static int MENU_ITEM_CLOSEAPP = 11;
 
 	private final static int LIBRARYACTIVITY_RESULT = 1;
 	private final static int RESTOREGAMEACTIVITY_RESULT = 2;
@@ -367,6 +368,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_HISTORY, 3, "Commands History");
     	mi.setOnMenuItemClickListener(this);
+    	mi = menu.add(0, MENU_ITEM_CLOSEAPP, 3, "Exit");
+    	mi.setOnMenuItemClickListener(this);
     	
         return super.onCreateOptionsMenu(menu);
     }
@@ -400,6 +403,9 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 			break;
 		case MENU_ITEM_HISTORY:
 			toggleCommandsHistory();
+			break;
+		case MENU_ITEM_CLOSEAPP:
+			finish();
 			break;
 		};
 
