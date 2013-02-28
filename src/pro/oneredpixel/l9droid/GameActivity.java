@@ -203,7 +203,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 
 		//preferences: log
 		pref_logtextcolor = color(sp.getString("logtextcolor", "#00000000"),Color.BLACK);
-		pref_logcommandcolor = color(sp.getString("logcommandcolor", "#0000FF00"),Color.BLUE);
+		pref_logcommandcolor = color(sp.getString("logcommandcolor", "#000000FF"),Color.BLUE);
 		pref_logbackgroundcolor = color(sp.getString("logbackgroundcolor", "#00FFFFFF"),Color.WHITE);
 		pref_logtextsize = check_bounds(val(sp.getString("logtextsize", "13"),13),5,30,13);
 		pref_logtextbold = sp.getBoolean("logtextbold", false);
@@ -234,6 +234,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		mt.lib.refreshLogCommandsColor(mt.lvAdapter, pref_logcommandcolor);
     	mt.lvAdapter.notifyDataSetChanged();
 
+		//preferences: commands history
 		pref_histtextsize = check_bounds(val(sp.getString("histtextsize", "13"),13),5,30,13);;
 		pref_histwidth = check_bounds(val(sp.getString("histwidth", "25"),25), 10, 50, 25);
 		
@@ -270,7 +271,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     int color(String s, int default_color) {
     	int c;
     	try {
-    		//i = Integer.valueOf(s);
     		c=Color.parseColor(s);
         	} catch (IllegalArgumentException e) {
     			c=default_color;
@@ -281,7 +281,6 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     int val(String s, int default_value) {
     	int i;
     	try {
-    		//i = Integer.valueOf(s);
     		i=Integer.decode(s);
         	} catch (NumberFormatException e) {
     			i=default_value;

@@ -12,7 +12,7 @@
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Commands history">
 			<EditTextPreference android:title="Text size" android:key="histtextsize" android:defaultValue="13"/>
-			<EditTextPreference android:title="Width" android:key="histwidth" android:defaultValue="13" android:summary="Set history width in percent"/>
+			<EditTextPreference android:title="Width" android:key="histwidth" android:defaultValue="25" android:summary="Set history width in percent"/>
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
 			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pref_pic_palette_entries" android:entryValues="@array/pref_pic_palette_entries" android:dialogTitle="Select palette" android:defaultValue="Amiga" android:summary="Amiga or Spectrum palette"/>
