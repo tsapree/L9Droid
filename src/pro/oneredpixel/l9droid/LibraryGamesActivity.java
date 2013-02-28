@@ -61,7 +61,11 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 			m = new HashMap<String, Object>();
 			m.put("game", gi.getTitle());
 			m.put("id", gi.getId());
-			m.put("mark", Library.MARK_PICTURES_RESID[gi.getHighestMark()]);
+			int mark;
+			mark = Library.MARK_INFO;
+			if (!gi.getId().startsWith("info_")) 
+				mark = gi.getHighestMark();
+			m.put("mark", Library.MARK_PICTURES_RESID[mark]);
 			gameItems.add(m);
 		};
 		if (prevCategory!=null) games.add(gameItems);

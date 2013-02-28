@@ -69,13 +69,15 @@ public class Library {
 	public static final int MARK_RATE_DOWN = 2;
 	public static final int MARK_RATE_UP = 3;
 	public static final int MARK_COMPLETED = 4;
+	public static final int MARK_INFO = 5;
 	
 	public static final int MARK_PICTURES_RESID[] = {
 		R.drawable.ic_empty, 	//MARK_NOT_INSTALLED = 0;
 		R.drawable.ic_installed,//MARK_INSTALLED = 1;
 		R.drawable.ic_rate_down,//MARK_RATE_DOWN = 2;
 		R.drawable.ic_rate_up,	//MARK_RATE_UP = 3;
-		R.drawable.ic_done		//MARK_COMPLETED = 4;
+		R.drawable.ic_done,		//MARK_COMPLETED = 4;
+		R.drawable.ic_tip
 	};
 	
 	Handler h;
