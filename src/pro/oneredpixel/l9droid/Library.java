@@ -573,14 +573,19 @@ public class Library {
 	public String getTags(String pathFilename) {
 		File f = new File(pathFilename);
 		String s=f.getParentFile().getName();
+		return decodeTags(s);
+	}
+	
+	public String decodeTags(String s) {
 		String r="";
 		for (int i=0;i<tags.length;i++) {
 			if (s.contains(tags[i][0])) {
 				if (r.length()>0) r+="/";
 				r+=tags[i][1];
 			};
-		}
+		};
 		return r;
+		
 	}
 	
 	public int getMark(String path) {

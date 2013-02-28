@@ -88,7 +88,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			View item = ltInflater.inflate(R.layout.library_game_download_item, linLayout, false);
 			TextView tvVersion = (TextView) item.findViewById(R.id.tvLink);
 			//fills info about this version, based on tags from parent dir
-			tvVersion.setText(gi.getTags(i));
+			tvVersion.setText(lib.decodeTags(gi.getTags(i)));
 			TextView tvStatus = (TextView) item.findViewById(R.id.tvStatus);
 			tvStatus.setVisibility(View.GONE);
 			ProgressBar pbProgress=(ProgressBar) item.findViewById(R.id.pbProgress);
