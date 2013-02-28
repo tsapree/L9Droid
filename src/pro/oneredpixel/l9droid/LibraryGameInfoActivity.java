@@ -183,7 +183,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		.setCancelable(true)
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
-			lib.resetGamePath();
+			lib.setGamePath(null);
 			fillInfo();
 			}
 		})

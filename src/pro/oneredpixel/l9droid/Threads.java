@@ -198,6 +198,7 @@ public class Threads {
         String picturefilename=l9.findPictureFile(gamepath);
         if (l9.LoadGame(gamepath, picturefilename)!=true) {
         	l9=null;
+        	lib.setGamePath(null);
         	return;
         }
         if (loadAutoSave) {
