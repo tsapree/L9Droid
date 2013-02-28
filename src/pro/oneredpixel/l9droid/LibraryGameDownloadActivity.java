@@ -1,5 +1,7 @@
 package pro.oneredpixel.l9droid;
 
+import java.util.concurrent.TimeUnit;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -31,11 +33,10 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	
 	String game;
 	GameInfo gi;
-	DownloadInstallFileTask mt;
-	Activity activity;
+	DownloadInstallFileTask mt=null;
+	LibraryGameDownloadActivity activity;
 	
-	boolean cancelPressed=false;
-	
+
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -45,6 +46,11 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    lib = Library.getInstance();
 	    
 	    activity = this;
+	    
+        mt = (DownloadInstallFileTask) getLastNonConfigurationInstance();
+	    if (mt != null) {
+	    	mt.act=this;
+	    };
 	    
 	    game=getIntent().getStringExtra("selectedgame");
 	    gi=lib.getGameInfo(this,game);
@@ -62,8 +68,15 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	    
 	};
 	
-	void FillSourcesInfo() {
-		cancelPressed=false;
+    public Object onRetainNonConfigurationInstance() {
+    	if (mt!=null) {
+    		mt.act=null;
+    	};
+	    return mt;
+	};
+	
+	public void FillSourcesInfo() {
+		boolean downloading = mt!=null; 
 		boolean sd = lib.checkIfSDCardPresent();
 		LinearLayout linLayout = (LinearLayout) findViewById(R.id.llSources);
 		linLayout.removeAllViews();
@@ -84,7 +97,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			Button bDownload = (Button) item.findViewById(R.id.bDownload);
 			bDownload.setOnClickListener(this);
 			bDownload.setVisibility(View.VISIBLE);
-			bDownload.setEnabled(sd);
+			bDownload.setEnabled(sd && !downloading);
 			Button bCancel = (Button) item.findViewById(R.id.bCancel);
 			bCancel.setOnClickListener(this);
 			bCancel.setVisibility(View.GONE);
@@ -98,6 +111,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			};
 			
 			item.setTag(i);
+			if (mt!=null) mt.v=item;
 			linLayout.addView(item);
 	    };
 	};
@@ -153,147 +167,154 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 		    	  Button bCancel = (Button) mt.v.findViewById(R.id.bCancel);
 		    	  bCancel.setEnabled(false);
 			};
-			cancelPressed=true;
+			if (mt!=null) mt.cancelPressed=true;
 			}
 		})
 		.setNegativeButton("No", null)
 		.show();
 	}
-	
-	class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
+}
 
-		View v;
-		Activity act = null;
-		int operation=0;
-		String returnMessage = null;
-		String errorDescription = null;
-		
-		DownloadInstallFileTask(View view) {
-			v=view;
-		};
-		
-	    @Override
-	    protected void onPreExecute() {
-	    	super.onPreExecute();
-	    	if (v!=null) {
-				TextView tvStatus=(TextView)v.findViewById(R.id.tvStatus);
-				ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
-				tvStatus.setText("Downloading...");
-				tvStatus.setVisibility(View.VISIBLE);
-				pbProgress.setIndeterminate(true);
-				pbProgress.setVisibility(View.VISIBLE);
-	    	  
-		  		Button bDownload = (Button) v.findViewById(R.id.bDownload);
-				Button bCancel = (Button) v.findViewById(R.id.bCancel);
-	
-				bDownload.setVisibility(View.GONE);
-				bCancel.setVisibility(View.VISIBLE);  
-	    	}
-	    }
+class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 
-	    @Override
-	    protected Void doInBackground(String... params) {
-	    
-	    	String downloadedPath = lib.downloadFileToCache(params[0],this);
-	    	if (downloadedPath!=null) {
-	    		operation=1;
-				if (lib.unzipFile(downloadedPath, params[1], params[2],this)) {
-					//download good, unzipped good
-				} else {
-					returnMessage = "Unzipped with error: "+errorDescription;
-					lib.deleteFile(downloadedPath);
-					//download good, unzipped with error;
-				}
+	Library lib;
+	View v;
+	LibraryGameDownloadActivity act = null;
+	int operation=0;
+	String returnMessage = null;
+	String errorDescription = null;
+	boolean cancelPressed=false;
+	
+	DownloadInstallFileTask(View view) {
+		v=view;
+	};
+	
+    @Override
+    protected void onPreExecute() {
+    	super.onPreExecute();
+        lib = Library.getInstance();
+
+    	if (v!=null) {
+			TextView tvStatus=(TextView)v.findViewById(R.id.tvStatus);
+			ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
+			tvStatus.setText("Downloading...");
+			tvStatus.setVisibility(View.VISIBLE);
+			pbProgress.setIndeterminate(true);
+			pbProgress.setVisibility(View.VISIBLE);
+    	  
+	  		Button bDownload = (Button) v.findViewById(R.id.bDownload);
+			Button bCancel = (Button) v.findViewById(R.id.bCancel);
+
+			bDownload.setVisibility(View.GONE);
+			bCancel.setVisibility(View.VISIBLE);  
+    	}
+    }
+
+    @Override
+    protected Void doInBackground(String... params) {
+    
+    	/*
+    	String downloadedPath = lib.downloadFileToCache(params[0],this);
+    	if (downloadedPath!=null) {
+    		operation=1;
+			if (lib.unzipFile(downloadedPath, params[1], params[2],this)) {
+				//download good, unzipped good
 			} else {
-				returnMessage = "Download error: "+errorDescription;
-				//download with error
-			};
+				returnMessage = "Unzipped with error: "+errorDescription;
+				lib.deleteFile(downloadedPath);
+				//download good, unzipped with error;
+			}
+		} else {
+			returnMessage = "Download error: "+errorDescription;
+			//download with error
+		};
+		*/
+		
 
-			/*
-	      try {
+		
+      try {
+        for (int i=0; i<10; i++) {
+        	TimeUnit.SECONDS.sleep(1);
+        	doProgressUpdate(i, 9);
+        	if (cancelPressed) {
+        		operation=-1;
+        		break;
+        	}
+        }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      
+      operation=1;
+      
+      try {
 	        for (int i=0; i<10; i++) {
 	        	TimeUnit.SECONDS.sleep(1);
 	        	doProgressUpdate(i, 9);
-	        	if (cancelPressed) operation=-1;
+	        	if (cancelPressed) {
+	        		operation=-1;
+	        		break;
+	        	}
 	        }
 	      } catch (InterruptedException e) {
 	        e.printStackTrace();
 	      }
 	      
-	      operation=1;
-	      
-	      try {
-		        for (int i=0; i<10; i++) {
-		        	TimeUnit.SECONDS.sleep(1);
-		        	doProgressUpdate(i, 9);
-		        	if (cancelPressed) operation=-1;
-		        }
-		      } catch (InterruptedException e) {
-		        e.printStackTrace();
-		      }
-		      */
       
-	      
-	      return null;
-	    }
-	    
-	    boolean doProgressUpdate(int current, int max) {
-	    	publishProgress(current, max);
-	    	return cancelPressed;
-	    }
+      return null;
+    }
+    
+    boolean doProgressUpdate(int current, int max) {
+    	publishProgress(current, max);
+    	return cancelPressed;
+    }
 
-	    @Override
-	    protected void onProgressUpdate(Integer... values) {
-	      super.onProgressUpdate(values);
-	      if (v!=null) {
-		      ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
-	    	  if (operation==1) {
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+      super.onProgressUpdate(values);
+      if (v!=null) {
+	      ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
+    	  if (operation==1) {
+    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
+	    	  tv.setText("Installing...");
+	    	  operation=2;
+    	  };
+    	  if (operation==-1) {
+    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
+	    	  tv.setText("Aborting...");
+	    	  pbProgress.setIndeterminate(true);
+    	  } else {
+	    	  if (values[1]>0) {
+	    		  
+	    		  pbProgress.setIndeterminate(false);
+	    		  pbProgress.setMax(values[1]);
+	    		  pbProgress.setProgress(values[0]);
+
 	    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-		    	  tv.setText("Installing...");
-		    	  operation=2;
-	    	  };
-	    	  if (operation==-1) {
-	    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-		    	  tv.setText("Aborting...");
-		    	  pbProgress.setIndeterminate(true);
+	    		  if (operation==0) {
+	    			  tv.setText(String.format("Downloading %d / %d kB",values[0]/1024,values[1]/1024) );
+	    		  } else {
+	    			  tv.setText(String.format("Installing %d / %d kB",values[0]/1024,values[1]/1024) );
+	    		  }
+	    			  
+	    		  
 	    	  } else {
-		    	  if (values[1]>0) {
-		    		  
-		    		  pbProgress.setIndeterminate(false);
-		    		  pbProgress.setMax(values[1]);
-		    		  pbProgress.setProgress(values[0]);
-	
-		    		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-		    		  if (operation==0) {
-		    			  tv.setText(String.format("Downloading %d / %d kB",values[0]/1024,values[1]/1024) );
-		    		  } else {
-		    			  tv.setText(String.format("Installing %d / %d kB",values[0]/1024,values[1]/1024) );
-		    		  }
-		    			  
-		    		  
-		    	  } else {
-		    		  pbProgress.setIndeterminate(true);
-		    		  //no info about file size, but downloading started
-		    	  }
-	    	  };
-	      }
-	    }
-	    
-	    @Override
-	    protected void onPostExecute(Void result) {
-	      super.onPostExecute(result);
-	      lib.invalidateInstalledVersions();
-	      /*if (v!=null) {
-	    	  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-	    	  tv.setText("Install completed!");
-	    	  ProgressBar pbProgress=(ProgressBar) v.findViewById(R.id.pbProgress);
-	    	  pbProgress.setVisibility(View.GONE);
-	      }
-	      */
-	      FillSourcesInfo();
-	      if (returnMessage!=null) Toast.makeText(activity, returnMessage, Toast.LENGTH_SHORT).show();
-	      mt=null;
-	    }
-	  }
-	
-}
+	    		  pbProgress.setIndeterminate(true);
+	    		  //no info about file size, but downloading started
+	    	  }
+    	  };
+      }
+    }
+    
+    @Override
+    protected void onPostExecute(Void result) {
+      super.onPostExecute(result);
+      lib.invalidateInstalledVersions();
+      if (returnMessage!=null && act!=null) Toast.makeText(act, returnMessage, Toast.LENGTH_SHORT).show();
+      if (act!=null) {
+    	  act.mt=null;
+    	  act.FillSourcesInfo();
+      };
+    }
+  }
+

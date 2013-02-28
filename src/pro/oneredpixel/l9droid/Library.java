@@ -27,11 +27,9 @@ import java.util.zip.ZipFile;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import pro.oneredpixel.l9droid.LibraryGameDownloadActivity.DownloadInstallFileTask;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Spannable;
@@ -39,7 +37,6 @@ import android.text.SpannableStringBuilder;
 import android.text.format.Time;
 import android.text.style.ForegroundColorSpan;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 public class Library {
 
