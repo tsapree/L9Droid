@@ -106,12 +106,18 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 				bDownload.setEnabled(false);
 			} else if (lib.checkFileInCache(gi.getPath(i))!=null) {
 				bDownload.setText("Install");
-				tvStatus.setText("Archive found in cache");
+				tvStatus.setText("Cached");
 				tvStatus.setVisibility(View.VISIBLE);
 			};
 			
 			item.setTag(i);
-			if (mt!=null) mt.v=item;
+			if (mt!=null && mt.param.equalsIgnoreCase(gi.getPath(i)+gi.getFiles(i)+gi.getId()+" "+gi.getTags(i))) {
+				mt.v=item;
+				bDownload.setVisibility(View.GONE);
+				bCancel.setVisibility(View.VISIBLE);
+				pbProgress.setIndeterminate(true);
+				pbProgress.setVisibility(View.VISIBLE);
+			};
 			linLayout.addView(item);
 	    };
 	};
@@ -136,6 +142,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 				
 				mt = new DownloadInstallFileTask(p);
 			    mt.execute(gi.getPath(index),gi.getFiles(index), gi.getId()+" "+gi.getTags(index));
+			    mt.act = activity;
 			    
 			    break;
 			case R.id.bCancel:
@@ -147,7 +154,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	};
 	
 	public void onBackPressed() {
-		if (mt!=null && !mt.isCancelled()) {
+		if (mt!=null && !mt.isCancelled() && !mt.cancelPressed) {
 			showCancelDialog();
 		} else super.onBackPressed();
 	}
@@ -155,15 +162,13 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 	private void showCancelDialog() {
 		new AlertDialog.Builder(this)
 		.setIcon(android.R.drawable.ic_dialog_alert)
-		.setTitle("Canceling...")
+		.setTitle("Cancelling...")
 		.setMessage("Are you sure you want to cancel?")
 		.setCancelable(true)
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
-		//CustomTabActivity.this.finish();
 			if ((mt!=null) && (mt.v!=null)) {
 				TextView tv=(TextView)mt.v.findViewById(R.id.tvStatus);
-		    	  tv.setText("Aborting...");
 		    	  Button bCancel = (Button) mt.v.findViewById(R.id.bCancel);
 		    	  bCancel.setEnabled(false);
 			};
@@ -181,6 +186,7 @@ class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 	View v;
 	LibraryGameDownloadActivity act = null;
 	int operation=0;
+	String param;
 	String returnMessage = null;
 	String errorDescription = null;
 	boolean cancelPressed=false;
@@ -212,26 +218,25 @@ class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 
     @Override
     protected Void doInBackground(String... params) {
-    
-    	/*
+    	param=params[0]+params[1]+params[2];
+    	
     	String downloadedPath = lib.downloadFileToCache(params[0],this);
     	if (downloadedPath!=null) {
     		operation=1;
 			if (lib.unzipFile(downloadedPath, params[1], params[2],this)) {
 				//download good, unzipped good
 			} else {
+				//download good, unzipped with error;
 				returnMessage = "Unzipped with error: "+errorDescription;
 				lib.deleteFile(downloadedPath);
-				//download good, unzipped with error;
 			}
 		} else {
-			returnMessage = "Download error: "+errorDescription;
 			//download with error
+			returnMessage = "Download error: "+errorDescription;
 		};
-		*/
-		
 
-		
+		//uncomment to testing status messages instead download
+		/*
       try {
         for (int i=0; i<10; i++) {
         	TimeUnit.SECONDS.sleep(1);
@@ -259,7 +264,7 @@ class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 	      } catch (InterruptedException e) {
 	        e.printStackTrace();
 	      }
-	      
+	     */
       
       return null;
     }
@@ -281,7 +286,7 @@ class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
     	  };
     	  if (operation==-1) {
     		  TextView tv=(TextView)v.findViewById(R.id.tvStatus);
-	    	  tv.setText("Aborting...");
+	    	  tv.setText("Canceling...");
 	    	  pbProgress.setIndeterminate(true);
     	  } else {
 	    	  if (values[1]>0) {

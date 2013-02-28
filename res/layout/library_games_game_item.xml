@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
 
 <TextView
     android:id="@+id/text1"
@@ -21,6 +21,7 @@
     android:layout_height="wrap_content"
     android:layout_alignParentRight="true"
     android:layout_centerVertical="true"
-    android:src="@drawable/ic_empty" />
+    android:paddingRight="5dp"
+    android:src="@drawable/ic_play" />
 
 </RelativeLayout>
