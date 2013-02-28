@@ -944,6 +944,7 @@ public class Library {
 		ZipEntry ze;
 		String absFolderTo;
 		int filesUnzipped=0;
+		
 		try {
 			
 			String sdState = android.os.Environment.getExternalStorageState();
@@ -999,7 +1000,10 @@ public class Library {
 			return false;
 		}
 		if (filesUnzipped>0) return true;
-		else return false;
+		else {
+			d.errorDescription = "No necessary files found in archive";
+			return false;
+		}
 	};
 	
 	//получить информацию о сохраненных играх по папке или пути до файла

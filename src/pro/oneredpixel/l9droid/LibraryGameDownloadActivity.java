@@ -200,7 +200,8 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 				if (lib.unzipFile(downloadedPath, params[1], params[2],this)) {
 					//download good, unzipped good
 				} else {
-					returnMessage = "Download OK, unzipped with error: "+errorDescription;
+					returnMessage = "Unzipped with error: "+errorDescription;
+					lib.deleteFile(downloadedPath);
 					//download good, unzipped with error;
 				}
 			} else {
