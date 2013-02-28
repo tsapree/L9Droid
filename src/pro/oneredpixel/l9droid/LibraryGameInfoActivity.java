@@ -36,6 +36,7 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	String game;
 	GameInfo gi;
 	String pathToDelete;
+	String newGamePath = null;
 	
 	@Override
 	  protected void onCreate(Bundle savedInstanceState) {
@@ -85,20 +86,25 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 	    }
     	
     }
-	
 
 	public void onClick(View v) {
 		View p=(View)v.getParent();
 		switch (v.getId()) {
 		case R.id.ibPlay:
 			if ((p!=null) && (p.getTag()!=null)) {
-				Intent intent = new Intent();
-		  	  	intent.putExtra("opengame", (String)p.getTag());
-		  	  	setResult(RESULT_OK,intent);
-		  	  	finish();
+				if (lib.getGamePath()==null) { 
+					Intent intent = new Intent();
+			  	  	intent.putExtra("opengame", (String)p.getTag());
+			  	  	setResult(RESULT_OK,intent);
+			  	  	finish();
+				} else {
+					newGamePath = (String)p.getTag();
+					showStopGameDialog();
+				}
 			};
 			break;
 		case R.id.ibStop:
+			newGamePath = null;
 			showStopGameDialog();
 			break;
 		case R.id.ibMenu:
@@ -183,10 +189,16 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 		.setCancelable(true)
 		.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int id) {
-			lib.setGamePath(null);
-			fillInfo();
+			if (newGamePath==null) {
+				lib.setGamePath(null);
+				fillInfo();
+			} else {
+				Intent intent = new Intent();
+		  	  	intent.putExtra("opengame", newGamePath);
+		  	  	setResult(RESULT_OK,intent);
+		  	  	finish();
 			}
-		})
+		}})
 		.setNegativeButton("No", null)
 		.show();
 	}

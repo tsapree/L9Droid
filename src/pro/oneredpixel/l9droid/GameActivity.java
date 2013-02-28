@@ -146,6 +146,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	        	Intent intent=new Intent(this, LibraryGamesActivity.class);
 				startActivityForResult(intent, LIBRARYACTIVITY_RESULT);
 	        };
+	        
 	        //if (mt.l9!=null) Toast.makeText(this, "Started: "+lastGame, Toast.LENGTH_SHORT).show();
 	        //else Toast.makeText(this, "Fault start of: "+lastGame, Toast.LENGTH_SHORT).show();
 	        

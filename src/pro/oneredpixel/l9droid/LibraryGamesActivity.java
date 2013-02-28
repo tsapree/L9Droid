@@ -15,16 +15,9 @@ import android.widget.ImageView;
 
 public class LibraryGamesActivity extends Activity implements OnChildClickListener, OnClickListener {
 
-	// коллекция для категорий
-	ArrayList<Map<String, Object>> categories;
-	// коллекция для элементов одной группы игр
-	ArrayList<Map<String, Object>> gameItems;
-	// общая коллекция для коллекций элементов
-	ArrayList<ArrayList<Map<String, Object>>> games;
-	// список аттрибутов группы или элемента
-	Map<String, Object> m;
 	ExpandableListView elGames;
-	
+	Library lib;
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,8 +25,32 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		
 	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
 	    ivBack.setOnClickListener(this);
+	    
+		elGames = (ExpandableListView) findViewById(R.id.elGames);
+		elGames.setOnChildClickListener(this);
+
+		lib=Library.getInstance();
 		
-		Library lib=Library.getInstance();
+	    fillInfo();
+	    
+	    if (lib.getGamePath()!=null) {
+	    	GameInfo gi=lib.getGameInfo(this,lib.getFileNameWithoutPath(lib.getFolder(lib.getGamePath())));
+	    	Intent intent=new Intent(this, LibraryGameInfoActivity.class);
+			intent.putExtra("selectedgame", gi.getId());
+			startActivityForResult(intent, 1);
+	    }
+	};
+	
+	public void fillInfo() {
+
+		// коллекция для категорий
+		ArrayList<Map<String, Object>> categories;
+		// коллекция для элементов одной группы игр
+		ArrayList<Map<String, Object>> gameItems=null;
+		// общая коллекция для коллекций элементов
+		ArrayList<ArrayList<Map<String, Object>>> games;
+		// список аттрибутов группы или элемента
+		Map<String, Object> m;
 		
 		categories = new ArrayList<Map<String, Object>>();
 		// создаем коллекцию для коллекций элементов 
@@ -81,10 +98,8 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 				R.layout.library_games_game_item,
 				gameFrom,
 				gameTo);
-      
-		elGames = (ExpandableListView) findViewById(R.id.elGames);
+
 		elGames.setAdapter(adapter);
-		elGames.setOnChildClickListener(this);
 	};
 	
 	public boolean onChildClick(ExpandableListView parent,
@@ -111,6 +126,7 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 				break;
 			}
 		} else {
+			fillInfo();
 		}
 	}
 	

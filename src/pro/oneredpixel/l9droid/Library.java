@@ -85,10 +85,13 @@ public class Library {
 	private ArrayList<String> paths;
 
 	String tags[][]={
-			{"V1","A-Code V1"},
-			{"V2","A-Code V2"},
-			{"V3","A-Code V3"},
-			{"V4","A-Code V4"},
+			{"1983","1983"},
+			{"1984","1984"},
+			{"1985","1985"},
+			{"1986","1986"},
+			{"1987","1987"},
+			{"1988","1988"},
+			{"1989","1989"},
 			{"Amiga","Amiga"},
 			{"Atari","Atari?"},
 			{"BBC","BBC"},
@@ -98,6 +101,10 @@ public class Library {
 			{"S128","Speccy 128k"},
 			{"ST","ST?"},
 			{"PC","PC"},
+			{"V1","A-Code V1"},
+			{"V2","A-Code V2"},
+			{"V3","A-Code V3"},
+			{"V4","A-Code V4"},
 	};
 
 	private Library() {
@@ -695,12 +702,14 @@ public class Library {
 		String currentCategory="";
 		String currentGame="";
 		
+		/*
 		//TODO: убрать, когда корректно наполню библиотеку
 		gi.setCategory("!category!");
 		gi.setId("!id!");
 		gi.setTitle("!title!");
 		gi.setAbout("!About!");
 		gi.setAuthors("!authors!");
+		*/
 		
 	    try {
 	        XmlPullParser parser = act.getResources().getXml(R.xml.games);
