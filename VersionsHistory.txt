@@ -1,0 +1,5 @@
+02.03.2013:
+versionCode=1,
+versionName=0.3,
+google play=yes,
+github commit=377890efefcbbcee7a6c517e4640bd2093bbf6dd (need update)  
