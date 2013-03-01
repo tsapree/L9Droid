@@ -3944,8 +3944,8 @@ GFX_V3C          320 x 96             no
 	{
 		int i=0;
 		int r=0;
-		while (obuff[i]!=0) {
-			r=r*10+(obuff[i]-'0');
+		while ((obuff[i]!=0) && (obuff[i]>='0') && (obuff[i]<='9')) {
+			r=r*10+(obuff[i++]-'0');
 		};
 		return r;
 	}
