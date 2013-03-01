@@ -329,11 +329,14 @@ The latest version of this program can always be found on this site, in
             <title>L9Droid v0.3</title>
             <about>Android port of Level 9 Interpreter v5.1
                 
-Copyright (c) 2012-2013 Paul Stakhov
+Copyright (c) 2012-2013 OneRedPixel.pro
+Written by Paul Stakhov
 
-Info in Library taken from game manuals and L9Fact sheet v1.1.
+Info in Library taken from game manuals and L9Fact sheet v1.1 Copyright (c) 1998, 1999 Miron Schmidt and Manuel Schulz.
 
-L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.</about>
+L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the GNU General Public License for more details.
+
+Please visit http://oneredpixel.pro/l9droid for additional info.</about>
         </game>
     </category>
 	<category name="The Middle-Earth Trilogy / Jewels Of Darkness">
@@ -343,13 +346,13 @@ L9Droid comes with ABSOLUTELY NO WARRANTY. This is free software, and you are we
 
 But when you qualify for the end-game by finding all of the treasures, it is another matter entirely. The standard end-game is rather limited, with only two locations, so we have added a complete new, unique end-game to Colossal Adventure: with over 70 locations! Don't feel let down when you've solved the first part of the game - the play continues!!</about>
 			<authors>Pete, Mike and Nick Austin, based on the original "Adventure" by Willie Crowther and Don Woods</authors>
-			<path tags="V3 S48" files="sna/v3/colossal.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/colossal.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adventure Quest">
 			<title>Adventure Quest</title>
 			<about>Adventure Quest is a full scale adventure game with 225 individually described locations. You will have to solve a very large number of problems on your journey to the Black Tower and (perhaps) victory.</about>
 			<authors>Pete, Mike and Nick Austin</authors>
-			<path tags="V3 S48" files="sna/v3/advquest.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/advquest.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			
 <!-- dont work, why?		<path tags="BBC" files="qdata">http://bbc.nvg.org/sw/Level9/AdventureQuest.zip</path> -->
 		</game>
@@ -357,7 +360,7 @@ But when you qualify for the end-game by finding all of the treasures, it is ano
 			<title>Dungeon Adventure</title>
 			<about>Dungeon Adventure is a full scale adventure game with well over 200 individually described locations, 700 messages, about 100 objects etc etc. You will have to solve a very large number of puzzles while collecting the treasures left by the Demon Lord!</about>
 			<authors>Pete, Mike and Nick Austin</authors>
-			<path tags="V3 S48" files="sna/v3/dungeon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/dungeon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Silicon Dreams Trilogy">
@@ -370,8 +373,8 @@ Your mission: to safeguard the interstar transport, Snowball 9, as a last resort
 Thus when your modified freezer-coffin wakes you with the Snowball still in transit, you know that something must be very wrong. You're weakened and disorientated from lengthy hibernation, but the fate of two million passengers is in your hands!</about>
 			<authors>Written by: Pete, Mike and Nick Austin.
 Additional expertise: Ian Buxton.</authors>
-			<path tags="V3 S48" files="sna/v3/snowball.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/snowball-pc.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/snowball.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/snowball-pc.zip</path>
 	    </game>
 	    <game name="Return to Eden">
 			<title>Return to Eden</title>
@@ -383,9 +386,9 @@ Snowball 9 is in orbit, crewed by people who believe you to be a murderer. The o
 Now you know enough to start. Good luck!</about>
 			<authors>Written by: Nick Austin and Chris Queen.
 Pictures by: Tim Noyce</authors>
-			<path tags="V2 S48" files="sna/v2/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V3 S48" files="sna/v3/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/eden-pc.zip</path>
+			<path tags="1985 V2 S48" files="sna/v2/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/eden-pc.zip</path>
 	    </game>
 	    <game name="Worm in Paradise">
 			<title>Worm in Paradise</title>
@@ -394,8 +397,8 @@ Pictures by: Tim Noyce</authors>
 You are a citizen of Enoch megapolis of Eden. Unfortunately, when the game starts, you can remember nothing more. It is most odd. Good Luck!</about>
 			<authors>Written by: Pete, Mike and Nick Austin.
 Pictures: James Horsler.</authors>
-			<path tags="V3 S48" files="sna/v3/worm.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/worm-pc.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/worm.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/worm-pc.zip</path>
 	    </game>
 	</category>
 	<category name="The Time And Magik Trilogy">
@@ -404,9 +407,9 @@ Pictures: James Horsler.</authors>
 			<about>Lords of Time is a full scale adventure game, with well over 200 locations, 750 messages, about 80 objects etc etc. You will have to solve a large number of puzzles in order to collect the objects needed to defeat the Evil Timelords.</about>
 			<authors>Written by: Sue Gazzard.
 Additional expertise: Ian Buxton.</authors>
-			<path tags="V1 S48" files="sna/v1/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V2 S48" files="sna/v2/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V4 S48" files="sna/v4/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1983 V1 S48" files="sna/v1/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1985 V2 S48" files="sna/v2/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1988 V4 S48" files="sna/v4/time.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Red Moon">
 			<title>Red Moon</title>
@@ -416,8 +419,8 @@ You have the use of many weapons and a dozen different magical spells to help yo
 			<authors>Game Design: David Williamson, Pete Austin
 Implementation: Simon Aspinall, Pete Austin
 Pictures: James Horsler</authors>
-			<path tags="V2 S48" files="sna/v2/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
-			<path tags="V4 S48" files="sna/v4/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1985 V2 S48" files="sna/v2/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1988 V4 S48" files="sna/v4/redmoon.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Price of Magik">
 			<title>The Price of Magik</title>
@@ -430,7 +433,7 @@ This is a game about magic. At the start you know absolutely nothing about its m
 Game Design: Pete Austin
 Implementation: Mike Austin
 Pictures: James Horsler</authors>
-			<path tags="V3 S48" files="sna/v3/price.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1986 V3 S48" files="sna/v3/price.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	</category>
 	<category name="The Gnome Ranger Series">
@@ -482,7 +485,7 @@ Based on The Adrian Mole Diaries by SueTownsend</authors>
 			<about>Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</about>
 			<authors>Written by: Shaun D. Abbott
 Pictures by: James Horsler</authors>
-			<path tags="V2 S48 Atari C64 CPC" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="1985 V2 S48 Atari C64 CPC" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 		</game>
 		<game name="Erik the Viking">
 			<title>The Saga of Erik the Viking</title>
@@ -494,7 +497,7 @@ Programmed by: Pete Austin
 Artist: Joan Lamb
 Adventure system: Mike Austin
 Graphics system: Ian Buxton, Mike Austin</authors>
-			<path tags="V2 S48" files="sna/v2/erik.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>        
+			<path tags="1985 V2 S48" files="sna/v2/erik.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>        
 	    </game>
 	    <game name="The Archers">
 			<title>The Archers</title>
