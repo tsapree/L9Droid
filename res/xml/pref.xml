@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 		<PreferenceCategory android:title="Game Log">
-			<EditTextPreference android:key="logtextcolor" android:title="Text color" android:defaultValue="#00000000" />
-			<EditTextPreference android:key="logcommandcolor" android:title="Commands color" android:defaultValue="#000000FF" android:summary="User entered commands color"/><EditTextPreference android:key="logbackgroundcolor" android:title="Background color" android:defaultValue="#00FFFFFF"/>
-			<EditTextPreference android:title="Text size" android:key="logtextsize" android:defaultValue="13"/>
-			<ListPreference android:key="logtexttypeface" android:title="Text typeface" android:entries="@array/pref_font_typeface_entries" android:entryValues="@array/pref_font_typeface_entries" android:defaultValue="Normal"/>
+			<EditTextPreference android:key="logtextcolor" android:title="Text color" android:defaultValue="#00000000" android:summary="Color of text in log"/>
+			<EditTextPreference android:key="logcommandcolor" android:title="Commands color" android:defaultValue="#000000FF" android:summary="Color of user entered commands"/><EditTextPreference android:key="logbackgroundcolor" android:title="Background color" android:defaultValue="#00FFFFFF" android:summary="Color of log background"/>
+			<EditTextPreference android:title="Text size" android:key="logtextsize" android:defaultValue="13" android:summary="Size of text in log"/>
+			<ListPreference android:key="logtexttypeface" android:title="Text typeface" android:entries="@array/pref_font_typeface_entries" android:entryValues="@array/pref_font_typeface_entries" android:defaultValue="Normal" android:summary="Typeface of text in log"/>
 			<CheckBoxPreference android:key="logtextbold" android:title="Text bold" android:defaultValue="false"/>
 			<CheckBoxPreference android:key="logtextitalic" android:title="Text italic" android:defaultValue="false"/>
 			<EditTextPreference android:key="loglimit" android:title="Limit of strings" android:summary="Maximum count of strings in log, 0 for unlimited" android:defaultValue="0"/>
 			
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Commands history">
-			<EditTextPreference android:title="Text size" android:key="histtextsize" android:defaultValue="13"/>
-			<EditTextPreference android:title="Width" android:key="histwidth" android:defaultValue="25" android:summary="Set history width in percent"/>
+			<EditTextPreference android:title="Text size" android:key="histtextsize" android:defaultValue="13" android:summary="Size of text in commands history"/>
+			<EditTextPreference android:title="Width" android:key="histwidth" android:defaultValue="25" android:summary="History width in percent"/>
 		</PreferenceCategory>
 		<PreferenceCategory android:title="Picture">
 			<ListPreference android:key="picpalette" android:title="Palette" android:entries="@array/pref_pic_palette_entries" android:entryValues="@array/pref_pic_palette_entries" android:dialogTitle="Select palette" android:defaultValue="Amiga" android:summary="Amiga or Spectrum palette"/>
 			<EditTextPreference android:key="picspeed" android:title="Speed" android:dialogTitle="Enter picture update speed" android:summary="Used to create more athmospheric drawn" android:defaultValue="10"/>
-			<EditTextPreference android:key="picmaxheight" android:title="Height" android:summary="Set maximum height in percent" android:defaultValue="30"/>
-			<CheckBoxPreference android:title="Stretch" android:key="picstretch" android:defaultValue="false" android:summary="Set to stretch picture"/>
+			<EditTextPreference android:key="picmaxheight" android:title="Height" android:summary="Maximum height of picture in percent" android:defaultValue="30"/>
+			<CheckBoxPreference android:title="Stretch" android:key="picstretch" android:defaultValue="false"/>
 		</PreferenceCategory>
 		<PreferenceCategory android:title="System">
-			<EditTextPreference android:title="Save file prefix" android:key="syssaveprefix" android:defaultValue="state"/>
-			<EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay" android:summary="Delay before apply next command" android:defaultValue="2"/>
+			<EditTextPreference android:title="Save file prefix" android:key="syssaveprefix" android:defaultValue="state" android:summary="Prefix for new saved files"/>
+			<EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay" android:summary="Delay before apply next script command" android:defaultValue="2"/>
 		</PreferenceCategory>
 		
 	</PreferenceScreen>
