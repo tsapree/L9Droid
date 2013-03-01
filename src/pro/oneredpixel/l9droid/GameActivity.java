@@ -357,8 +357,10 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	mi.setOnMenuItemClickListener(this);
         mi = menu.add(0, MENU_ITEM_SETTINGS, 0, "Settings");
         mi.setIntent(new Intent(this, PrefActivity.class));
+        /*
     	mi = menu.add(1, MENU_ITEM_PLAY_SCRIPT, 0,"Play Script");
     	mi.setOnMenuItemClickListener(this);
+    	*/
     	mi = menu.add(0, MENU_ITEM_HISTORY, 3, "Commands History");
     	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_CLOSEAPP, 3, "Exit");

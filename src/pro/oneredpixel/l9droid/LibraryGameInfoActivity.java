@@ -108,9 +108,6 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			showStopGameDialog();
 			break;
 		case R.id.ibMenu:
-			if ((p!=null) && (p.getTag()!=null)) {
-				Toast.makeText(this, "Path: "+p.getTag(), Toast.LENGTH_SHORT).show();
-			};
 			View w = p.findViewById(R.id.rlMarks);
 			if (w.getVisibility()==View.GONE) w.setVisibility(View.VISIBLE);
 			else w.setVisibility(View.GONE);
@@ -171,7 +168,8 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			};
 			break;
 		case R.id.ibAdd:
-			Intent intent=new Intent(this, LibraryGameInstallActivity.class);
+			//Intent intent=new Intent(this, LibraryGameInstallActivity.class);
+			Intent intent=new Intent(this, LibraryGameDownloadActivity.class);
 			intent.putExtra("selectedgame", game);
 			startActivity(intent);
 			break;

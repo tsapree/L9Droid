@@ -22,7 +22,7 @@
 		</PreferenceCategory>
 		<PreferenceCategory android:title="System">
 			<EditTextPreference android:title="Save file prefix" android:key="syssaveprefix" android:defaultValue="state" android:summary="Prefix for new saved files"/>
-			<EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay" android:summary="Delay before apply next script command" android:defaultValue="2"/>
+			<!-- <EditTextPreference android:title="Script delay in seconds" android:key="sysscriptdelay" android:summary="Delay before apply next script command" android:defaultValue="2"/>  -->
 		</PreferenceCategory>
 		
 	</PreferenceScreen>
