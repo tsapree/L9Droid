@@ -17,11 +17,14 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 
 	ExpandableListView elGames;
 	Library lib;
+	String lastSelectedGame;
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.library_games);
+		
+		lastSelectedGame=null;
 		
 	    ImageView ivBack = (ImageView) findViewById(R.id.ivBack);
 	    ivBack.setOnClickListener(this);
@@ -37,6 +40,7 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 	    	GameInfo gi=lib.getGameInfo(this,lib.getFileNameWithoutPath(lib.getFolder(lib.getGamePath())));
 	    	Intent intent=new Intent(this, LibraryGameInfoActivity.class);
 			intent.putExtra("selectedgame", gi.getId());
+			lastSelectedGame = gi.getId();
 			startActivityForResult(intent, 1);
 	    }
 	};
@@ -51,6 +55,9 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		ArrayList<ArrayList<Map<String, Object>>> games;
 		// список аттрибутов группы или элемента
 		Map<String, Object> m;
+		
+		int group = -1;
+		int child = -1;
 		
 		categories = new ArrayList<Map<String, Object>>();
 		// создаем коллекцию для коллекций элементов 
@@ -84,6 +91,10 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 				mark = gi.getHighestMark();
 			m.put("mark", Library.MARK_PICTURES_RESID[mark]);
 			gameItems.add(m);
+			if ( (lastSelectedGame!=null) && (gi.getId().equalsIgnoreCase(lastSelectedGame)) ) {
+				group=categories.size()-1;
+				child=gameItems.size()-1;
+			};
 		};
 		if (prevCategory!=null) games.add(gameItems);
 	
@@ -100,6 +111,12 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 				gameTo);
 
 		elGames.setAdapter(adapter);
+		if ((group>=0) && (child>=0))  {
+			elGames.expandGroup(group);
+			elGames.setSelectedChild(group, child, true);
+			
+		}
+			
 	};
 	
 	public boolean onChildClick(ExpandableListView parent,
@@ -108,6 +125,7 @@ public class LibraryGamesActivity extends Activity implements OnChildClickListen
 		
 			@SuppressWarnings("unchecked")
 			String selectedGame=((Map<String,String>)(parent.getExpandableListAdapter().getChild(groupPosition, childPosition))).get("id");
+			lastSelectedGame = selectedGame;
 			
 			Intent intent=new Intent(this, LibraryGameInfoActivity.class);
 			intent.putExtra("selectedgame", selectedGame);
