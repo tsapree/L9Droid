@@ -100,7 +100,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			bDownload.setEnabled(sd && !downloading);
 			Button bCancel = (Button) item.findViewById(R.id.bCancel);
 			bCancel.setOnClickListener(this);
-			bCancel.setVisibility(View.GONE);
+			bCancel.setVisibility(View.INVISIBLE);
 			if (lib.checkPathInLibrary(gi.getId()+" "+gi.getTags(i))) {
 				bDownload.setText("Installed");
 				bDownload.setEnabled(false);
@@ -113,7 +113,7 @@ public class LibraryGameDownloadActivity extends Activity implements OnClickList
 			item.setTag(i);
 			if (mt!=null && mt.param.equalsIgnoreCase(gi.getPath(i)+gi.getFiles(i)+gi.getId()+" "+gi.getTags(i))) {
 				mt.v=item;
-				bDownload.setVisibility(View.GONE);
+				bDownload.setVisibility(View.INVISIBLE);
 				bCancel.setVisibility(View.VISIBLE);
 				pbProgress.setIndeterminate(true);
 				pbProgress.setVisibility(View.VISIBLE);
@@ -211,7 +211,7 @@ class DownloadInstallFileTask extends AsyncTask<String, Integer, Void> {
 	  		Button bDownload = (Button) v.findViewById(R.id.bDownload);
 			Button bCancel = (Button) v.findViewById(R.id.bCancel);
 
-			bDownload.setVisibility(View.GONE);
+			bDownload.setVisibility(View.INVISIBLE);
 			bCancel.setVisibility(View.VISIBLE);  
     	}
     }

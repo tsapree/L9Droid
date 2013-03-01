@@ -462,7 +462,6 @@ Pictures by: Joan Lamb</authors>
 Programmed by: Pete Austin
 Pictures: James Horsler
 Based on The Adrian Mole Diaries by Sue Townsend</authors>
-			<path tags="V3 S48" files="sna/v3/mole2.sna,sna/v3/mole3.sna,sna/v3/mole1.sna,sna/v3/mole4.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 	    </game>
 	    <game name="Adrian Mole 2">
 			<title>The Growing Pains of Adrian Mole</title>
@@ -471,7 +470,8 @@ Based on The Adrian Mole Diaries by Sue Townsend</authors>
 Programmed by: Pete Austin
 Pictures: Joan Lamb
 Additional text and story lines for the game by Pete Austin
-Based on The Adrian Mole Diaries by SueTownsend</authors>        
+Based on The Adrian Mole Diaries by SueTownsend</authors>
+			<path tags="V3 S48" files="sna/v3/mole2.sna,sna/v3/mole3.sna,sna/v3/mole1.sna,sna/v3/mole4.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>        
 	    </game>
 	</category>
 	<category name="Individual Games">
@@ -480,7 +480,7 @@ Based on The Adrian Mole Diaries by SueTownsend</authors>
 			<about>Emerald Isle. Fierce winds seize your aircraft over the Bermuda Triangle and hul it to destruction. You escape by parachute, floating downwards to the lonely atoll, the "Emerald Isle", from which few escape. The only way out is to solve its challenges&#8230;</about>
 			<authors>Written by: Shaun D. Abbott
 Pictures by: James Horsler</authors>
-			<path tags="V2 S48" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V2 S48 Atari C64 CPC" files="sna/v2/emerald.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 		</game>
 		<game name="Erik the Viking">
 			<title>The Saga of Erik the Viking</title>
