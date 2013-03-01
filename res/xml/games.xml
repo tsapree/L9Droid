@@ -371,6 +371,7 @@ Thus when your modified freezer-coffin wakes you with the Snowball still in tran
 			<authors>Written by: Pete, Mike and Nick Austin.
 Additional expertise: Ian Buxton.</authors>
 			<path tags="V3 S48" files="sna/v3/snowball.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/snowball-pc.zip</path>
 	    </game>
 	    <game name="Return to Eden">
 			<title>Return to Eden</title>
@@ -384,6 +385,7 @@ Now you know enough to start. Good luck!</about>
 Pictures by: Tim Noyce</authors>
 			<path tags="V2 S48" files="sna/v2/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
 			<path tags="V3 S48" files="sna/v3/eden.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/eden-pc.zip</path>
 	    </game>
 	    <game name="Worm in Paradise">
 			<title>Worm in Paradise</title>
@@ -393,6 +395,7 @@ You are a citizen of Enoch megapolis of Eden. Unfortunately, when the game start
 			<authors>Written by: Pete, Mike and Nick Austin.
 Pictures: James Horsler.</authors>
 			<path tags="V3 S48" files="sna/v3/worm.sna">http://ifarchive.org/if-archive/games/spectrum/level9.zip</path>
+			<path tags="V3 Mac PC S128" files="">http://oneredpixel.pro/l9droid/games/worm-pc.zip</path>
 	    </game>
 	</category>
 	<category name="The Time And Magik Trilogy">
@@ -521,7 +524,8 @@ Additional artwork Neil Strudwick and Stuart Lee</authors>
 			<about>Travel back to the Age of Chivalry when knights were bold, galloping across the countryside and rescuing damsels in distress. Level 9 recreate the time of wizards and the Knights of the Round Table in their greatest adventure yet. Lancelot is a three-part adventure, spanning the complete saga from the foundation of the Order to its finest hour - the quest for the Holy Grail. Guide Lancelot through his many exploits at Camelot, battle with wayward knights, and win the love of Guinever and Elaine. The challenge which has fascinated treasure hunters through the centuries is now yours - and you´ll need all your strength, wit and valour to achieve your goal.</about>
 			<authors>Written by: Christina Erskin.
 Pictures by Joan Lamb, Neil Scrimgeour, Dicken Peeke, Nusarath Jahan.
-Systems: Mike and Nick Austin, John Jones-Steele, Mike Bryant</authors>        
+Systems: Mike and Nick Austin, John Jones-Steele, Mike Bryant</authors>
+			<path tags="1988 V4 Amiga PC" files="">http://oneredpixel.pro/l9droid/games/lancelot-pc.zip</path>        
 	    </game>
 	    <game name="Scapeghost">
 			<title>Scapeghost</title>
@@ -533,7 +537,8 @@ Game design etc.: Pete Austin.
 Game programming: Graham Jones.
 Game text: Graham Jones, Pete Austin, Peter McBride.
 Cover Picture: Godfrey Dowson.
-Computer Art: Dicon Peeke.</authors>        
+Computer Art: Dicon Peeke.</authors>
+			<path tags="1989 V4 PC ST" files="">http://oneredpixel.pro/l9droid/games/scapeghost-pc.zip</path>        
 	    </game>
 	</category>
 </games>

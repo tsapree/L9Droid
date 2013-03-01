@@ -97,6 +97,7 @@ public class Library {
 			{"BBC","BBC"},
 			{"CPC","CPC"},
 			{"C64","Commodore 64"},
+			{"Mac","Mac"},
 			{"S48","Speccy 48k"},
 			{"S128","Speccy 128k"},
 			{"ST","ST"},
