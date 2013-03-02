@@ -2,4 +2,4 @@
 versionCode=1,
 versionName=0.3,
 google play=yes,
-github commit= (need update)  
+github commit=fba9df18094899270cf549a0a6a694bdd7782ae0
