@@ -8,4 +8,4 @@ github commit=fba9df18094899270cf549a0a6a694bdd7782ae0
 versionCode=2,
 versionName=0.4,
 google play=yes,
-github commit=
+github commit=f0de2464d5d3119afa52471016e329c12fb60693
