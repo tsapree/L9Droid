@@ -1044,7 +1044,7 @@ public class Library {
 						m.put(ATTR_DATE, t.format("%H:%M %d.%m.%Y"));
 						m.put(ATTR_NAME, f[i].getName());
 						m.put(ATTR_PATH, f[i].getAbsolutePath());
-						m.put(ATTR_IMAGE, R.drawable.ic_file);
+						m.put(ATTR_IMAGE, R.drawable.ic_empty);
 						
 						//sort
 						int x=0;

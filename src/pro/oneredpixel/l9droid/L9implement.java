@@ -206,7 +206,7 @@ public class L9implement extends L9 {
 
 	void L9UpdatePalette() {
 		for (int i=0;i<4;i++) {
-			if (th.activity.pref_picpaletteamiga)
+			if ((th!=null) && (th.activity!=null) && (th.activity.pref_picpaletteamiga))
 				 SelectedPalette[i]=PaletteAmiga[L9PaletteIndexes[i]];
 			else SelectedPalette[i]=PaletteSpectrum[L9PaletteIndexes[i]];
 		};
@@ -361,7 +361,9 @@ public class L9implement extends L9 {
 				fastShowPic=false;
 				while ((L9Fill_Step()>0) || RunGraphics()) j++;
 			} else {
-				int steps = th.activity.pref_picspeed;
+				int steps;
+				if (th!=null && th.activity!=null) steps= th.activity.pref_picspeed;
+				else steps=10;
 				for (int i=0; i<steps; i++)
 					if (L9Fill_Step()>0) j++;
 					else if (RunGraphics()) j++;	//если встретился fill - нельзя выполнять другие операции
@@ -430,7 +432,7 @@ public class L9implement extends L9 {
 			try {
 				for (int i=0;i<millis;i++) {
 					TimeUnit.MILLISECONDS.sleep(100);
-					if (th.keyPressed!=0) {
+					if ((th!=null) && (th.keyPressed!=0)) {
 						key=th.keyPressed;
 						break;
 					}
@@ -445,7 +447,9 @@ public class L9implement extends L9 {
 	};
 	
 	boolean os_save_file(byte[] buff) {
-		String path=Library.DIR_SAVES+"/"+th.activity.pref_syssaveprefix+".sav";
+		String prefix = "state";
+		if (th!=null && th.activity!=null) prefix=th.activity.pref_syssaveprefix;
+		String path=Library.DIR_SAVES+"/"+prefix+".sav";
 
 		path=lib.getAbsolutePath(path);
 		path=lib.unifyFile(path);
@@ -519,7 +523,7 @@ public class L9implement extends L9 {
 		if (bm!=null) mHandler.sendEmptyMessage(Threads.MACT_GFXUPDATE);
 		
 		name=lib.changeFileExtension(path, "log");
-		tempLog=lib.LoadLogToSpannableArrayList(name,th.activity.pref_logcommandcolor);
+		tempLog=lib.LoadLogToSpannableArrayList(name,(th!=null&&th.activity!=null)?th.activity.pref_logcommandcolor:0);
 		h.clear();
 		for (SpannableStringBuilder logStr:tempLog) {
 			h.add(lib.getSpannedString(logStr));
