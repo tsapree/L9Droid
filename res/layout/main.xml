@@ -51,28 +51,34 @@
 	    android:imeOptions="normal|flagNoExtractUi"
 	    android:inputType="textNoSuggestions" />
 
-	<Button android:id="@+id/bEnter"
+	<Button
+	    android:id="@+id/bEnter"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
-	    android:layout_alignParentRight="true"
+	    android:layout_alignTop="@+id/ibMenu"
+	    android:layout_toLeftOf="@+id/ibMenu"
+	    android:background="@android:drawable/btn_default_small"
 	    android:nextFocusDown="@+id/bEnter"
 	    android:nextFocusRight="@+id/bEnter"
 	    android:nextFocusUp="@+id/bEnter"
 	    android:text="Enter"
 	    android:visibility="invisible" >
+
 	</Button>
 	<Button
 	    android:id="@+id/bSpace"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
+	    android:layout_alignTop="@+id/ibMenu"
 	    android:layout_toLeftOf="@+id/bEnter"
 	    android:nextFocusDown="@+id/bSpace"
 	    android:nextFocusLeft="@+id/bSpace"
 	    android:nextFocusRight="@+id/bEnter"
 	    android:nextFocusUp="@+id/bSpace"
 	    android:text="Space"
+	    android:background="@android:drawable/btn_default_small"
 	    android:visibility="invisible" />
 	<ImageView
 		android:id="@+id/ivPicture"

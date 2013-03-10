@@ -184,12 +184,12 @@ public class Threads {
 	};
 	
 	void stopGame() {
-		destroy(false);
+		destroy();
 	};
 	
 	void startGame(String gamepath, boolean loadAutoSave) {
 		
-		destroy(false);
+		destroy();
 
 		l9=new L9implement(lib,h,this);
 		if (gamepath==null) return;
@@ -268,15 +268,10 @@ public class Threads {
 		t.start();
 	}
 	
-	void destroy(boolean needAutoSave) {
+	void destroy() {
 		//TODO: почистить очередь?
-		if (l9!=null && needAutoSave) {
-			if (l9.L9State!=l9.L9StateStopped) {
-				String name=lib.getAbsolutePath("Saves/auto.sav");
-				l9.autosave(name);
-			};
+		if (l9!=null)
 			l9.StopGame();
-		};
 		needToQuit=true;
 		if (g!=null) while (g.isAlive());
 		if (t!=null) while (t.isAlive());
@@ -286,6 +281,15 @@ public class Threads {
 		needToQuit=false;
 		lib.setGamePath(null);
 	};
+	
+	void autosaveGame() {
+		if (l9!=null) {
+			if (l9.L9State!=l9.L9StateStopped) {
+				String name=lib.getAbsolutePath("Saves/auto.sav");
+				l9.autosave(name);
+			};
+		};
+	}
 	
 }
 

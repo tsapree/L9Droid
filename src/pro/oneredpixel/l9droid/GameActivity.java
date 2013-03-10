@@ -309,28 +309,29 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     protected void onPause() {
     	super.onPause();
     	mt.activityPaused=true;
+    	
+		SharedPreferences sPref=getPreferences(MODE_PRIVATE);
+		Editor ed = sPref.edit();
+		ed.putBoolean("showhistory", getVisibilityCommandsHistory());
+
+		if (mt.l9!=null) {
+			if (mt.lib.getGamePath()!=null) {
+				ed.putString("lastgame", mt.l9.LastGame);
+				mt.autosaveGame();
+			} else {
+				ed.remove("lastgame");
+			}
+		}
+		ed.commit();
     }
     
     protected void onDestroy() {
 		super.onDestroy();
 		mt.activityPaused=true;
-
-		SharedPreferences sPref=getPreferences(MODE_PRIVATE);
-		Editor ed = sPref.edit();
-		ed.putBoolean("showhistory", getVisibilityCommandsHistory());
-		
+	
 		if (killThreadsOnDestroyActivity && mt.l9!=null) {
-			if (mt.lib.getGamePath()!=null) {
-				ed.putString("lastgame", mt.l9.LastGame);
-				mt.destroy(true);
-			} else {
-				ed.remove("lastgame");
-				mt.destroy(false);
-			}
-
+			mt.destroy();
 		}
-		
-		ed.commit();
 
     }
 
