@@ -523,16 +523,22 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	
 	void outLogFlush(boolean finishThisString) {
 		if (mt.logStringCapacitor!=null && mt.logStringCapacitor.length()>0) {
-			if ((mt.logStrId>=0) && (mt.logStrId<lvMain.getAdapter().getCount())) {
-				mt.lvAdapter.getItem(mt.logStrId).append(mt.logStringCapacitor);
-			} else {
-				mt.lvAdapter.add(mt.logStringCapacitor);
-				limitlvAdapter();
-			}
-			mt.logStringCapacitor=null;
-			if (finishThisString) mt.logStrId=-1;
-			else mt.logStrId=lvMain.getAdapter().getCount()-1;
-			mt.lvAdapter.notifyDataSetChanged();
+			boolean empty=true;
+			for (int i=0; i<mt.logStringCapacitor.length();i++) {
+				if (mt.logStringCapacitor.charAt(i)>32) {empty=false; break;};
+			};
+			if (!empty) {
+				if ((mt.logStrId>=0) && (mt.logStrId<lvMain.getAdapter().getCount())) {
+					mt.lvAdapter.getItem(mt.logStrId).append(mt.logStringCapacitor);
+				} else {
+					mt.lvAdapter.add(mt.logStringCapacitor);
+					limitlvAdapter();
+				}
+				mt.logStringCapacitor=null;
+				if (finishThisString) mt.logStrId=-1;
+				else mt.logStrId=lvMain.getAdapter().getCount()-1;
+				mt.lvAdapter.notifyDataSetChanged();
+			};
 		};
 	}
 	
