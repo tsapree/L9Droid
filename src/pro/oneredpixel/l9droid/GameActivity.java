@@ -500,16 +500,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 	
 	void outCharToLog(char c) {
 		if (mt.logStringCapacitor==null) mt.logStringCapacitor=new SpannableStringBuilder();
-		 
-		//every enter starts new paragraph
 		if (c=='\n') outLogFlush(true);
 		else mt.logStringCapacitor.append(c);
-		
-		//no unnecessary line breaks
-		//if (c=='\n') {
-		//	if (logStringCapacitor.length()>0 && logStringCapacitor.charAt(logStringCapacitor.length()-1)!='\n') logStringCapacitor.append(c);
-		//} else 
-		//	logStringCapacitor.append(c);
 	};
 	
 	void outUserInputToLog(String str) {
@@ -527,7 +519,9 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 			for (int i=0; i<mt.logStringCapacitor.length();i++) {
 				if (mt.logStringCapacitor.charAt(i)>32) {empty=false; break;};
 			};
-			if (!empty) {
+			if (empty && finishThisString) {
+				mt.logStringCapacitor=null;
+			} else {
 				if ((mt.logStrId>=0) && (mt.logStrId<lvMain.getAdapter().getCount())) {
 					mt.lvAdapter.getItem(mt.logStrId).append(mt.logStringCapacitor);
 				} else {
@@ -535,11 +529,11 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 					limitlvAdapter();
 				}
 				mt.logStringCapacitor=null;
-				if (finishThisString) mt.logStrId=-1;
-				else mt.logStrId=lvMain.getAdapter().getCount()-1;
+				if (!finishThisString) mt.logStrId=lvMain.getAdapter().getCount()-1;
 				mt.lvAdapter.notifyDataSetChanged();
 			};
 		};
+		if (finishThisString) mt.logStrId=-1;
 	}
 	
 	void limitlvAdapter() {

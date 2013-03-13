@@ -106,6 +106,7 @@ public class Threads {
 		    		activity.etCmd.requestFocus();
 		    		break;
 		    	case MACT_L9WAITFORCHAR:
+		    		activity.outLogFlush(true);
 		    		activity.bSpace.setVisibility(View.VISIBLE);
 		    		activity.bEnter.setVisibility(View.VISIBLE);
 		    		activity.ibCmd.setVisibility(View.INVISIBLE);
