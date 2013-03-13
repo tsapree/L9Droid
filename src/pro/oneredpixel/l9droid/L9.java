@@ -3460,7 +3460,7 @@ GFX_V3C          320 x 96             no
 					String newFileName=LastGame.substring(0, findBeginFilename(LastGame))+(tempGS.filename.substring(findBeginFilename(tempGS.filename)));
 					int ret = LoadGame2(newFileName,null);
 					if (ret!=L9StateStopped) {
-						printstring("\rGamefile changed according to saved game state\r");
+						printstring("\rGamefile changed according to saved game state.\r");
 						tempGS.setFromCloneInBytes(buff, l9memory, listarea);
 					}
 					else printstring("\rSorry, correct game file not found.\r");
