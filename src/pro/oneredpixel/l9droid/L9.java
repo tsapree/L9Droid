@@ -7274,7 +7274,13 @@ class GameState {
 			for (j=0;j<L9.STACKSIZE;j++) stack[j]=buff[i++];
 			//char filename[MAX_PATH];
 			filename="";
-			for (j=0;j<filenamesize;j++) filename+=(char)buff[i++];
+			while (filenamesize>0) {
+				b=buff[i++]&0xffff;
+				filename+=(char)(b&0xff);
+				b=(b>>8)&0xff;
+				if (--filenamesize>0) filename+=(char)b;
+				filenamesize--;
+			};
 			if (!name.equalsIgnoreCase(filename)) return false; 
 			
 			return true;
