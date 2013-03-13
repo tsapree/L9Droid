@@ -482,7 +482,7 @@ public class L9implement extends L9 {
 		byte buff[]=lib.fileLoadToArray(path);
 		GameState tempGS=new GameState();
 		if (buff==null) return false;
-		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
+		if (tempGS.setFromCloneInBytes(buff, l9memory, listarea)) {
 			workspace=tempGS.clone();
 			codeptr=acodeptr+workspace.codeptr;
 			load_piclog(path,th.history);

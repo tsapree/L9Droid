@@ -3414,38 +3414,13 @@ GFX_V3C          320 x 96             no
 	}*/
 	void NormalRestore()
 	{
-		GameState temp;
-		int Bytes;
 		L9DEBUG("function - restore");
 		if (Cheating)
 		{
 			// not really an error
 			Cheating=false;
 			error("\rWord is: %s\r",ibuffstr);
-		}
-
-		/*TODO:
-		if (os_load_file((L9BYTE*) &temp,&Bytes,sizeof(GameState)))
-		{
-			if (Bytes==V1FILESIZE)
-			{
-				printstring("\rGame restored.\r");
-				memset(workspace.listarea,0,LISTAREASIZE);
-				memmove(workspace.vartable,&temp,V1FILESIZE);
-			}
-			else if (CheckFile(&temp))
-			{
-				printstring("\rGame restored.\r");
-				// only copy in workspace 
-				memmove(workspace.vartable,temp.vartable,sizeof(SaveStruct));
-			}
-			else
-			{
-				printstring("\rSorry, unrecognised format. Unable to restore\r");
-			}
-		}
-		else printstring("\rUnable to restore game.\r");
-		*/
+		} else restore();
 	}
 
 	/*--was--	void restore(void)
@@ -3479,13 +3454,33 @@ GFX_V3C          320 x 96             no
 		byte buff[]=os_load_file();
 		GameState tempGS=new GameState();
 		if (buff!=null) {
-			if (tempGS.setFromCloneInBytes(buff, l9memory, listarea, LastGame)) {
+			if (tempGS.setFromCloneInBytes(buff, l9memory, listarea)) {
 				printstring("\rGame restored.\r");
+				if (!LastGame.equalsIgnoreCase(tempGS.filename)) {	
+					String newFileName=LastGame.substring(0, findBeginFilename(LastGame))+(tempGS.filename.substring(findBeginFilename(tempGS.filename)));
+					int ret = LoadGame2(newFileName,null);
+					if (ret!=L9StateStopped) {
+						printstring("\rGamefile changed according to saved game state\r");
+						tempGS.setFromCloneInBytes(buff, l9memory, listarea);
+					}
+					else printstring("\rSorry, correct game file not found.\r");
+				};
 				workspace=tempGS.clone();
 				codeptr=acodeptr+workspace.codeptr;
 			} else printstring("\rSorry, unrecognised format. Unable to restore\r");
 		} else printstring("\rUnable to restore game.\r");
 	}
+	
+	int findBeginFilename(String path) {
+		int begin_filename=path.length()-1;
+		char c;
+		while (begin_filename>0) {
+			c=path.charAt(begin_filename-1);
+			if (c=='\\' || c=='/') break;
+			begin_filename--;
+		};
+		return begin_filename;
+	};
 
 	/*--was--	void playback(void)
 	{
@@ -7202,8 +7197,8 @@ class GameState {
 		return bytebuff;
 	}
 	
-	//for restore() - old 0.4 version saves 
-	public boolean setFromCloneInBytes(byte[] bytebuff, byte[] mem, int startmem, String name) {
+	//for restore()
+	public boolean setFromCloneInBytes(byte[] bytebuff, byte[] mem, int startmem) {
 		int i=0,j=0,s,b;
 		s=bytebuff.length;
 		short buff[]=new short[s/2];
@@ -7221,7 +7216,7 @@ class GameState {
 			s=buff[i++];
 			filename="";
 			for (j=0;j<s;j++) filename+=(char)buff[i++];
-			if (!name.equalsIgnoreCase(filename)) return false; 
+			//if (!name.equalsIgnoreCase(filename)) return false; 
 			codeptr=buff[i++];
 			stackptr=buff[i++];
 			if (buff[i++]!=VARSIZE) return false;
@@ -7281,7 +7276,7 @@ class GameState {
 				if (--filenamesize>0) filename+=(char)b;
 				filenamesize--;
 			};
-			if (!name.equalsIgnoreCase(filename)) return false; 
+			//if (!name.equalsIgnoreCase(filename)) return false; 
 			
 			return true;
 		}
