@@ -53,7 +53,6 @@ package pro.oneredpixel.l9droid;
 
 public class L9 {
 	
-	//TODO: перенести LISTAREASIZE и STACKSIZE в какой-либо класс, а не таскать по всем.
 	public static final int LISTAREASIZE = 0x800;
 	public static final int STACKSIZE = 1024;
 	
@@ -77,8 +76,8 @@ public class L9 {
 	public static final int L9StateStopped=0;
 	public static final int L9StateRunning=1;
 	public static final int L9StateWaitForCommand=2;
-	public static final int L9StateCommandReady = 3;	//TODO: Переназвать, глупо как-то звучит
-	public static final int L9StateWaitBeforeScriptCommand=5; //включить паузу перед скриптовой командой
+	public static final int L9StateCommandReady = 3;
+	public static final int L9StateWaitBeforeScriptCommand=5;
 	
 	
 	//char LastGame[MAX_PATH];
@@ -541,7 +540,6 @@ GFX_V3C          320 x 96             no
 	}
 	*/
 	//TODO: error*3 - Изврат
-	//TODO: может error выводить инфу во всплывающем окне?
 	void error(String txt) {
 		for (int i=0;i<txt.length();i++) os_printchar(txt.charAt(i));
 	}
@@ -1240,7 +1238,6 @@ GFX_V3C          320 x 96             no
 		else displaywordV1(startmd,Msg);
 	};
 
-	//TODO: нужно ли?
 	/*--was-- L9UINT32 filelength(FILE *f)
 	{
 		L9UINT32 pos,FileSize;
@@ -1252,7 +1249,6 @@ GFX_V3C          320 x 96             no
 		return FileSize;
 	}*/
 	
-	//TODO: нужно ли?
 	/*--was--	void L9Allocate(L9BYTE **ptr,L9UINT32 Size)
 	{
 		if (*ptr) free(*ptr);
@@ -1642,7 +1638,7 @@ GFX_V3C          320 x 96             no
 	boolean ValidateSequence(byte[] Image,int iPos,int acode,ScanData sdat,boolean Rts, boolean checkDriverV4)
 	{
 		boolean Finished=false,Valid;
-		int Strange=0;
+		//int Strange=0;
 		int Code;
 		sdat.JumpKill=false;
 		
@@ -1796,14 +1792,14 @@ GFX_V3C          320 x 96             no
 					Valid=false;
 					break;
 			}
-		if (Valid && ((Code & ~pscm.ScanCodeMask)!=0))
-			Strange++;
+			if (Valid && ((Code & ~pscm.ScanCodeMask)!=0)) {
+				//Strange++;
+			};
 		} while (Valid && !Finished && pscm.Pos<filesize); // && Strange==0); 
 		(sdat.Size)+=pscm.Pos-iPos;
 		return Valid; // && Strange==0; 
 	}
 
-	//TODO: нужно ли?
 	/*--was--	L9BYTE calcchecksum(L9BYTE* ptr,L9UINT32 num)
 	{
 		L9BYTE d1=0;
@@ -1902,7 +1898,6 @@ GFX_V3C          320 x 96             no
 		
 		ScanData scandata=new ScanData();
 		
-		//TODO: Есть ли шанс, что массивы Chk и Image не создадутся?
 		//if ((Chk==NULL)||(Image==NULL))
 		//{
 		//	fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
@@ -2045,7 +2040,7 @@ GFX_V3C          320 x 96             no
 	
 		ScanData scandata=new ScanData();
 		
-		/* TODO: Есть ли шанс, что массивы Chk и Image не создадутся?
+		/*
 		if ((Chk==NULL)||(Image==NULL))
 		{
 			fprintf(stderr,"Unable to allocate memory for game scan! Exiting...\n");
@@ -2907,7 +2902,6 @@ GFX_V3C          320 x 96             no
 		return true;
 	}
 	
-	//TODO: нужно ли?
 	/*--was--	L9BOOL checksumgamedata(void)
 	{
 		return calcchecksum(startdata,L9WORD(startdata)+1)==0;
@@ -3267,7 +3261,6 @@ GFX_V3C          320 x 96             no
 	{
 		int a6=list9startptr;
 		int d0=l9memory[a6++]&0xff;
-		//TODO: CODEFOLLOW(" %s",drivercalls[d0]);
 
 		if (d0==0x16 || d0==0x17)
 		{
@@ -3352,14 +3345,12 @@ GFX_V3C          320 x 96             no
 		workspace.codeptr=(short)((codeptr-acodeptr)&0xffff);
 		workspace.listsize=LISTAREASIZE;
 		workspace.stacksize=STACKSIZE;
-		//TODO: обрезать полное имя с путем до имени файла.
 		workspace.filename=LastGame;
 		byte buff[]=workspace.getCloneInBytes(l9memory, listarea);
 		if (os_save_file(buff)) printstring("\rGame saved.\r");
 		else printstring("\rUnable to save game.\r");
 	};
 
-	//TODO: Нужно ли?
 	/*--was--	L9BOOL CheckFile(GameState *gs)
 	{
 		L9UINT16 checksum;
@@ -4443,7 +4434,6 @@ GFX_V3C          320 x 96             no
 					ibuff=ibuffstr.toCharArray();
 				}
 				
-				//TODO: сделать настройку отключения функции пустой строки после команды
 				//if need empty line after command:
 				os_printchar('\r');
 				
@@ -4640,7 +4630,7 @@ GFX_V3C          320 x 96             no
 			do
 			{
 				x=(char)(l9memory[ptr++]&0xff);
-			//TODO: так - меньше мусора. Но прав ли я?
+
 			//} while (x>0 && x<0x7f);
 			//if (x==0) return false; // no more words
 			} while (x>31 && x<0x7f);
@@ -4807,7 +4797,6 @@ GFX_V3C          320 x 96             no
 				ibuff=ibuffstr.toCharArray();
 			}
 
-			//TODO: сделать настройку отключения функции пустой строки после команды
 			//if need empty line after command:
 			os_printchar('\r');
 			
@@ -5017,7 +5006,6 @@ GFX_V3C          320 x 96             no
 				if (L9GameType==L9_V4)
 				{
 					if ((d0==0) && (l9memory[a0+1]==0)) {
-						//TODO: проверить, что break уходит за while
 						skip=true;
 						break;
 					}
@@ -5042,9 +5030,10 @@ GFX_V3C          320 x 96             no
 
 		/* notfn4 */
 	//notfn4:
+		
 		//TODO: fix by tsap, d6 cannot be >15. превышение массива и crash в snowball.sna
 		if (d6>15) d6=15; //пофиксил только выход из диапазона, правильно ли - не знаю.
-		//TODO: end of fix
+		//end of fix
 		d6=(byte)(exitreversaltable[d6]&0xff);
 		a0=absdatablock;
 		d5[0]=1;
@@ -6688,9 +6677,9 @@ GFX_V3C          320 x 96             no
 			case 31:	ilins(code & 0x1f);break;
 		}
 		CODEFOLLOW(); //out string
-		//TODO: раскомментировать для разницы в памяти:
+		//раскомментировать (и сам метод тоже) для разницы в памяти:
 		//L9MemoryDiff();
-		//TODO: раскомментировать для разницы в переменных:
+		//раскомментировать (и сам метод тоже) для разницы в переменных:
 		//VarDiff();
 	}
 	
@@ -6847,7 +6836,7 @@ GFX_V3C          320 x 96             no
 	////////////////////////////////////////////////////////////////////////
 
 	void os_printchar(char c) {};
-	//TODO:KILL os_input()
+	//TODO: KILL os_input()
 	String os_input(int size) {return InputString;}; 
 	char os_readchar(int millis) {return '\r';}; 
 	boolean os_stoplist() {return false;}; 
@@ -6866,7 +6855,7 @@ GFX_V3C          320 x 96             no
 	String os_get_game_file(String NewName) {return NewName;};
 	String os_set_filenumber(String NewName, int num) {return NewName;};
 	
-	//TODO: added by tsap
+	//added by tsap
 	byte[] os_load(String filename) { return null; };
 	void os_debug(String str) {};
 	void os_verbose(String str) {};
@@ -7026,7 +7015,7 @@ GFX_V3C          320 x 96             no
 		CODEFOLLOW(String.format(txt, val1, val2, val3, val4, val5));
 	}
 	
-	//TODO: Убрать потом обе diff-функции
+	/* дебажные функции
 	byte l9clonememory[];
 	void L9MemoryDiff() {
 		if (l9clonememory!=null) {
@@ -7046,6 +7035,7 @@ GFX_V3C          320 x 96             no
 		};
 		vartableclone=workspace.vartable.clone();
 	}
+	*/
 	
 	
 	
@@ -7066,9 +7056,6 @@ GFX_V3C          320 x 96             no
 */
 class GameState {
 
-	//TODO: перенести LISTAREASIZE и STACKSIZE в глобальные константы 
-	//private static final int LISTAREASIZE = 0x800;
-	private static final int STACKSIZE = 1024;
 	private static final int VARSIZE = 256;
 	private static final int L9_ID=0x4c393031;
 	
@@ -7082,7 +7069,7 @@ class GameState {
 	GameState() {
 		vartable=new short[VARSIZE];
 		//listarea=new byte[LISTAREASIZE];
-		stack=new short[STACKSIZE];
+		stack=new short[L9.STACKSIZE];
 	}
 
 	public GameState clone() {
@@ -7101,7 +7088,7 @@ class GameState {
 	
 	//for save()
 	public byte[] getCloneInBytes(byte[] mem, int startmem) {
-		short buff[]=new short[2+1+filename.length()+3+VARSIZE+1+STACKSIZE+1+listsize/2+1];
+		short buff[]=new short[2+1+filename.length()+3+VARSIZE+1+L9.STACKSIZE+1+listsize/2+1];
 		int i=0,j;
 		buff[i++]=L9_ID>>16;
 		buff[i++]=L9_ID&0xffff;
@@ -7113,7 +7100,7 @@ class GameState {
 		buff[i++]=VARSIZE;
 		for (j=0;j<VARSIZE;j++) buff[i++]=vartable[j];
 		buff[i++]=stacksize;
-		for (j=0;j<STACKSIZE;j++) buff[i++]=stack[j];
+		for (j=0;j<L9.STACKSIZE;j++) buff[i++]=stack[j];
 		buff[i++]=listsize; //count in bytes. listsize
 		for (j=0;j<listsize/2;j++) buff[i++]=(short)((mem[startmem+j*2]&0xff)|((mem[startmem+j*2+1]&0xff)<<8));
 		checksum=0;
@@ -7148,7 +7135,7 @@ class GameState {
 		if (buff[i++]!=VARSIZE) return false;
 		for (j=0;j<VARSIZE;j++) vartable[j]=buff[i++];
 		stacksize=buff[i++];
-		for (j=0;j<STACKSIZE;j++) stack[j]=buff[i++];
+		for (j=0;j<L9.STACKSIZE;j++) stack[j]=buff[i++];
 		listsize=buff[i++]; //count in bytes. listsize
 		checksum=0;
 		for (j=0;j<i+listsize/2;j++) checksum+=buff[j]; 
@@ -7169,12 +7156,11 @@ class GameState {
 //	L9BYTE listarea[LISTAREASIZE];
 //} SaveStruct;
 class SaveStruct {
-	private static final int LISTAREASIZE = 0x800;
 	short vartable[];
 	byte listarea[];
 	SaveStruct() {
 		vartable=new short[256];
-		listarea=new byte[LISTAREASIZE];
+		listarea=new byte[L9.LISTAREASIZE];
 	}
 }
 
