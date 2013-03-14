@@ -3457,7 +3457,7 @@ GFX_V3C          320 x 96             no
 			if (tempGS.setFromCloneInBytes(buff, l9memory, listarea)) {
 				printstring("\rGame restored.\r");
 				if (!LastGame.equalsIgnoreCase(tempGS.filename)) {	
-					String newFileName=LastGame.substring(0, findBeginFilename(LastGame))+(tempGS.filename.substring(findBeginFilename(tempGS.filename)));
+					String newFileName=LastGame.substring(0, findBeginFilename(LastGame))+(tempGS.filename.substring(findBeginFilename(tempGS.filename)).toLowerCase());
 					int ret = LoadGame2(newFileName,null);
 					if (ret!=L9StateStopped) {
 						printstring("\rGamefile changed according to saved game state.\r");
@@ -7126,6 +7126,7 @@ class GameState {
 		short buff[]=new short[2+6+3+VARSIZE+(listsize/2)+L9.STACKSIZE+(256/2)];
 		int i=0,j;
 		int i_checksum;
+		int c_checksum;
 		//Id
 		buff[i++]=L9_ID&0xffff;
 		buff[i++]=L9_ID>>16;
@@ -7159,8 +7160,11 @@ class GameState {
 			if (i<buff.length) buff[i++] = sym;
 		}
 		
-		checksum=0;
-		for (j=0;j<buff.length;j++) checksum+=buff[j]; 
+		c_checksum=0;
+		for (j=0;j<buff.length;j++) {
+			c_checksum+=(buff[j]&0xff)+((buff[j]&0xff00)>>8);
+		};
+		checksum=(short)(c_checksum&0xffff);
 		buff[i_checksum]=checksum;
 		
 		byte bytebuff[]=new byte[buff.length*2];
@@ -7255,6 +7259,13 @@ class GameState {
 			buff[i++]=0;
 			checksum=0;
 			for (j=0;j<buff.length;j++) checksum+=buff[j];
+
+			int c_checksum=0;
+			for (j=0;j<buff.length;j++) {
+				c_checksum+=(buff[j]&0xff)+((buff[j]&0xff00)>>8);
+			};
+			checksum=(short)(c_checksum&0xffff);
+			
 			if (buff_checksum!=checksum) return false;
 
 			//L9UINT16 vartable[256];
@@ -7270,9 +7281,9 @@ class GameState {
 			//char filename[MAX_PATH];
 			filename="";
 			while (filenamesize>0) {
-				b=buff[i++]&0xffff;
+				b=buff[i++]&0xffff; 	if ((b&0xff)<32) break;
 				filename+=(char)(b&0xff);
-				b=(b>>8)&0xff;
+				b=(b>>8)&0xff;			if ((b&0xff)<32) break;
 				if (--filenamesize>0) filename+=(char)b;
 				filenamesize--;
 			};
