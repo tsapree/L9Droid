@@ -20,7 +20,7 @@ Dima Bak, 08.03.2013 в 17:46 Шедеврально. Авторы молодцы. p.s. ошибки с сохранен
 14.03.2013
 versionCode=3,
 versionName=0.5,
-google play=not yet,
+google play=yes,
 github commit=
 
 v0.5:
