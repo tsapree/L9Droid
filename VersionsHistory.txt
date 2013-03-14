@@ -23,7 +23,9 @@ versionName=0.5,
 google play=not yet,
 github commit=
 
-[*] changed format of save files to support compatibility with L9.Net and Level 9 interpreters.
+v0.5:
+[*] changed format of save files to support compatibility with Level9.Net and Level 9 interpreters.
 [*] more stable autosave feature, now works on every activity pauses.
 [*] small interface fixes (Space/Enter buttons; insert new line after Space/Enter; eat empty lines in log on some games;)
-[*] now works game command RESTORE in addition to #restore.
+[*] game command RESTORE works in addition to #restore.
+[+] added How To Play to game menu
