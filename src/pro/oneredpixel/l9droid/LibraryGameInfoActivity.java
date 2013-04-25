@@ -15,7 +15,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class LibraryGameInfoActivity extends Activity implements OnClickListener {
 	
@@ -238,11 +237,15 @@ public class LibraryGameInfoActivity extends Activity implements OnClickListener
 			ImageButton ibDone = (ImageButton) item.findViewById(R.id.ibDone);
 			ibDone.setOnClickListener(this);
 		
-			if (lib.getGamePath()!=null && lib.getGamePath().equalsIgnoreCase(versions.get(i))) {
-				ibPlay.setVisibility(View.INVISIBLE);
-				ibStop.setVisibility(View.VISIBLE);
-				tvVersion.setTypeface(Typeface.DEFAULT_BOLD);
-				ibDelete.setVisibility(View.GONE);
+			if (lib.getGamePath()!=null) {
+				String gameFolder = lib.getGamePath().substring(0, lib.getGamePath().lastIndexOf('/'));
+				String versionFolder = versions.get(i).substring(0, versions.get(i).lastIndexOf('/'));
+				if (gameFolder.equalsIgnoreCase(versionFolder)) {
+					ibPlay.setVisibility(View.INVISIBLE);
+					ibStop.setVisibility(View.VISIBLE);
+					tvVersion.setTypeface(Typeface.DEFAULT_BOLD);
+					ibDelete.setVisibility(View.GONE);
+				};
 			};
 			
 			linLayout.addView(item);

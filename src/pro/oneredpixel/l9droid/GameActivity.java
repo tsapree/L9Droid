@@ -48,6 +48,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     private final static int MENU_ITEM_LIBRARY = 7;
     private final static int MENU_ITEM_HISTORY = 8;
     private final static int MENU_ITEM_CLOSEAPP = 9;
+    private final static int MENU_ITEM_HOWTOPLAY = 10;    
 
 	private final static int LIBRARYACTIVITY_RESULT = 1;
 	private final static int RESTOREGAMEACTIVITY_RESULT = 2;
@@ -362,6 +363,8 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	mi = menu.add(1, MENU_ITEM_PLAY_SCRIPT, 0,"Play Script");
     	mi.setOnMenuItemClickListener(this);
     	*/
+        mi = menu.add(0, MENU_ITEM_HOWTOPLAY, 3, "How To Play?");
+    	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_HISTORY, 3, "Commands History");
     	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_CLOSEAPP, 3, "Exit");
@@ -395,6 +398,11 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 			break;
 		case MENU_ITEM_HISTORY:
 			toggleCommandsHistory();
+			break;
+		case MENU_ITEM_HOWTOPLAY:
+			intent=new Intent(this, LibraryGameInfoActivity.class);
+			intent.putExtra("selectedgame", "info_how2play");
+			startActivity(intent);
 			break;
 		case MENU_ITEM_CLOSEAPP:
 			finish();

@@ -20,10 +20,12 @@ Dima Bak, 08.03.2013 в 17:46 Шедеврально. Авторы молодцы. p.s. ошибки с сохранен
 14.03.2013
 versionCode=3,
 versionName=0.5,
-google play=not yet,
-github commit=
+google play=yes,
+github commit=c5a61cfb6313910f3966ab6ad021133dd682a6e3
 
-[*] changed format of save files to support compatibility with L9.Net and Level 9 interpreters.
+v0.5:
+[*] changed format of save files to support compatibility with Level9.Net and Level 9 interpreters.
 [*] more stable autosave feature, now works on every activity pauses.
 [*] small interface fixes (Space/Enter buttons; insert new line after Space/Enter; eat empty lines in log on some games;)
-[*] now works game command RESTORE in addition to #restore.
+[*] game command RESTORE works in addition to #restore.
+[+] added How To Play to game menu
