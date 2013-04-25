@@ -79,7 +79,7 @@ public class Threads {
 		    public void handleMessage(android.os.Message msg) {
 		    	try {
 		    		//сведение вероятности падения при повороте экрана к минимуму
-		    		//TODO: внимание! возможно зависание при выходе из программы
+		    		//TODO:  внимание! возможно зависание при выходе из программы
 					while (activity==null) 
 						TimeUnit.MILLISECONDS.sleep(200);
 				} catch (InterruptedException e) {
