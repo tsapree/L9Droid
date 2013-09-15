@@ -1,5 +1,6 @@
 package pro.oneredpixel.l9droid;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -336,16 +338,19 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 
     }
 
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    private void prepareOptionsMenu(Menu menu) {
         menu.setGroupVisible(1, mt.menuHashEnabled);
         menu.setGroupVisible(2, mt.menuHashEnabled && Threads.gfx_ready && (!mt.menuPicturesEnabled));
         menu.setGroupVisible(3, mt.menuHashEnabled && Threads.gfx_ready &&  mt.menuPicturesEnabled);
+    }
+
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        prepareOptionsMenu(menu);
         
         return super.onPrepareOptionsMenu(menu);
     }
     
-    //@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    private void populateOptionsMenu(Menu menu) {
     	MenuItem mi;
     	mi = menu.add(0, MENU_ITEM_LIBRARY,0,"Library");
     	mi.setOnMenuItemClickListener(this);
@@ -369,7 +374,12 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
     	mi.setOnMenuItemClickListener(this);
     	mi = menu.add(0, MENU_ITEM_CLOSEAPP, 3, "Exit");
     	mi.setOnMenuItemClickListener(this);
+    }
     	
+    //@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        populateOptionsMenu(menu);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -410,6 +420,18 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 		};
 
 		return false;
+	}
+
+	@SuppressLint("NewApi")
+	void showOptionsMenu() {
+		if (android.os.Build.VERSION.SDK_INT >= 11) {
+			PopupMenu pmMenu = new PopupMenu(this, ibMenu);
+			populateOptionsMenu(pmMenu.getMenu());
+			prepareOptionsMenu(pmMenu.getMenu());
+			pmMenu.show();
+		} else {
+			openOptionsMenu();
+		}
 	}
 	
 	public void selectFileToRestore() {
@@ -462,7 +484,7 @@ public class GameActivity extends Activity implements OnClickListener, TextWatch
 			}
 			break;
 		case R.id.ibMenu:
-			openOptionsMenu();
+			showOptionsMenu();
 			break;
 		case R.id.bSpace:
 			mt.keyPressed=' ';
