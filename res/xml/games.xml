@@ -326,16 +326,21 @@ The latest version of this program can always be found on this site, in
 </about>
         </game>
         <game name="info_l9droid">
-            <title>L9Droid v0.5</title>
+            <title>L9Droid v0.6</title>
             <about>L9Droid is an Android port of Level 9 Interpreter v5.1
-Released: 14.03.2013
+Released: 30.11.2014
                 
-Copyright (c) 2012-2013 OneRedPixel.pro
+Copyright (c) 2012-2014 OneRedPixel.pro
 Written by Paul Stakhov, sources available at https://github.com/tsapree/L9Droid
 Info in Library taken from game manuals and L9Fact sheet v1.1 Copyright (c) 1998, 1999 Miron Schmidt and Manuel Schulz.
 
 History:
-v0.5:
+v0.6, 30.11.2014:
+[+] added downloadable Knight Orc game in library.
+[*] fixed bug with multifile games (listarea correctly transfers to loaded file).
+[*] corrected size of saved state file (4880), bud sadly not all files works fine on L9.Net.
+
+v0.5, 14.3.2013:
 [*] changed format of save files to support compatibility with Level9.Net and Level 9 interpreters.
 [*] more stable autosave feature, now works on every activity pauses.
 [*] small interface fixes (Space/Enter buttons; insert new line after Space/Enter; eat empty lines in log on some games;)
