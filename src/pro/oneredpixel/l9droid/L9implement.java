@@ -115,14 +115,14 @@ public class L9implement extends L9 {
 	
 	void log_debug(String str) {
 		final String LOG_TAG = "l9droid";
-		if (str.length()>0) 
-			Log.d(LOG_TAG, str);
+	//	if (str.length()>0) 
+	//		Log.d(LOG_TAG, str);
 	};
 	
 	void log_verbose(String str) {
 		final String LOG_TAG = "l9droid";
-		if (str.length()>0) 
-			Log.v(LOG_TAG, str);
+	//	if (str.length()>0) 
+	//		Log.v(LOG_TAG, str);
 	};
 	
 	void os_flush() {

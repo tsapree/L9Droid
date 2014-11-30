@@ -8,8 +8,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_above="@+id/etCmd"
-	    android:layout_below="@+id/ivPicture"
-	    android:layout_toLeftOf="@+id/lvHistory" >
+	    android:layout_below="@+id/ivPicture" >
 
 		<ListView
 		    android:id="@+id/lvLog"
@@ -29,7 +28,6 @@
 		    android:layout_width="100dp"
 		    android:layout_height="wrap_content"
 		    android:layout_alignParentRight="true"
-		    android:layout_below="@+id/ivPicture"
 		    android:paddingLeft="5dp"
 		    android:stackFromBottom="true"
 		    android:transcriptMode="alwaysScroll"

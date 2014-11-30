@@ -1322,7 +1322,12 @@ GFX_V3C          320 x 96             no
 			error("\rFile is too small to contain a Level 9 game\r");
 			return false;
 		};
-		l9memory=new byte[filesize+LISTAREASIZE];
+		byte newl9memory[]=new byte[filesize+LISTAREASIZE];
+		//we must save listarea for new file it it is no new game 
+		if ((l9memory!=null) && (listarea>0) && ((listarea+LISTAREASIZE)<=l9memory.length)) {
+			for (int i=0;i<LISTAREASIZE;i++) newl9memory[filesize+i]=l9memory[listarea+i];
+		}
+		l9memory=newl9memory;
 		listarea=filesize;
 		startfile=0;
 		for (int i=0;i<filesize;i++) l9memory[startfile+i]=filedata[i];
@@ -6956,7 +6961,7 @@ GFX_V3C          320 x 96             no
 	
 	//L9DEBUG
 	void L9DEBUG(String txt) {
-//		os_debug(txt);
+		os_debug(txt);
 	}
 	
 	void L9DEBUG(String txt1, String txt2) {
@@ -6982,8 +6987,8 @@ GFX_V3C          320 x 96             no
 	
 	void CODEFOLLOW(String txt) {
 //uncomment for CODEFOLLOW feature
-//		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
-//		CODEFOLLOWSTRING+=txt;
+		if (CODEFOLLOWSTRING==null) CODEFOLLOWSTRING="";
+		CODEFOLLOWSTRING+=txt;
 	}
 	
 	void CODEFOLLOW(String txt1, String txt2) {
@@ -7122,8 +7127,9 @@ class GameState {
 
 	 */
 	
+	//TODO: см.ниже - +3 нафига???
 	public byte[] getCloneInBytes(byte[] mem, int startmem) {
-		short buff[]=new short[2+6+3+VARSIZE+(listsize/2)+L9.STACKSIZE+(256/2)];
+		short buff[]=new short[2+6+VARSIZE+(listsize/2)+L9.STACKSIZE+(256/2)];
 		int i=0,j;
 		int i_checksum;
 		int c_checksum;
