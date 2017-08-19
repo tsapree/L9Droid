@@ -10,7 +10,7 @@
 	    android:id="@+id/bCancel"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_alignBottom="@+id/tvDownloading"
+	    android:layout_alignBottom="@+id/tvStatus"
 	    android:layout_alignLeft="@+id/bDownload"
 	    android:layout_alignParentRight="true"
 	    android:layout_alignParentTop="true"

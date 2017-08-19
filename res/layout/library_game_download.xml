@@ -28,7 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignRight="@+id/tvGameName"
             android:layout_below="@+id/tvDownload"
             android:paddingBottom="5dp"
             android:paddingLeft="21dp"
