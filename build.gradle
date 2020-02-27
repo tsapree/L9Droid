@@ -13,7 +13,7 @@ buildscript {
      * of the Gradle plugin for the buildscript.
      */
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.0'
     }
 }
 
@@ -40,7 +40,7 @@ dependencies {
  */
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.3"
 
     /**
      * This nested sourceSets block points the source code directories to the
