@@ -41,6 +41,7 @@ import android.widget.ArrayAdapter;
 public class Library {
 
 	private static Library lib_instance;
+	private Activity activity = null;
 	
 	final static String LIBDIR_SD = "L9Droid";
 	final static String FILE_NOMEDIA=".nomedia";
@@ -132,10 +133,12 @@ public class Library {
 	
 	//TODO: вызываю извне этот метод, лучше убрать и вызывать из конструктора
 	boolean prepareLibrary(Activity act) {
+		activity = act;
 		//getting sdcard path
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			File sdPath = activity.getExternalFilesDir(null);
+//			File sdPath = android.os.Environment.getExternalStorageDirectory();
 			sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD);
 			if (!sdPath.isDirectory()) {
 				//Toast.makeText(act, "Creating library", Toast.LENGTH_LONG).show();
@@ -158,7 +161,8 @@ public class Library {
 	
 	public void requestPaths() {
 		paths = new ArrayList<String>();
-		File sdPath = android.os.Environment.getExternalStorageDirectory();
+		File sdPath = activity.getExternalFilesDir(null);
+//		File sdPath = android.os.Environment.getExternalStorageDirectory();
 		sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/");
 		File[] pathdirs=sdPath.listFiles();
 		if (pathdirs!=null) {
@@ -432,7 +436,8 @@ public class Library {
 	public boolean importFile(String fileName, String folderName) {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			File sdPath = activity.getExternalFilesDir(null);
+//			File sdPath = android.os.Environment.getExternalStorageDirectory();
 			File newFolder = new File (	unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/"+folderName));
 
 			File source=new File(fileName);
@@ -853,7 +858,8 @@ public class Library {
 		
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			File sdPath = activity.getExternalFilesDir(null);
+//			File sdPath = android.os.Environment.getExternalStorageDirectory();
 			dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 			File fdst=new File(dst);
 			if (fdst.exists()) return dst; //если уже файл скачан ранее, вернуть путь
@@ -864,7 +870,8 @@ public class Library {
 	public boolean checkPathInLibrary(String folderTo) {
 		String sdState = android.os.Environment.getExternalStorageState();
 		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
+			File sdPath = activity.getExternalFilesDir(null);
+//			File sdPath = android.os.Environment.getExternalStorageDirectory();
 			File path=new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
 			if (path.isDirectory()) return true;
 		};
@@ -883,7 +890,9 @@ public class Library {
 			
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-				File sdPath = android.os.Environment.getExternalStorageDirectory();
+
+				File sdPath = activity.getExternalFilesDir(null);
+//				File sdPath = android.os.Environment.getExternalStorageDirectory();
 				dst=sdPath.getAbsolutePath() + "/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 				
 				fdst=new File(dst);
@@ -963,7 +972,8 @@ public class Library {
 			
 			String sdState = android.os.Environment.getExternalStorageState();
 			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-				File sdPath = android.os.Environment.getExternalStorageDirectory();
+				File sdPath = activity.getExternalFilesDir(null);
+//				File sdPath = android.os.Environment.getExternalStorageDirectory();
 				absFolderTo=unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
 				z=new ZipFile(zipPath);
 				File path=new File(absFolderTo);
