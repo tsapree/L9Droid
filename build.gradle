@@ -39,8 +39,8 @@ dependencies {
  * compilation target.
  */
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     /**
      * This nested sourceSets block points the source code directories to the

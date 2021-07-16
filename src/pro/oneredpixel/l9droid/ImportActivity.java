@@ -41,8 +41,8 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 		lvAdapter.clear();
 		//lvAdapter.add(path);
 
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+		//String sdState = android.os.Environment.getExternalStorageState();
+		//if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File sdpath=new File(path);
 			if (!(path.equalsIgnoreCase(rootElement))) {
 				String parent=sdpath.getParent();
@@ -52,7 +52,7 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 			for (int i=0; i<FileList.length;i++) {
 				lvAdapter.add(path+"/"+FileList[i]);
 			};
-		};
+		//};
 		
 	};
 
@@ -69,7 +69,7 @@ public class ImportActivity extends Activity implements OnItemClickListener, OnI
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 		String selFile=lvAdapter.getItem(position);
 		//File sdpath=new File(selFile);
-		//TODO: убрать возможность долгого клика по отцовской папке
+		//TODO: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		SelectFolder(selFile);
 		return true;
 	}

@@ -30,6 +30,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Spannable;
@@ -126,16 +127,33 @@ public class Library {
 	}
 	
 	public boolean checkIfSDCardPresent() {
-		String sdState = android.os.Environment.getExternalStorageState();
-		return (sdState.equals(android.os.Environment.MEDIA_MOUNTED));
+		if (isNoExternalStorage()) return true;
+		return !isStorageStateError();
+	}
+
+	public File getLibPath() {
+		if (isNoExternalStorage()) return L9DroidApplication.getContext().getFilesDir();
+		return android.os.Environment.getExternalStorageDirectory();
+	}
+
+	private boolean isNoExternalStorage() {
+		//no use external storage on sdk>=29
+		return (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
+	}
+
+	public boolean isStorageStateError() {
+		if (!isNoExternalStorage()) {
+			String sdState = android.os.Environment.getExternalStorageState();
+			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) return true;
+		}
+		return false;
 	}
 	
 	//TODO: вызываю извне этот метод, лучше убрать и вызывать из конструктора
-	boolean prepareLibrary(Activity act) {
+	boolean prepareLibrary() {
 		//getting sdcard path
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
+		if (!isStorageStateError()) {
+			File sdPath = getLibPath();
 			sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD);
 			if (!sdPath.isDirectory()) {
 				//Toast.makeText(act, "Creating library", Toast.LENGTH_LONG).show();
@@ -158,7 +176,7 @@ public class Library {
 	
 	public void requestPaths() {
 		paths = new ArrayList<String>();
-		File sdPath = android.os.Environment.getExternalStorageDirectory();
+		File sdPath = getLibPath();
 		sdPath = new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/");
 		File[] pathdirs=sdPath.listFiles();
 		if (pathdirs!=null) {
@@ -208,51 +226,47 @@ public class Library {
 	byte[] fileLoadToArray(String absolutePath) {
 		if (absolutePath==null) return null;
 		byte buff[]=null;
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdFile = new File(absolutePath);
-		    try {
-		    	int size=(int)sdFile.length();
-		    	if (size>0) {
-		    		buff = new byte[size];
-			    	InputStream in = new FileInputStream(sdFile);
-	                int len=in.read(buff);
-	                in.close();
-		    	}
-		    } catch (IOException e) {
-		      e.printStackTrace();
-		    }
 
-		    //if (buff!=null) sendUserMessage("Loaded: "+absolutePath);
-		    //else sendUserMessage("ERROR load: "+absolutePath);
-		    
-		};
+		if (isStorageStateError()) return null;
+
+		File sdFile = new File(absolutePath);
+		try {
+			int size=(int)sdFile.length();
+			if (size>0) {
+				buff = new byte[size];
+				InputStream in = new FileInputStream(sdFile);
+				int len=in.read(buff);
+				in.close();
+			}
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
+
 		return buff;
 	};
 	
 	boolean fileSaveFromArray(String path,byte buff[]) {
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			try {
-				File sdFile = new File(path);
-				//folder exists?
-				File sdPath = new File(sdFile.getParent());
-				if (!sdPath.isDirectory()) {
-					//create folder
-					sdPath.mkdirs();
-				};
-				OutputStream out = new FileOutputStream(sdFile);
-				out.write(buff);
-				out.close();
-				//sendUserMessage("Saved: "+path);
-				return true;
-			} catch (FileNotFoundException e) {
-				//TODO: e.printStackTrace();
-			} catch (IOException e) {
-				//TODO: e.printStackTrace();
-			}
-			//sendUserMessage("ERROR save: "+path);
-		};
+		if (isStorageStateError()) return false;
+
+		try {
+			File sdFile = new File(path);
+			//folder exists?
+			File sdPath = new File(sdFile.getParent());
+			if (!sdPath.isDirectory()) {
+				//create folder
+				sdPath.mkdirs();
+			};
+			OutputStream out = new FileOutputStream(sdFile);
+			out.write(buff);
+			out.close();
+			//sendUserMessage("Saved: "+path);
+			return true;
+		} catch (FileNotFoundException e) {
+			//TODO: e.printStackTrace();
+		} catch (IOException e) {
+			//TODO: e.printStackTrace();
+		}
+		//sendUserMessage("ERROR save: "+path);
 		return false;
 	}
 	
@@ -279,40 +293,38 @@ public class Library {
 	    //else sendUserMessage("ERROR load strings: "+absolutePath);
 	    return buff;
 	};
-	
+
 	boolean fileSaveFromStringArray(String absolutePath, ArrayList<String> buff) {
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			try {
-				
-				File sdFile = new File(absolutePath);
-				//folder exists?
-				File sdPath = new File(sdFile.getParent());
-				if (!sdPath.isDirectory()) sdPath.mkdirs();
-				OutputStream out = new FileOutputStream(sdFile);
-				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
-				
-				for (int i=0;i<buff.size();i++)
-					bw.write(buff.get(i)+"\n");
-				bw.close();
-				
-				//sendUserMessage("Saved strings: "+absolutePath);
-				return true;
-			} catch (FileNotFoundException e) {
-				//TODO: e.printStackTrace();
-			} catch (IOException e) {
-				//TODO: e.printStackTrace();
-			}
-			//sendUserMessage("ERROR save strings: "+absolutePath);
-		};
+		if (isStorageStateError()) return false;
+		try {
+
+			File sdFile = new File(absolutePath);
+			//folder exists?
+			File sdPath = new File(sdFile.getParent());
+			if (!sdPath.isDirectory()) sdPath.mkdirs();
+			OutputStream out = new FileOutputStream(sdFile);
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(out));
+
+			for (int i=0;i<buff.size();i++)
+				bw.write(buff.get(i)+"\n");
+			bw.close();
+
+			//sendUserMessage("Saved strings: "+absolutePath);
+			return true;
+		} catch (FileNotFoundException e) {
+			//TODO: e.printStackTrace();
+		} catch (IOException e) {
+			//TODO: e.printStackTrace();
+		}
+		//sendUserMessage("ERROR save strings: "+absolutePath);
 		return false;		
 	}
 	
 	boolean pictureSaveFromBitmap(String path, Bitmap bm) {
 		if (bm==null) return false;
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			try {
+		if (isStorageStateError()) return false;
+
+		try {
 				File sdFile = new File(path);
 				//folder exists?
 				File sdPath = new File(sdFile.getParent());
@@ -331,7 +343,6 @@ public class Library {
 				//TODO: e.printStackTrace();
 			}
 			//sendUserMessage("ERROR save: "+path);
-		};
 		return false;
 	}
 	
@@ -345,14 +356,13 @@ public class Library {
 	
 	boolean deleteFile(String path) {
 		//TODO: проверить, что файл в моей библиотеке, иначе не совать нос и не удалять!
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdFile = new File(path);
+		if (isStorageStateError()) return false;
+
+		File sdFile = new File(path);
 			if (sdFile.delete()) {
 				//sendUserMessage("Deleted: "+path);
 				return true;
 			}
-		};
 		//sendUserMessage("ERROR delete: "+path);
 		return false;
 	}
@@ -430,10 +440,11 @@ public class Library {
 	}
 	
 	public boolean importFile(String fileName, String folderName) {
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			File newFolder = new File (	unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/"+folderName));
+		if (isStorageStateError()) return false;
+
+		File sdPath = getLibPath();
+
+		File newFolder = new File (	unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/"+folderName));
 
 			File source=new File(fileName);
 			if (source.isDirectory()) return copy(fileName,newFolder.toString());
@@ -441,8 +452,7 @@ public class Library {
 				newFolder.mkdirs();
 				copy(fileName,newFolder.toString()+"/"+source.getName());
 			};
-		};
-		return false; 
+		return false;
 	};
 
 	public static boolean copy(String from, String to) {
@@ -850,24 +860,24 @@ public class Library {
 		String dst=null;
 		String filename=getFileName(src);
 		String folder=src.replace('/', '_').replace(":", "_");
-		
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
+
+		if (isStorageStateError()) return null;
+
+		File sdPath = getLibPath();
+
+		dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 			File fdst=new File(dst);
 			if (fdst.exists()) return dst; //если уже файл скачан ранее, вернуть путь
-		};
 		return null;
 	};
 	
 	public boolean checkPathInLibrary(String folderTo) {
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File sdPath = android.os.Environment.getExternalStorageDirectory();
-			File path=new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
+		if (isStorageStateError()) return false;
+
+		File sdPath = getLibPath();
+
+		File path=new File(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
 			if (path.isDirectory()) return true;
-		};
 		return false;
 	};
 	
@@ -880,10 +890,10 @@ public class Library {
 		try {
 			String filename=getFileName(src);
 			String folder=src.replace('/', '_').replace(":", "_");
-			
-			String sdState = android.os.Environment.getExternalStorageState();
-			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-				File sdPath = android.os.Environment.getExternalStorageDirectory();
+
+			if (!isStorageStateError()) {
+
+				File sdPath = getLibPath();
 				dst=sdPath.getAbsolutePath() + "/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 				
 				fdst=new File(dst);
@@ -960,10 +970,10 @@ public class Library {
 		int filesUnzipped=0;
 		
 		try {
-			
-			String sdState = android.os.Environment.getExternalStorageState();
-			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
-				File sdPath = android.os.Environment.getExternalStorageDirectory();
+
+			if (!isStorageStateError()) {
+
+				File sdPath = getLibPath();
 				absFolderTo=unifyFolder(sdPath.getAbsolutePath() + "/"+LIBDIR_SD+"/" + folderTo);
 				z=new ZipFile(zipPath);
 				File path=new File(absFolderTo);
@@ -1027,8 +1037,7 @@ public class Library {
         Map<String, Object> m;
 
 		Time t=new Time();
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+		if (!isStorageStateError()) {
 			File sdpath=new File(path);
 			if (sdpath.isFile()) sdpath=sdpath.getParentFile();
 			sdpath = new File(sdpath.getAbsolutePath()+"/"+DIR_SAVES);
@@ -1072,8 +1081,7 @@ public class Library {
         Map<String, Object> m;
 
 		Time t=new Time();
-		String sdState = android.os.Environment.getExternalStorageState();
-		if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) {
+		if (!isStorageStateError()) {
 			File sdpath=new File(path);
 			if (sdpath.isDirectory()) {
 				File[] f = sdpath.listFiles();

@@ -39,9 +39,9 @@ public class SelectFileActivity extends Activity implements OnItemClickListener,
         SharedPreferences sPref=getPreferences(MODE_PRIVATE);
         folder = sPref.getString("selectfileactivity_folder", null);
         if (folder==null || (!(new File(folder)).exists())) {
-			String sdState = android.os.Environment.getExternalStorageState();
-			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED))
-				folder = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+			if (!Library.getInstance().isStorageStateError())
+				folder = Library.getInstance().getLibPath().getAbsolutePath();
+				//folder = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
 			else folder = "/";
         };
 		data=lib.getFilesInFolder(folder);

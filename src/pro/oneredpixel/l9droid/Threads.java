@@ -65,7 +65,7 @@ public class Threads {
     
 	void create() {
 		lib=Library.getInstance();
-	    lib.prepareLibrary(activity);
+	    lib.prepareLibrary();
 	    
 		//lvAdapter = new ArrayAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
 	    lvAdapter = new CustomisableListAdapter<SpannableStringBuilder>(activity, R.layout.log_list_item, new ArrayList<SpannableStringBuilder>());
