@@ -326,15 +326,18 @@ The latest version of this program can always be found on this site, in
 </about>
         </game>
         <game name="info_l9droid">
-            <title>L9Droid v0.9</title>
+            <title>L9Droid v0.10</title>
             <about>L9Droid is an Android port of Level 9 Interpreter v5.1
-Released: 17.07.2021
+Released: 18.07.2021
                 
 Copyright (c) 2012-2021 OneRedPixel
 Written by Paul Stakhov, sources available at https://github.com/tsapree/L9Droid
 Info in Library taken from game manuals and L9Fact sheet v1.1 Copyright (c) 1998, 1999 Miron Schmidt and Manuel Schulz.
 
 History:
+v0.10, 18.07.2020:
+[*] fixed file storage on Android 4-9 (huh)
+
 v0.9, 17.07.2020:
 [*] changed https files, file storage on Android 10
 

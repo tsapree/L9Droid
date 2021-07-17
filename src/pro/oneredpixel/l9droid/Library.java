@@ -144,12 +144,12 @@ public class Library {
 	public boolean isStorageStateError() {
 		if (!isNoExternalStorage()) {
 			String sdState = android.os.Environment.getExternalStorageState();
-			if (sdState.equals(android.os.Environment.MEDIA_MOUNTED)) return true;
+			if (!sdState.equals(android.os.Environment.MEDIA_MOUNTED)) return true;
 		}
 		return false;
 	}
 	
-	//TODO: вызываю извне этот метод, лучше убрать и вызывать из конструктора
+	//TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	boolean prepareLibrary() {
 		//getting sdcard path
 		if (!isStorageStateError()) {
@@ -355,7 +355,7 @@ public class Library {
 	}
 	
 	boolean deleteFile(String path) {
-		//TODO: проверить, что файл в моей библиотеке, иначе не совать нос и не удалять!
+		//TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ!
 		if (isStorageStateError()) return false;
 
 		File sdFile = new File(path);
@@ -394,7 +394,7 @@ public class Library {
 	//	else absolute path = gamePath-gameName+relativePath
 	String getAbsolutePath(String relativePath) { 
 		String absolutePath=null;
-		//TODO: на момент, пока игра не стартанула, в пути GameFullPathName ерунда
+		//TODO: пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅ GameFullPathName пїЅпїЅпїЅпїЅпїЅпїЅ
 		File sdFile = new File(GameFullPathName);
 		absolutePath=sdFile.getParent()+'/';
 		if (relativePath!=null) {
@@ -413,7 +413,7 @@ public class Library {
 	}
 	
 	boolean FileExist(String path) {
-		//TODO: на момент, пока игра не стартанула, в пути GameFullPathName ерунда
+		//TODO: пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅ GameFullPathName пїЅпїЅпїЅпїЅпїЅпїЅ
 		String checkPath=getAbsolutePath(path);
 		File sdFile = new File(checkPath);
 		return sdFile.exists();
@@ -458,14 +458,14 @@ public class Library {
 	public static boolean copy(String from, String to) {
 		try {      
 			File fFrom = new File(from);
-			if (fFrom.isDirectory()) { // Если директория, копируем все ее содержимое
-				File f1 = new File(to); //Создаем файловую переменную
+			if (fFrom.isDirectory()) { // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+				File f1 = new File(to); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 if (!f1.exists()) f1.mkdirs();
 				String[] FilesList = fFrom.list();
 				for (int i = 0; i < FilesList.length; i++)
 					if (!copy(from + "/" + FilesList[i], to + "/" + FilesList[i]))
-						return false; // Если при копировании произошла ошибка
-			} else if (fFrom.isFile()) { // Если файл просто копируем его
+						return false; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			} else if (fFrom.isFile()) { // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 			    File fTo = new File(to);
 			    InputStream in = new FileInputStream(fFrom);
 			    OutputStream out = new FileOutputStream(fTo);
@@ -477,29 +477,29 @@ public class Library {
 			    in.close();
 			    out.close();
 			}
-		} catch (FileNotFoundException ex) { // Обработка ошибок
-		} catch (IOException e) { // Обработка ошибок
+		} catch (FileNotFoundException ex) { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		} catch (IOException e) { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		}
 		return true;
 	}
 	
-	//завернуть spans в тэги {}
-	//TODO: посмотреть на решение по поиску спэнов в refreshLogCommandsColor(), там получилось лучше
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ spans пїЅ пїЅпїЅпїЅпїЅ {}
+	//TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ refreshLogCommandsColor(), пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	private String wrapSpans(SpannableStringBuilder spannedStr) {
 		String result=new String();
 		SpannableStringBuilder spannedString=new SpannableStringBuilder(" ");
-		spannedString.append(spannedStr);//исправление особенности nextSpanTransition, который не видит 
+		spannedString.append(spannedStr);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ nextSpanTransition, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 
 		int size=spannedString.length();
 		int i=spannedString.getSpans(0, size, ForegroundColorSpan.class).length;
 		if (i>0) {
 			
-			//TODO: пока только одна подсвеченная команда в строке будет заключена в фигурные скобки 
-			//TODO: раскомментировать .replace("{", "{/").replace("}", "}}") для маскировки этих символов
+			//TODO: пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
+			//TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ .replace("{", "{/").replace("}", "}}") пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			int begin=0;
 			int beginSpan=-1;
 			int endSpan=0;
 			beginSpan=spannedString.nextSpanTransition(begin, size-1, ForegroundColorSpan.class);
-			begin=1; //Пропустить вставленный мною пробел
+			begin=1; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			if (beginSpan>=0) {
 				endSpan=spannedString.nextSpanTransition(beginSpan, size-1, ForegroundColorSpan.class);
 				result+=spannedString.subSequence(begin, beginSpan).toString()/*.replace("{", "{/").replace("}", "}/")*/
@@ -522,7 +522,7 @@ public class Library {
 		else return null;
 	}
 	
-	//развернуть spans из тэгов {}
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ spans пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ {}
 	private SpannableStringBuilder unwrapSpans(String wrappedString, int color) {
 		
 		int size=wrappedString.length();
@@ -576,7 +576,7 @@ public class Library {
 		paths=null;
 	}
 	
-	//вернуть список путей с именами запускаемых файлов, соответствующих игре gameName
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ gameName
 	public ArrayList<String> getInstalledVersions(String gameName) {
 		if (paths==null) requestPaths();
 		ArrayList<String> p=new ArrayList<String>();
@@ -650,7 +650,7 @@ public class Library {
 		};
 	}
 	
-	//получить список игр, с указанием короткого имени, названия игры и категории
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public ArrayList<GameInfo> getGameList(Activity act) {
 		ArrayList<GameInfo> rez = new ArrayList<GameInfo>();
 		String currentCategory="";
@@ -714,7 +714,7 @@ public class Library {
 		String currentGame="";
 		
 		/*
-		//TODO: убрать, когда корректно наполню библиотеку
+		//TODO: пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		gi.setCategory("!category!");
 		gi.setId("!id!");
 		gi.setTitle("!title!");
@@ -867,7 +867,7 @@ public class Library {
 
 		dst=sdPath.getAbsolutePath() +"/" + LIBDIR_SD + "/"+DIR_CACHE+"/" + folder + "/" + filename;
 			File fdst=new File(dst);
-			if (fdst.exists()) return dst; //если уже файл скачан ранее, вернуть путь
+			if (fdst.exists()) return dst; //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 		return null;
 	};
 	
@@ -900,14 +900,14 @@ public class Library {
 				dir=fdst.getParentFile();
 				if (!dir.isDirectory()) dir.mkdirs();
 				
-				if (fdst.exists()) return dst; //если уже файл скачан ранее, просто вернуть путь
+				if (fdst.exists()) return dst; //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
 				URL url = new URL(src);
 				URLConnection connection;
 				
-				//TODO: методы получения адреса и порта прокси deprecated, поэтому
-				//      надо перевести на определение стандартным java-способом
-				//      либо вынести настройки прокси в настройки и не париться.
+				//TODO: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ deprecated, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+				//      пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ java-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+				//      пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 				String proxyServer = android.net.Proxy.getDefaultHost();
 				int proxyPort = android.net.Proxy.getDefaultPort();
 				if (proxyServer!=null && proxyPort>0) {
@@ -948,7 +948,7 @@ public class Library {
 			//return null;
 		}
 		if (cancelled) d.errorDescription = "Canceled";
-		if (cancelled || (dst==null)) { //если произошла отмена или ошибка
+		if (cancelled || (dst==null)) { //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			if ((fdst!=null) && (fdst.exists())) fdst.delete();
 			if ((dir!=null) && (dir.isDirectory())) dir.delete();
 			dst=null;
@@ -961,8 +961,8 @@ public class Library {
 		return src.substring(src.lastIndexOf('/')+1);
 	};
 	
-	//метод разархивирует все файлы, начинающиеся с fileToExtract, маленький недочет в том, что все файлы,
-	//начинающиеся с этого пути будут помещены в одну папку, меня это пока устраивает
+	//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ fileToExtract, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ,
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	public boolean unzipFile(String zipPath, String fileToExtract, String folderTo, DownloadInstallFileTask d) {
 		ZipFile z;
 		ZipEntry ze;
@@ -1030,7 +1030,7 @@ public class Library {
 		}
 	};
 	
-	//получить информацию о сохраненных играх по папке или пути до файла
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	ArrayList<Map<String, Object>> getSaved(String path) {
 
 		ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
@@ -1074,7 +1074,7 @@ public class Library {
         }
     }
 	
-	//получить информацию о каталоге для activity select file
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ activity select file
 	ArrayList<Map<String, Object>> getFilesInFolder(String path) {
 
 		ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
